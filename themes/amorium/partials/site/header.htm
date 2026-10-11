@@ -4,8 +4,13 @@
 <nav class="navbar {{ hasHero ? '' : 'is-sticky' }}" id="navbar">
     <div class="container flex flex-wrap items-center justify-end">
         <a class="navbar-brand" href="{{ 'index'|page }}">
-            <span class="l-light text-2xl font-medium tracking-wide text-white">{{ brandName }}</span>
-            <span class="l-dark text-2xl font-medium tracking-wide text-slate-900 dark:text-white">{{ brandName }}</span>
+            {% if this.theme.logo %}
+                <img class="l-light logo-image" src="{{ (this.theme.logo_light ?: this.theme.logo)|media }}" alt="{{ brandName }}" />
+                <img class="l-dark logo-image" src="{{ this.theme.logo|media }}" alt="{{ brandName }}" />
+            {% else %}
+                <span class="l-light text-2xl font-medium tracking-wide text-white">{{ brandName }}</span>
+                <span class="l-dark text-2xl font-medium tracking-wide text-slate-900 dark:text-white">{{ brandName }}</span>
+            {% endif %}
         </a>
 
         <div class="nav-icons flex items-center lg_992:order-2 ms-auto">

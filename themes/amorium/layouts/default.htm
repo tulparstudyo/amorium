@@ -11,6 +11,13 @@ slug = "footer-menu"
 ==
 {% set brandName = business().business_name ?: this.theme.getConfigValue('name') %}
 {% set isRtl = this.site.hard_locale|slice(0, 2) in ['ar', 'fa', 'he', 'ur'] %}
+{% set settings = this.theme %}
+{% set fontPattern = '/^[A-Za-z0-9 ]+$/' %}
+{% set colorPattern = '/^#[0-9A-Fa-f]{3,8}$/' %}
+{% set bodyFont = settings.body_font|default('') matches fontPattern ? settings.body_font : 'Rubik' %}
+{% set headingFont = settings.heading_font|default('') matches fontPattern ? settings.heading_font : bodyFont %}
+{% set fontFamilies = headingFont != bodyFont ? [bodyFont, headingFont] : [bodyFont] %}
+{% set fontQuery = fontFamilies|map(font => font|lower|replace({ ' ': '-' }) ~ ':300,400,500,600,700')|join('|') %}
 <!DOCTYPE html>
 <html lang="{{ this.site.hard_locale }}" dir="{{ isRtl ? 'rtl' : 'ltr' }}" class="light scroll-smooth scroll-pt-24">
     <head>
@@ -23,18 +30,35 @@ slug = "footer-menu"
                 <link rel="alternate" hreflang="{{ site.hard_locale }}" href="{{ site.url }}" />
             {% endfor %}
         {% endif %}
+        {% if settings.favicon %}
+            <link rel="icon" href="{{ settings.favicon|media }}" />
+        {% endif %}
         <link rel="preconnect" href="https://fonts.bunny.net" />
-        <link href="https://fonts.bunny.net/css?family=rubik:300,400,500,600,700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family={{ fontQuery }}&display=swap" rel="stylesheet" />
         {% if isRtl %}
             <link href="https://fonts.bunny.net/css?family=cairo:300,400,500,600,700&display=swap" rel="stylesheet" />
         {% endif %}
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
         <link href="{{ 'modules/system/assets/toolbox/elements/flag/flag.css'|app }}" rel="stylesheet" />
         <link href="{{ 'assets/css/theme.css'|themeAsset }}" rel="stylesheet" />
+        <style>
+            :root {
+                --theme-font-body: "{{ bodyFont }}";
+                --theme-font-heading: "{{ headingFont }}";
+                --theme-font-size: {{ (settings.base_font_size ?: 16)|round }}px;
+                --theme-logo-height: {{ (settings.logo_height ?: 32)|round }}px;
+                {% if settings.primary_color|default('') matches colorPattern %}
+                    --theme-color-primary: {{ settings.primary_color }};
+                {% endif %}
+                {% if settings.primary_dark_color|default('') matches colorPattern %}
+                    --theme-color-primary-dark: {{ settings.primary_dark_color }};
+                {% endif %}
+            }
+        </style>
         {% styles %}
     </head>
     {% set hasHero = this.page.id == 'index' or this.page.hasHero %}
-    <body class="flex min-h-screen flex-col bg-white font-rubik text-base text-slate-900 antialiased dark:bg-slate-900 dark:text-white {{ hasHero ? 'has-hero' : '' }}">
+    <body class="flex min-h-screen flex-col bg-white font-body text-base text-slate-900 antialiased dark:bg-slate-900 dark:text-white {{ hasHero ? 'has-hero' : '' }}">
         {% partial 'site/header' hasHero=hasHero %}
 
         <main class="flex-1 {{ hasHero ? '' : 'pt-24' }}">
@@ -43,11 +67,13 @@ slug = "footer-menu"
 
         {% partial 'site/footer' %}
 
-        <a href="#" id="back-to-top" class="back-to-top fixed end-5 bottom-5 z-10 hidden size-8 items-center justify-center rounded-full bg-primary text-lg leading-8 text-white" aria-label="{{ 'Back to top'|_ }}">
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7" />
-            </svg>
-        </a>
+        {% if settings.show_back_to_top %}
+            <a href="#" id="back-to-top" class="back-to-top fixed end-5 bottom-5 z-10 hidden size-8 items-center justify-center rounded-full bg-primary text-lg leading-8 text-white" aria-label="{{ 'Back to top'|_ }}">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+            </a>
+        {% endif %}
 
         {% framework extras %}
         <script src="{{ 'assets/vendor/flowbite/flowbite.min.js'|theme }}"></script>

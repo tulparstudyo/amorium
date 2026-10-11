@@ -1,0 +1,96 @@
+tabs:
+    fields:
+        logo:
+            tab: General
+            label: Logo
+            type: mediafinder
+            mode: image
+            span: left
+            comment: Shown on light backgrounds. The business name is shown when left empty.
+
+        logo_light:
+            tab: General
+            label: Light Logo
+            type: mediafinder
+            mode: image
+            span: right
+            comment: Shown over the hero image and in the footer. The logo is used when left empty.
+
+        logo_height:
+            tab: General
+            label: Logo Height (px)
+            type: number
+            min: 16
+            max: 120
+            default: 32
+            span: left
+
+        favicon:
+            tab: General
+            label: Favicon
+            type: mediafinder
+            mode: image
+            span: right
+            comment: Square PNG or SVG, at least 32x32 pixels.
+
+        show_back_to_top:
+            tab: General
+            label: Show back to top button
+            type: switch
+            default: true
+            span: full
+
+        primary_color:
+            tab: Color
+            label: Primary Color
+            type: colorpicker
+            default: '#f54a00'
+            span: left
+            comment: Used for buttons, links and highlights.
+
+        primary_dark_color:
+            tab: Color
+            label: Primary Hover Color
+            type: colorpicker
+            default: '#cc3d00'
+            span: right
+            comment: Used when hovering buttons. Usually a darker shade of the primary color.
+
+        body_font:
+            tab: Typography
+            label: Body Font
+            type: dropdown
+            default: Rubik
+            span: left
+            options: &fonts
+                Rubik: Rubik
+                Inter: Inter
+                Poppins: Poppins
+                Roboto: Roboto
+                Open Sans: Open Sans
+                Montserrat: Montserrat
+                Nunito: Nunito
+                Lato: Lato
+                Raleway: Raleway
+                Work Sans: Work Sans
+                DM Sans: DM Sans
+                Playfair Display: Playfair Display
+                Merriweather: Merriweather
+
+        heading_font:
+            tab: Typography
+            label: Heading Font
+            type: dropdown
+            emptyOption: Same as body font
+            span: right
+            options: *fonts
+
+        base_font_size:
+            tab: Typography
+            label: Base Font Size (px)
+            type: number
+            min: 12
+            max: 22
+            default: 16
+            span: left
+            comment: Body text size. Line height is adjusted automatically.

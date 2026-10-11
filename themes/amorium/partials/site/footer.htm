@@ -4,7 +4,14 @@
     <div class="container">
         <div class="grid items-center md:grid-cols-12">
             <div class="md:col-span-3">
-                <a href="{{ 'index'|page }}" class="logo-footer mx-auto block text-center text-xl font-medium text-white md:mx-0 md:text-start">{{ brandName }}</a>
+                <a href="{{ 'index'|page }}" class="logo-footer mx-auto block text-center text-xl font-medium text-white md:mx-0 md:text-start">
+                    {% set footerLogo = this.theme.logo_light ?: this.theme.logo %}
+                    {% if footerLogo %}
+                        <img class="logo-image mx-auto inline-block md:mx-0" src="{{ footerLogo|media }}" alt="{{ brandName }}" />
+                    {% else %}
+                        {{ brandName }}
+                    {% endif %}
+                </a>
             </div>
 
             <div class="mt-8 md:col-span-5 md:mt-0">

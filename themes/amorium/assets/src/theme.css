@@ -14,24 +14,38 @@
 /* Dark mode is toggled with a class on <html>, not the system preference. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* The --theme-* variables are printed by layouts/default.htm from the theme customization settings. */
 @theme {
-    --font-rubik: "Rubik", sans-serif;
+    --font-body: var(--theme-font-body, "Rubik"), sans-serif;
+    --font-heading: var(--theme-font-heading, var(--theme-font-body, "Rubik")), sans-serif;
 
-    --color-primary: #f54a00;
-    --color-primary-200: #ff7e47;
-    --color-primary-300: #ff7033;
-    --color-primary-400: #ff621f;
-    --color-primary-dark: #cc3d00;
+    --color-primary: var(--theme-color-primary, #f54a00);
+    --color-primary-200: color-mix(in oklab, var(--color-primary) 70%, white);
+    --color-primary-300: color-mix(in oklab, var(--color-primary) 80%, white);
+    --color-primary-400: color-mix(in oklab, var(--color-primary) 90%, white);
+    --color-primary-dark: var(--theme-color-primary-dark, #cc3d00);
 
     --breakpoint-lg_992: 992px;
 
-    --text-base: 16px;
-    --text-base--line-height: 24px;
+    --text-base: var(--theme-font-size, 16px);
+    --text-base--line-height: 1.5;
 }
 
-/* Rubik has no Arabic glyphs. */
+/* The Latin fonts have no Arabic glyphs. */
 [dir="rtl"] {
-    --font-rubik: "Cairo", "Rubik", sans-serif;
+    --font-body: "Cairo", var(--theme-font-body, "Rubik"), sans-serif;
+    --font-heading: "Cairo", var(--theme-font-heading, var(--theme-font-body, "Rubik")), sans-serif;
+}
+
+@layer base {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+    }
+}
+
+.logo-image {
+    width: auto;
+    height: var(--theme-logo-height, 32px);
 }
 
 [dir="rtl"] :is([class*="ri-arrow-left"], [class*="ri-arrow-right"]):not([class*="ri-arrow-left-right"]) {
@@ -80,7 +94,7 @@
     top: 0;
     background-color: transparent;
     padding-block: calc(var(--spacing) * 3);
-    font-family: var(--font-rubik);
+    font-family: var(--font-body);
     transition-property: all;
     transition-duration: 0.5s;
     transition-timing-function: var(--default-transition-timing-function);
