@@ -1,6 +1,10 @@
 <?php namespace Amorium\Pages;
 
 use Event;
+use Backend;
+use BackendMenu;
+use Cms\Classes\Theme;
+use Cms\Controllers\ThemeOptions;
 use Tailor\Models\RepeaterItem;
 use Tailor\Controllers\Entries;
 use System\Classes\PluginBase;
@@ -48,6 +52,46 @@ class Plugin extends PluginBase
                 'data-label-enabled' => __("Enabled: shown on the site"),
                 'data-label-disabled' => __("Disabled: hidden on the site"),
             ]);
+        });
+
+        $this->addThemeOptionsMenu();
+    }
+
+    /**
+     * addThemeOptionsMenu lists the theme customization page under the Amorium menu
+     * and keeps that menu active while the page is open.
+     */
+    protected function addThemeOptionsMenu()
+    {
+        $owner = 'October.Tailor';
+        $code = 'entry_amorium-page';
+
+        Event::listen('backend.menu.extendItems', function ($manager) use ($owner, $code) {
+            $pages = $manager->getMainMenuItem($owner, $code);
+            $theme = Theme::getActiveTheme();
+            if (!$pages || !$theme || !$theme->hasCustomData()) {
+                return;
+            }
+
+            $permissions = $pages->permissions;
+            if (!in_array('cms.theme_customize', $permissions, true)) {
+                $permissions[] = 'cms.theme_customize';
+                $pages->permissions($permissions);
+            }
+
+            $manager->addSideMenuItem($owner, $code, 'themeoptions', [
+                'label' => 'Theme Settings',
+                'url' => Backend::url('cms/themeoptions/update/' . $theme->getDirName()),
+                'icon' => 'icon-paint-brush',
+                'permissions' => ['cms.theme_customize'],
+                'order' => 80
+            ]);
+        });
+
+        ThemeOptions::extend(function ($controller) use ($owner, $code) {
+            $controller->bindEvent('page.beforeDisplay', function () use ($owner, $code) {
+                BackendMenu::setContext($owner, $code, 'themeoptions');
+            });
         });
     }
 }
