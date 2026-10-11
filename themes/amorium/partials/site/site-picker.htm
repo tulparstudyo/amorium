@@ -1,0 +1,35 @@
+{% if sitePicker.isEnabled %}
+    {% set currentSite = sitePicker.sites|filter(site => site.id == this.site.id)|first %}
+    <div class="site-picker relative text-sm" data-dropdown>
+        <button
+            type="button"
+            class="lang-link inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-medium uppercase"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-label="{{ 'Language'|_ }}"
+            data-dropdown-toggle
+        >
+            {% if currentSite.flag_icon %}<i class="{{ currentSite.flag_icon }} rounded-sm" aria-hidden="true"></i>{% endif %}
+            {{ currentSite.code ?: this.site.code }}
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+            </svg>
+        </button>
+
+        <ul class="absolute end-0 top-full z-50 mt-2 hidden min-w-40 rounded-md bg-white p-2 shadow-lg dark:bg-slate-900" data-dropdown-menu>
+            {% for site in sitePicker.sites %}
+                <li>
+                    <a
+                        href="{{ site.url }}"
+                        hreflang="{{ site.hard_locale }}"
+                        class="flex items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap duration-300 hover:bg-gray-50 hover:text-primary dark:hover:bg-slate-800 {{ site.id == this.site.id ? 'text-primary' : 'text-slate-700 dark:text-slate-200' }}"
+                        {% if site.id == this.site.id %}aria-current="true"{% endif %}
+                    >
+                        {% if site.flag_icon %}<i class="{{ site.flag_icon }} rounded-sm" aria-hidden="true"></i>{% endif %}
+                        {{ site.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

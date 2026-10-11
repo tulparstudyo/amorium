@@ -1,0 +1,8 @@
+{
+    "name": "amorium/post-plugin",
+    "type": "october-plugin",
+    "description": "Posts and categories managed with blueprints",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

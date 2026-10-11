@@ -1,0 +1,8 @@
+{
+    "name": "amorium/amorium-theme",
+    "type": "october-theme",
+    "description": "Custom theme for Amorium built with Tailwind CSS 4.3",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

@@ -1,0 +1,12 @@
+<ul class="flex flex-col">
+    {% for child in items %}
+        <li>
+            {% partial 'site/nav-link' item=child class='block rounded-md px-3 py-2 text-sm font-medium duration-500 hover:text-primary dark:hover:text-primary' activeClass='text-primary' inactiveClass='text-slate-400 dark:text-white' caret=false %}
+            {% if child.items %}
+                <div class="ms-3 border-s border-slate-100 ps-2 dark:border-slate-800">
+                    {% partial 'site/nav-dropdown' items=child.items %}
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

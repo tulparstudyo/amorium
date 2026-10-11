@@ -1,0 +1,58 @@
+uuid: amorium_navigation
+handle: Amorium\Navigation
+type: structure
+name: Navigation
+drafts: false
+multisite: sync
+
+structure:
+    maxDepth: 4
+
+navigation:
+    label: Navigation
+    icon: icon-sitemap
+    parent: Amorium\Page
+    order: 10
+
+fields:
+    link_type:
+        label: Link Type
+        type: dropdown
+        default: page
+        translatable: false
+        comment: Top level records are menus. Their slug is used to load the links below them.
+        options:
+            page: Amorium Page
+            external: External URL
+            anchor: Anchor
+
+    link_page:
+        label: Page
+        type: pagefinder
+        singleMode: true
+        allowCustomUrl: false
+        allowedTypes:
+            - entry-amorium_page
+        trigger:
+            action: show
+            field: link_type
+            condition: value[page][anchor]
+
+    link_url:
+        label: URL
+        type: text
+        placeholder: https://example.com
+        trigger:
+            action: show
+            field: link_type
+            condition: value[external]
+
+    link_anchor:
+        label: Anchor
+        type: text
+        placeholder: services
+        comment: The element ID without the # sign. It opens on the selected page, or on the home page when no page is selected.
+        trigger:
+            action: show
+            field: link_type
+            condition: value[anchor]

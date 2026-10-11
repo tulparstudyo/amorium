@@ -1,0 +1,109 @@
+tabs:
+    fields:
+        _hint:
+            tab: Contact
+            type: hint
+            mode: tip
+            label: These details belong to the site selected in the site switcher. Phone, email, WhatsApp, opening hours and social links are kept in sync across sites in the same group. The business name and address can be different for each site.
+
+        business_name:
+            tab: Contact
+            label: Business Name
+            span: full
+
+        phone:
+            tab: Contact
+            label: Phone
+            span: left
+
+        whatsapp:
+            tab: Contact
+            label: WhatsApp
+            span: right
+            comment: "Country code and number, without spaces or symbols. Example: 905551112233"
+
+        email:
+            tab: Contact
+            label: Email
+            span: full
+
+        address:
+            tab: Contact
+            label: Address
+            type: textarea
+            size: large
+            span: full
+
+        hours:
+            tab: Opening Hours
+            label: Opening Hours
+            type: repeater
+            prompt: Add day
+            titleFrom: day
+            form:
+                fields:
+                    day:
+                        label: Day
+                        type: dropdown
+                        emptyOption: Select a day
+                        options:
+                            monday: Monday
+                            tuesday: Tuesday
+                            wednesday: Wednesday
+                            thursday: Thursday
+                            friday: Friday
+                            saturday: Saturday
+                            sunday: Sunday
+
+                    is_closed:
+                        label: Closed
+                        type: checkbox
+                        span: full
+
+                    opens_at:
+                        label: Opens
+                        type: datepicker
+                        mode: time
+                        span: left
+                        trigger:
+                            action: disable|empty
+                            field: is_closed
+                            condition: checked
+
+                    closes_at:
+                        label: Closes
+                        type: datepicker
+                        mode: time
+                        span: right
+                        trigger:
+                            action: disable|empty
+                            field: is_closed
+                            condition: checked
+
+        social_links:
+            tab: Social Media
+            label: Social Media
+            type: repeater
+            prompt: Add social link
+            titleFrom: network
+            form:
+                fields:
+                    network:
+                        label: Network
+                        type: dropdown
+                        span: left
+                        emptyOption: Select a network
+                        options:
+                            facebook: Facebook
+                            instagram: Instagram
+                            x: X
+                            youtube: YouTube
+                            linkedin: LinkedIn
+                            tiktok: TikTok
+                            pinterest: Pinterest
+                            telegram: Telegram
+
+                    url:
+                        label: URL
+                        span: right
+                        placeholder: https://

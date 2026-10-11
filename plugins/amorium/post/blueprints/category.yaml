@@ -1,0 +1,28 @@
+uuid: amorium_post_category
+handle: Amorium\Post\Category
+type: structure
+name: Category
+drafts: false
+multisite: sync
+pagefinder: true
+
+structure:
+    maxDepth: 2
+
+navigation:
+    label: Categories
+    icon: icon-folder-o
+    parent: Amorium\Page
+    order: 40
+
+fields:
+    description:
+        label: Description
+        tab: Content
+        type: textarea
+        size: small
+
+    _seo:
+        tab: SEO
+        type: mixin
+        source: Amorium\Pages\Seo

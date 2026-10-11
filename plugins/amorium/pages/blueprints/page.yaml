@@ -1,0 +1,79 @@
+uuid: amorium_page
+handle: Amorium\Page
+type: structure
+name: Page
+drafts: true
+multisite: sync
+pagefinder: true
+
+structure:
+    maxDepth: 3
+
+primaryNavigation:
+    label: Pages
+    icon: icon-file-text-o
+    order: 110
+
+navigation:
+    label: Pages
+    icon: icon-file-text-o
+    parent: Amorium\Page
+    order: 20
+
+fields:
+    sections:
+        label: Sections
+        tab: Sections
+        type: repeater
+        prompt: Add section
+        titleFrom: section_title
+        itemsExpanded: false
+        translatable: sync
+        form:
+            fields:
+                section_title:
+                    type: text
+                    cssClass: d-none
+                    translatable: false
+
+                is_disabled:
+                    label: Disabled
+                    type: checkbox
+                    cssClass: d-none
+                    translatable: false
+
+                section:
+                    label: Section
+                    type: entries
+                    source: Amorium\Section
+                    maxItems: 1
+                    translatable: false
+
+                section_type:
+                    label: Section Type
+                    type: dropdown
+                    span: left
+                    default: boxed
+                    translatable: false
+                    options:
+                        boxed: Boxed
+                        full_width: Full Width
+
+                background_color:
+                    label: Background Color
+                    type: colorpicker
+                    span: right
+                    availableColors: false
+                    allowEmpty: true
+                    translatable: false
+                    comment: Leave empty for a transparent background.
+
+                section_data:
+                    type: sectionfields
+                    dependsOn: section
+                    translatable: true
+
+    _seo:
+        tab: SEO
+        type: mixin
+        source: Amorium\Pages\Seo

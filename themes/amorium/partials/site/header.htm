@@ -1,0 +1,38 @@
+{% set navItems = mainNavigation.items %}
+{% set brandName = business().business_name ?: this.theme.getConfigValue('name') %}
+
+<nav class="navbar {{ hasHero ? '' : 'is-sticky' }}" id="navbar">
+    <div class="container flex flex-wrap items-center justify-end">
+        <a class="navbar-brand" href="{{ 'index'|page }}">
+            <span class="l-light text-2xl font-medium tracking-wide text-white">{{ brandName }}</span>
+            <span class="l-dark text-2xl font-medium tracking-wide text-slate-900 dark:text-white">{{ brandName }}</span>
+        </a>
+
+        <div class="nav-icons flex items-center lg_992:order-2 ms-auto">
+            {% partial 'site/site-picker' %}
+            <a href="#contact" class="ms-3 hidden rounded-md border border-primary bg-primary px-5 py-2 text-center align-middle text-base font-normal tracking-wide text-white duration-500 hover:border-primary-dark hover:bg-primary-dark lg_992:inline-block">{{ 'Get in Touch'|_ }}</a>
+            <button data-collapse="menu-collapse" type="button" class="collapse-btn ms-3 inline-flex items-center text-slate-900 lg_992:hidden dark:text-white" aria-controls="menu-collapse" aria-expanded="false">
+                <span class="sr-only">{{ 'Open menu'|_ }}</span>
+                <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="navigation lg_992:order-1 lg_992:flex hidden" id="menu-collapse">
+            <ul class="navbar-nav nav-light" id="navbar-navlist">
+                {% for item in navItems %}
+                    <li class="nav-item group relative">
+                        {% partial 'site/nav-link' item=item caret=item.items activeClass='active' inactiveClass='' class='nav-link' %}
+
+                        {% if item.items %}
+                            <div class="ps-3 lg_992:invisible lg_992:absolute lg_992:start-0 lg_992:top-full lg_992:z-50 lg_992:min-w-52 lg_992:translate-y-1 lg_992:rounded-md lg_992:bg-white lg_992:p-2 lg_992:opacity-0 lg_992:shadow-lg lg_992:transition lg_992:duration-500 lg_992:group-hover:visible lg_992:group-hover:translate-y-0 lg_992:group-hover:opacity-100 lg_992:group-focus-within:visible lg_992:group-focus-within:translate-y-0 lg_992:group-focus-within:opacity-100 dark:lg_992:bg-slate-900">
+                                {% partial 'site/nav-dropdown' items=item.items %}
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>

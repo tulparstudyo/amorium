@@ -1,0 +1,48 @@
+columns:
+    id:
+        label: ID
+        invisible: true
+
+    form_name:
+        label: Form
+        searchable: true
+
+    field_1:
+        label: Field 1
+        sortable: false
+
+    field_2:
+        label: Field 2
+        sortable: false
+
+    field_3:
+        label: Field 3
+        sortable: false
+
+    data:
+        label: Content
+        searchable: true
+        sortable: false
+        invisible: true
+        type: partial
+        path: $/amorium/form/models/submission/_column_data.php
+
+    site:
+        label: Site
+        relation: site
+        select: name
+        invisible: true
+
+    page_url:
+        label: Page
+        searchable: true
+        invisible: true
+
+    read_at:
+        label: Read
+        type: switch
+        sortable: true
+
+    created_at:
+        label: Date
+        type: datetime

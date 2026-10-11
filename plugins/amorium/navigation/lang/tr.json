@@ -1,0 +1,16 @@
+{
+    "Amorium Navigation": "Amorium Navigasyon",
+    "Nested navigation menus managed with blueprints": "Blueprint ile yönetilen iç içe navigasyon menüleri",
+    "Navigation": "Navigasyon",
+    "Link Type": "Link Türü",
+    "Top level records are menus. Their slug is used to load the links below them.": "En üst seviyedeki kayıtlar menüdür. Altındaki linkler bu kaydın slug değeriyle çağrılır.",
+    "Amorium Page": "Amorium Sayfası",
+    "External URL": "Harici URL",
+    "Anchor": "Çapa (#anchor)",
+    "Page": "Sayfa",
+    "URL": "URL",
+    "The element ID without the # sign. It opens on the selected page, or on the home page when no page is selected.": "Öğe kimliği, # işareti olmadan. Seçilen sayfada, sayfa seçilmezse ana sayfada açılır.",
+    "Displays the nested links of a menu, found by the slug of its top level record.": "En üst kaydın slug değeriyle bulunan menünün iç içe linklerini gösterir.",
+    "Menu Slug": "Menü Slug",
+    "Slug of the top level navigation record.": "En üst seviyedeki navigasyon kaydının slug değeri."
+}

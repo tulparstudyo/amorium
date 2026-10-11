@@ -1,0 +1,490 @@
+import { BrowserAdapter } from "./browser-adapter";
+import { History } from "./history";
+import { Location } from "./location";
+import { ScrollManager } from "./scroll-manager";
+import { dispatch, uuid } from "../util";
+import { View } from "./view";
+import { Visit } from "./visit";
+
+export class Controller
+{
+    constructor() {
+        this.adapter = new BrowserAdapter(this);
+        this.history = new History(this);
+        this.restorationData = {};
+        this.restorationDataKeys = [];
+        this.restorationDataLimit = 20;
+        this.scrollManager = new ScrollManager(this);
+        this.useScroll = true;
+        this.view = new View(this);
+        this.enabled = true;
+        this.pendingAssets = 0;
+        this.progressBarDelay = 500;
+        this.progressBarVisible = true;
+        this.started = false;
+        this.uniqueInlineScripts = new Set();
+        this.uniqueInlineScriptsLimit = 100;
+        this.currentVisit = null;
+        this.historyVisit = null;
+        this.pageIsReady = false;
+        this.viewTransitionFinished = null;
+
+        // Event handlers
+        this.pageLoaded = () => {
+            this.pageIsReady = true;
+            this.lastRenderedLocation = this.location;
+            this.notifyApplicationAfterPageLoad();
+            this.notifyApplicationAfterPageAndScriptsLoad();
+            this.observeInlineScripts();
+        };
+
+        this.moduleLoaded = () => {
+            this.decrementPendingAsset();
+        };
+
+        this.clickCaptured = () => {
+            removeEventListener('click', this.clickBubbled, false);
+            addEventListener('click', this.clickBubbled, false);
+        };
+
+        this.clickBubbled = (event) => {
+            if (this.enabled && this.clickEventIsSignificant(event)) {
+                const link = this.getVisitableLinkForTarget(event.target);
+                if (link) {
+                    const location = this.getVisitableLocationForLink(link);
+                    if (location && this.applicationAllowsFollowingLinkToLocation(link, location)) {
+                        event.preventDefault();
+                        const action = this.getActionForLink(link);
+                        const scroll = this.useScrollForLink(link);
+                        this.visit(location, { action, scroll });
+                    }
+                }
+            }
+        };
+    }
+
+    start() {
+        if (Controller.supported && !this.started) {
+            addEventListener('click', this.clickCaptured, true);
+            addEventListener('DOMContentLoaded', this.pageLoaded, false);
+            addEventListener('turbo:module-loaded', this.moduleLoaded, false);
+            this.startHistory();
+            this.scrollManager.start();
+            this.started = true;
+            this.enabled = this.documentIsEnabled();
+        }
+    }
+
+    // Defer taking over scrollRestoration until the first SPA visit, so that
+    // a plain reload of the initial page still restores native scroll position.
+    takeOverScrollRestoration() {
+        if ('scrollRestoration' in history && !this.scrollRestorationTakenOver) {
+            this.previousScrollRestoration = history.scrollRestoration;
+            history.scrollRestoration = 'manual';
+            this.scrollRestorationTakenOver = true;
+        }
+    }
+
+    disable() {
+        this.enabled = false;
+    }
+
+    stop() {
+        if (this.started) {
+            removeEventListener('click', this.clickCaptured, true);
+            removeEventListener('DOMContentLoaded', this.pageLoaded, false);
+            removeEventListener('turbo:module-loaded', this.moduleLoaded, false);
+            this.scrollManager.stop();
+            this.stopHistory();
+            this.started = false;
+
+            if ('scrollRestoration' in history && this.scrollRestorationTakenOver && this.previousScrollRestoration) {
+                history.scrollRestoration = this.previousScrollRestoration;
+                this.scrollRestorationTakenOver = false;
+            }
+        }
+    }
+
+    isEnabled() {
+        return this.started && this.enabled;
+    }
+
+    pageReady() {
+        return new Promise((resolve) => {
+            if (this.pageIsReady) {
+                resolve();
+            }
+            else {
+                addEventListener('render', () => resolve(), { once: true });
+            }
+        });
+    }
+
+    visit(location, options = {}) {
+        location = Location.wrap(location);
+        const action = options.action || 'advance';
+        if (this.applicationAllowsVisitingLocation(location, action)) {
+            if (this.locationIsVisitable(location)) {
+                this.useScroll = options.scroll !== false;
+                this.takeOverScrollRestoration();
+                this.adapter.visitProposedToLocationWithAction(location, action);
+            }
+            else {
+                window.location.href = location.toString();
+            }
+        }
+    }
+
+    startVisitToLocationWithAction(location, action, restorationIdentifier) {
+        if (Controller.supported) {
+            const restorationData = this.getRestorationDataForIdentifier(restorationIdentifier);
+            this.startVisit(Location.wrap(location), action, { restorationData });
+        }
+        else {
+            window.location.href = location.toString();
+        }
+    }
+
+    setProgressBarVisible(value) {
+        this.progressBarVisible = value;
+    }
+
+    setProgressBarDelay(delay) {
+        this.progressBarDelay = delay;
+    }
+
+    // History
+    startHistory() {
+        this.location = Location.currentLocation;
+        this.restorationIdentifier = uuid();
+        this.history.start();
+        this.history.replace(this.location, this.restorationIdentifier);
+    }
+
+    stopHistory() {
+        this.history.stop();
+    }
+
+    getLastVisitUrl() {
+        if (this.historyVisit) {
+            return this.historyVisit.referrer.absoluteURL;
+        }
+    }
+
+    pushHistoryWithLocationAndRestorationIdentifier(locatable, restorationIdentifier) {
+        this.historyVisit = this.currentVisit;
+        this.location = Location.wrap(locatable);
+        this.restorationIdentifier = restorationIdentifier;
+        this.history.push(this.location, this.restorationIdentifier);
+    }
+
+    replaceHistoryWithLocationAndRestorationIdentifier(locatable, restorationIdentifier) {
+        this.location = Location.wrap(locatable);
+        this.restorationIdentifier = restorationIdentifier;
+        this.history.replace(this.location, this.restorationIdentifier);
+    }
+
+    // History delegate
+    historyPoppedToLocationWithRestorationIdentifier(location, restorationIdentifier, direction) {
+        if (this.enabled) {
+            this.location = location;
+            this.restorationIdentifier = restorationIdentifier;
+            this.takeOverScrollRestoration();
+            const restorationData = this.getRestorationDataForIdentifier(restorationIdentifier);
+            this.startVisit(location, 'restore', { restorationIdentifier, restorationData, historyChanged: true, direction });
+        }
+        else {
+            this.adapter.pageInvalidated();
+        }
+    }
+
+    // Scrolling
+    scrollToAnchor(anchor) {
+        const element = this.view.getElementForAnchor(anchor);
+        if (element) {
+            this.scrollToElement(element);
+        }
+        else {
+            this.scrollToPosition({ x: 0, y: 0 });
+        }
+    }
+
+    scrollToElement(element) {
+        this.scrollManager.scrollToElement(element);
+    }
+
+    scrollToPosition(position) {
+        this.scrollManager.scrollToPosition(position);
+    }
+
+    // Scroll manager delegate
+    scrollPositionChanged(position) {
+        const restorationData = this.getCurrentRestorationData();
+        restorationData.scrollPosition = position;
+    }
+
+    // Pending asset management
+    incrementPendingAsset() {
+        this.pendingAssets++;
+    }
+
+    decrementPendingAsset() {
+        this.pendingAssets--;
+        if (this.pendingAssets === 0) {
+            this.pageIsReady = true;
+            this.notifyApplicationAfterPageAndScriptsLoad();
+            this.notifyApplicationAfterLoadScripts();
+        }
+    }
+
+    // View
+    render(options, callback) {
+        this.view.render(options, callback);
+    }
+
+    viewInvalidated() {
+        this.adapter.pageInvalidated();
+    }
+
+    viewAllowsImmediateRender(newBody, options) {
+        this.pageIsReady = false;
+        this.notifyApplicationUnload();
+        const event = this.notifyApplicationBeforeRender(newBody, options);
+        return !event.defaultPrevented;
+    }
+
+    viewRendered() {
+        this.lastRenderedLocation = this.currentVisit.location;
+        this.notifyApplicationAfterRender();
+    }
+
+    setViewTransitionFinished(promise) {
+        this.viewTransitionFinished = promise;
+    }
+
+    viewTransitionEnabled() {
+        return this.view.getPage().isViewTransitionEnabled();
+    }
+
+    markVisitDirection(action, direction) {
+        if (!direction) {
+            direction = { advance: 'forward', restore: 'back' }[action] || 'none';
+        }
+        document.documentElement.setAttribute('data-turbo-visit-direction', direction);
+    }
+
+    unmarkVisitDirection() {
+        document.documentElement.removeAttribute('data-turbo-visit-direction');
+    }
+
+    // Inline script monitoring
+
+    observeInlineScripts() {
+        document.documentElement.querySelectorAll('script[data-turbo-eval-once]')
+            .forEach((el) => this.applicationHasSeenInlineScript(el));
+    }
+
+    applicationHasSeenInlineScript(element) {
+        const uid = element.getAttribute('data-turbo-eval-once');
+        if (!uid) {
+            return false;
+        }
+
+        const hasSeen = this.uniqueInlineScripts.has(uid);
+        if (!hasSeen) {
+            // Trim if at limit (remove oldest entries)
+            if (this.uniqueInlineScripts.size >= this.uniqueInlineScriptsLimit) {
+                const iterator = this.uniqueInlineScripts.values();
+                this.uniqueInlineScripts.delete(iterator.next().value);
+            }
+            this.uniqueInlineScripts.add(uid);
+        }
+        return hasSeen;
+    }
+
+    // Application events
+    applicationAllowsFollowingLinkToLocation(link, location) {
+        const event = this.notifyApplicationAfterClickingLinkToLocation(link, location);
+        return !event.defaultPrevented;
+    }
+
+    applicationAllowsVisitingLocation(location, action) {
+        const event = this.notifyApplicationBeforeVisitingLocation(location, action);
+        return !event.defaultPrevented;
+    }
+
+    notifyApplicationAfterClickingLinkToLocation(link, location) {
+        return dispatch('page:click', { target: link, detail: { url: location.absoluteURL } });
+    }
+
+    notifyApplicationBeforeVisitingLocation(location, action) {
+        return dispatch('page:before-visit', { detail: { url: location.absoluteURL, action } });
+    }
+
+    notifyApplicationAfterVisitingLocation(location) {
+        return dispatch('page:visit', { detail: { url: location.absoluteURL }, cancelable: false });
+    }
+
+    notifyApplicationBeforeRender(newBody, options) {
+        return dispatch('page:before-render', { detail: { newBody, ...options } });
+    }
+
+    notifyApplicationAfterRender() {
+        return dispatch('page:render', { cancelable: false });
+    }
+
+    notifyApplicationAfterPageLoad(timing = {}) {
+        return dispatch('page:load', { detail: { url: this.location.absoluteURL, timing }, cancelable: false });
+    }
+
+    notifyApplicationAfterPageAndScriptsLoad() {
+        return dispatch('page:loaded', { cancelable: false });
+    }
+
+    notifyApplicationAfterLoadScripts() {
+        return dispatch('page:updated', { cancelable: false });
+    }
+
+    notifyApplicationUnload() {
+        return dispatch('page:unload', { cancelable: false });
+    }
+
+    // Private
+    startVisit(location, action, properties) {
+        if (this.currentVisit) {
+            this.currentVisit.cancel();
+        }
+        this.currentVisit = this.createVisit(location, action, properties);
+        this.currentVisit.scrolled = !this.useScroll;
+        this.markVisitDirection(action, properties.direction);
+        this.currentVisit.start();
+        this.notifyApplicationAfterVisitingLocation(location);
+    }
+
+    createVisit(location, action, properties) {
+        const visit = new Visit(this, location, action, properties.restorationIdentifier);
+        visit.restorationData = Object.assign({}, (properties.restorationData || {}));
+        visit.historyChanged = !!properties.historyChanged;
+        visit.referrer = this.location;
+        return visit;
+    }
+
+    visitCompleted(visit) {
+        if (this.viewTransitionFinished) {
+            this.viewTransitionFinished.then(() => {
+                this.unmarkVisitDirection();
+            }).catch(() => {
+                this.unmarkVisitDirection();
+            });
+            this.viewTransitionFinished = null;
+        }
+        else {
+            this.unmarkVisitDirection();
+        }
+
+        this.notifyApplicationAfterPageLoad(visit.getTimingMetrics());
+
+        if (this.pendingAssets === 0) {
+            this.pageIsReady = true;
+            this.notifyApplicationAfterPageAndScriptsLoad();
+            this.notifyApplicationAfterLoadScripts();
+        }
+    }
+
+    clickEventIsSignificant(event) {
+        return !(
+            (event.target && event.target.isContentEditable) ||
+            event.defaultPrevented ||
+            event.which > 1 ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey
+        );
+    }
+
+    getVisitableLinkForTarget(target) {
+        if (target instanceof Element && this.elementIsVisitable(target)) {
+            var container = target.closest('a[href]:not([download])');
+            if (container
+                && container.getAttribute('target')
+                && container.getAttribute('target') != '_self') {
+                return null;
+            }
+
+            return container;
+        }
+    }
+
+    getVisitableLocationForLink(link) {
+        const location = new Location(link.getAttribute('href') || '');
+        if (this.locationIsVisitable(location)) {
+            return location;
+        }
+    }
+
+    getActionForLink(link) {
+        const action = link.getAttribute('data-turbo-action');
+        return this.isAction(action) ? action : 'advance';
+    }
+
+    useScrollForLink(link) {
+        return link.getAttribute('data-turbo-no-scroll') === null;
+    }
+
+    isAction(action) {
+        return action == 'advance' || action == 'replace' || action == 'restore' || action == 'swap';
+    }
+
+    documentIsEnabled() {
+        const meta = document.documentElement.querySelector('head meta[name="turbo-visit-control"]');
+        if (meta) {
+            const value = meta.getAttribute('content');
+            return value == 'enable';
+        }
+
+        return false;
+    }
+
+    elementIsVisitable(element) {
+        const container = element.closest('[data-turbo]');
+        if (container) {
+            return container.getAttribute('data-turbo') != 'false';
+        }
+        else {
+            return true;
+        }
+    }
+
+    locationIsVisitable(location) {
+        return location.isPrefixedBy(this.view.getRootLocation()) && location.isHTML();
+    }
+
+    locationIsSamePageAnchor(location) {
+        return typeof location.anchor != 'undefined' && location.requestURL == this.location.requestURL;
+    }
+
+    getCurrentRestorationData() {
+        return this.getRestorationDataForIdentifier(this.restorationIdentifier);
+    }
+
+    getRestorationDataForIdentifier(identifier) {
+        if (!(identifier in this.restorationData)) {
+            this.restorationData[identifier] = {};
+            this.restorationDataKeys.push(identifier);
+            this.trimRestorationData();
+        }
+        return this.restorationData[identifier];
+    }
+
+    trimRestorationData() {
+        while (this.restorationDataKeys.length > this.restorationDataLimit) {
+            const oldestKey = this.restorationDataKeys.shift();
+            delete this.restorationData[oldestKey];
+        }
+    }
+}
+
+Controller.supported = !!(window.history.pushState &&
+    window.requestAnimationFrame &&
+    window.addEventListener);

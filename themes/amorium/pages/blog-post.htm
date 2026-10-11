@@ -1,0 +1,114 @@
+##
+title = "Blog Post"
+url = "/blog/:slug"
+layout = "default"
+hasHero = 1
+
+[section post]
+handle = "Amorium\Post"
+identifier = "slug"
+isDefault = 1
+==
+<?php
+use Tailor\Models\EntryRecord;
+
+function onEnd()
+{
+    $post = $this['post']->getRecord();
+    if (!$post) {
+        return;
+    }
+
+    $otherPosts = EntryRecord::inSection('Amorium\Post')
+        ->applyVisibleFrontend()
+        ->where($post->getQualifiedKeyName(), '<>', $post->getKey())
+        ->orderBy('published_at', 'desc');
+
+    $categoryIds = $post->categories->modelKeys();
+    $this['relatedPosts'] = $categoryIds
+        ? (clone $otherPosts)
+            ->whereHas('categories', fn ($query) => $query->whereIn($query->getModel()->getQualifiedKeyName(), $categoryIds))
+            ->limit(3)
+            ->get()
+        : collect();
+
+    $this['recentPosts'] = $otherPosts->limit(4)->get();
+}
+?>
+==
+{% if post is empty %}
+    {% do abort(404) %}
+{% endif %}
+
+{% put metaTitle %}{{ post.meta_title ?: post.title }}{% endput %}
+{% put metaDescription %}{{ post.meta_description ?: post.excerpt }}{% endput %}
+
+<section class="relative table w-full bg-slate-950 bg-cover bg-center bg-no-repeat py-2" {% if post.featured_image %}style="background-image: url('{{ post.featured_image|media }}');"{% endif %}>
+    <div class="absolute inset-0 bg-slate-950/80"></div>
+
+    <div class="relative container">
+        <div class="mt-10 grid grid-cols-1 pb-8 text-center">
+            <h1 class="mt-10 mb-3 text-3xl leading-normal font-medium text-white">{{ post.title }}</h1>
+        </div>
+    </div>
+</section>
+
+<section class="relative py-16 md:py-24">
+    <div class="container">
+        <div class="grid grid-cols-1 gap-7.5 md:grid-cols-12">
+            <article class="md:col-span-6 lg:col-span-8">
+                <div class="rounded-md p-6 shadow-sm dark:shadow-gray-800">
+                    {% if post.featured_image %}
+                        <img src="{{ post.featured_image|media }}" alt="{{ post.title }}" class="w-full rounded-md" />
+                    {% endif %}
+
+                    <div class="prose max-w-none text-slate-400 dark:prose-invert prose-a:text-primary prose-blockquote:rounded-ss-xl prose-blockquote:rounded-ee-xl prose-blockquote:border-x-4 prose-blockquote:border-primary prose-blockquote:p-3 prose-blockquote:text-slate-400 {{ post.featured_image ? 'mt-6' : '' }}">
+                        {{ post.content|content }}
+                    </div>
+                </div>
+            </article>
+
+            <aside class="md:col-span-6 lg:col-span-4">
+                <div class="sticky top-20">
+                    {% if recentPosts is not empty %}
+                        <h5 class="rounded-md bg-gray-50 p-2 text-center text-lg font-medium shadow-sm dark:bg-slate-800 dark:shadow-gray-800">{{ 'Recent Posts'|_ }}</h5>
+                        <ul class="mt-8 list-none space-y-5">
+                            {% for item in recentPosts %}
+                                {% set itemUrl = 'blog-post'|page({ slug: item.slug }) %}
+                                <li class="flex items-center gap-3">
+                                    {% if item.featured_image %}
+                                        <a href="{{ itemUrl }}" class="shrink-0">
+                                            <img src="{{ item.featured_image|media }}" alt="{{ item.title }}" class="size-16 rounded-md object-cover" loading="lazy" />
+                                        </a>
+                                    {% endif %}
+                                    <div>
+                                        <a href="{{ itemUrl }}" class="font-medium transition-all duration-500 hover:text-primary">{{ item.title }}</a>
+                                        {% if item.published_at %}
+                                            <time datetime="{{ item.published_at.toAtomString() }}" class="block text-sm text-slate-400">{{ item.published_at.translatedFormat('j F Y') }}</time>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <a href="{{ 'blog'|page }}" class="{{ recentPosts is not empty ? 'mt-8' : '' }} btn-primary w-full"><i class="ri-arrow-left-line align-middle me-1"></i> {{ 'Back to blog'|_ }}</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    {% if relatedPosts is not empty %}
+        <div class="container mt-16 lg:mt-24">
+            <div class="grid grid-cols-1 pb-8 text-center">
+                <h3 class="mb-4 text-xl font-medium md:text-2xl">{{ 'Related Posts'|_ }}</h3>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {% for item in relatedPosts %}
+                    {% partial 'blog/post-card' post=item %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</section>

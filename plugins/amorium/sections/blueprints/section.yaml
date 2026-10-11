@@ -1,0 +1,69 @@
+uuid: amorium_section
+handle: Amorium\Section
+type: entry
+name: Section
+drafts: false
+multisite: false
+
+navigation:
+    label: Sections
+    icon: icon-puzzle-piece
+    parent: Amorium\Page
+    order: 50
+
+fields:
+    title:
+        label: Title
+        translatable: false
+
+    slug:
+        label: Slug
+        translatable: false
+
+    is_enabled:
+        label: Enabled
+        translatable: false
+
+    published_at:
+        label: Publish Date
+        translatable: false
+
+    expired_at:
+        label: Expiry Date
+        translatable: false
+
+    html:
+        label: HTML
+        tab: HTML
+        type: codeeditor
+        language: html
+        size: giant
+        translatable: false
+        comment: The markup is rendered with Twig and placed inside a wrapper element with the data-amorium-section attribute. The values of the fields defined in the Fields tab are available as "data".
+
+    fields_definition:
+        label: Fields
+        tab: Fields
+        type: codeeditor
+        language: yaml
+        size: giant
+        translatable: false
+        comment: Form fields shown on the page when this section is used, written in October form field YAML. Use mediafinder for images, pagefinder for links and remixicon for icons.
+
+    css:
+        label: CSS
+        tab: CSS
+        type: codeeditor
+        language: css
+        size: giant
+        translatable: false
+        comment: Rules are scoped to this section automatically, write selectors relative to the section.
+
+    js:
+        label: JS
+        tab: JS
+        type: codeeditor
+        language: javascript
+        size: giant
+        translatable: false
+        comment: Runs once for every use of the section. The section wrapper element is available as "root".

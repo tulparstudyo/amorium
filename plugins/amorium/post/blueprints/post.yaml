@@ -1,0 +1,48 @@
+uuid: amorium_post
+handle: Amorium\Post
+type: stream
+name: Post
+drafts: true
+multisite: sync
+pagefinder: true
+
+navigation:
+    label: Posts
+    icon: icon-pencil
+    parent: Amorium\Page
+    order: 30
+
+fields:
+    content:
+        label: Content
+        tab: Content
+        type: richeditor
+        span: adaptive
+
+    categories:
+        label: Categories
+        tab: Details
+        type: entries
+        source: Amorium\Post\Category
+        displayMode: taglist
+        translatable: false
+        comment: A post can belong to more than one category.
+
+    featured_image:
+        label: Featured Image
+        tab: Details
+        type: mediafinder
+        mode: image
+        maxItems: 1
+
+    excerpt:
+        label: Excerpt
+        tab: Details
+        type: textarea
+        size: small
+        comment: A short summary shown in post lists.
+
+    _seo:
+        tab: SEO
+        type: mixin
+        source: Amorium\Pages\Seo

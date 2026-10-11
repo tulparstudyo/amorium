@@ -1,0 +1,17 @@
+{
+    "name": "amorium-theme",
+    "private": true,
+    "scripts": {
+        "vendor": "node -e \"const fs=require('fs');fs.mkdirSync('assets/vendor/flowbite',{recursive:true});fs.copyFileSync('node_modules/flowbite/dist/flowbite.min.js','assets/vendor/flowbite/flowbite.min.js')\"",
+        "dev": "npm run vendor && tailwindcss -i ./assets/src/theme.css -o ./assets/css/theme.css --watch",
+        "build": "npm run vendor && tailwindcss -i ./assets/src/theme.css -o ./assets/css/theme.css --minify"
+    },
+    "dependencies": {
+        "flowbite": "^4.0.2"
+    },
+    "devDependencies": {
+        "@tailwindcss/cli": "^4.3.3",
+        "@tailwindcss/typography": "^0.5.20",
+        "tailwindcss": "^4.3.3"
+    }
+}

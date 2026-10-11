@@ -1,0 +1,9 @@
+v1.0.0:
+    - First version
+    - create_logs_table.php
+v1.0.1:
+    - Translation memory
+    - create_memory_table.php
+v1.0.2:
+    - Translation memory is kept per model
+    - add_model_to_memory_key.php

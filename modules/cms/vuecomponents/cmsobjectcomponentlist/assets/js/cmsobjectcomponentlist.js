@@ -1,0 +1,79 @@
+let componentKeyCounter = 0;
+
+export default {
+    props: {
+        components: Array
+    },
+    data: function() {
+        return {
+            expanded: false
+        };
+    },
+    computed: {
+        storageKey: function computeStorageKey() {
+            return 'cms-object-component-list-expanded';
+        }
+    },
+    methods: {
+        // Stable v-for key so that editing a component alias
+        componentKey: function componentKey(component) {
+            if (component.__inspectorKey === undefined) {
+                Object.defineProperty(component, '__inspectorKey', {
+                    value: ++componentKeyCounter,
+                    enumerable: false,
+                    writable: false,
+                    configurable: true
+                });
+            }
+
+            return component.__inspectorKey;
+        },
+
+        onToggleCollapse: function onToggleCollapse() {
+            this.expanded = !this.expanded;
+
+            if (this.expanded) {
+                localStorage.setItem(this.storageKey, '1');
+            }
+            else {
+                localStorage.removeItem(this.storageKey);
+            }
+        },
+
+        onRemoveComponentClick: function onRemoveComponentClick(index) {
+            this.$emit('remove', this.components[index]);
+            this.components.splice(index, 1);
+        },
+
+        onComponentRename: function onComponentRename(prevAlias, newAlias) {
+            this.$emit('rename', prevAlias, newAlias);
+        },
+
+        onInspectorHiding: function(eventData, componentIndex) {
+            for (var index = 0; index < this.components.length; index++) {
+                if (index == componentIndex) {
+                    continue;
+                }
+
+                var alias = eventData.values['oc.alias'];
+                if (this.components[index].alias == alias) {
+                    eventData.prevented = true;
+                    alert('The component alias "' + alias + '" is already used.');
+                    return;
+                }
+            }
+        }
+    },
+    mounted: function mounted() {
+        $(this.$refs.scrollable).dragScroll({
+            useDrag: true,
+            useNative: false,
+            noScrollClasses: true
+        });
+
+        this.expanded = localStorage.getItem(this.storageKey) == '1';
+    },
+    beforeUnmount: function beforeUnmount() {
+        $(this.$refs.scrollable).dragScroll('dispose');
+    }
+};

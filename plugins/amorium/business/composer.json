@@ -1,0 +1,8 @@
+{
+    "name": "amorium/business-plugin",
+    "type": "october-plugin",
+    "description": "Business details stored for each site",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

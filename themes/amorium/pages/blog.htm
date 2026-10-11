@@ -1,0 +1,37 @@
+##
+title = "Blog"
+url = "/blog"
+layout = "default"
+
+[collection posts]
+handle = "Amorium\Post"
+recordsPerPage = 9
+sortColumn = "published_at"
+sortDirection = "desc"
+==
+{% set paginator = posts.getRecord() %}
+
+{% if paginator.currentPage > 1 and paginator.isEmpty %}
+    {% do abort(404) %}
+{% endif %}
+
+<section class="relative py-16 md:py-2">
+    <div class="container">
+        <div class="grid grid-cols-1 pb-8 text-center">
+            <h6 class="mb-2 text-base font-medium text-primary uppercase">{{ 'Blog'|_ }}</h6>
+            <h1 class="mb-4 text-xl font-medium md:text-2xl">{{ 'Latest Posts'|_ }}</h1>
+        </div>
+
+        {% if paginator.isEmpty %}
+            <p class="text-center text-slate-400">{{ 'No posts have been published yet.'|_ }}</p>
+        {% else %}
+            <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {% for post in posts %}
+                    {% partial 'blog/post-card' post=post %}
+                {% endfor %}
+            </div>
+
+            {% partial 'blog/pagination' paginator=paginator %}
+        {% endif %}
+    </div>
+</section>

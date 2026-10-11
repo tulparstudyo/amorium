@@ -1,0 +1,16 @@
+{
+    "Amorium Navigation": "Amorium Навигация",
+    "Nested navigation menus managed with blueprints": "Вложенные меню навигации, управляемые через blueprint",
+    "Navigation": "Навигация",
+    "Link Type": "Тип ссылки",
+    "Top level records are menus. Their slug is used to load the links below them.": "Записи верхнего уровня являются меню. По их slug загружаются вложенные ссылки.",
+    "Amorium Page": "Страница Amorium",
+    "External URL": "Внешний URL",
+    "Anchor": "Якорь (#anchor)",
+    "Page": "Страница",
+    "URL": "URL",
+    "The element ID without the # sign. It opens on the selected page, or on the home page when no page is selected.": "ID элемента без знака #. Открывается на выбранной странице, а если страница не выбрана, на главной.",
+    "Displays the nested links of a menu, found by the slug of its top level record.": "Показывает вложенные ссылки меню, найденного по slug записи верхнего уровня.",
+    "Menu Slug": "Slug меню",
+    "Slug of the top level navigation record.": "Slug записи навигации верхнего уровня."
+}

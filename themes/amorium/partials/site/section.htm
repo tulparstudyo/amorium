@@ -1,0 +1,31 @@
+{% set sectionKey = block.slug ?: 'section-' ~ block.id %}
+{% set sectionType = type == 'full_width' ? 'full_width' : 'boxed' %}
+{% set sectionBackground = background matches '/^#[0-9a-fA-F]{3,8}$/' ? background : null %}
+
+{% if block.css %}
+    {% put styles %}
+        <style>[data-amorium-section="{{ sectionKey }}"] { {{ block.css|raw }} }</style>
+    {% endput %}
+{% endif %}
+
+<div
+    data-amorium-section="{{ sectionKey }}"
+    data-section-type="{{ sectionType }}"
+    {% if sectionBackground %}style="--section-bg: {{ sectionBackground }}; background-color: var(--section-bg);"{% endif %}
+>
+    {% if sectionType == 'boxed' %}
+        <div class="container">
+            {{ block|sectionHtml(data, index)|raw }}
+        </div>
+    {% else %}
+        {{ block|sectionHtml(data, index)|raw }}
+    {% endif %}
+</div>
+
+{% if block.js %}
+    <script>
+        (function (root) {
+            {{ block.js|raw }}
+        })(document.currentScript.previousElementSibling);
+    </script>
+{% endif %}

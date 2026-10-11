@@ -1,0 +1,264 @@
+<?php namespace October\Rain\Support;
+
+use Illuminate\Console\Application as Artisan;
+use October\Contracts\Support\OctoberPackage;
+use October\Rain\Support\ServiceProvider as ServiceProviderBase;
+
+/**
+ * ModuleServiceProvider
+ *
+ * @package october\support
+ * @author Alexey Bobkov, Samuel Georges
+ */
+abstract class ModuleServiceProvider extends ServiceProviderBase implements OctoberPackage
+{
+    /**
+     * register the service provider
+     */
+    public function register()
+    {
+        $module = $this->getModule(func_get_args());
+        if (!$module) {
+            return;
+        }
+
+        $modulePath = base_path('modules/' . $module);
+
+        // Register configuration path
+        $configPath = $modulePath . '/config';
+        if (!$this->app->configurationIsCached() && is_dir($configPath)) {
+            $this->loadConfigFrom($configPath, $module);
+        }
+
+        // Register view path
+        $viewsPath = $modulePath . '/views';
+        if (is_dir($viewsPath)) {
+            $this->loadViewsFrom($viewsPath, $module);
+        }
+
+        // Load translator
+        $this->loadTranslationsFrom($modulePath . '/lang', $module);
+        if ($this->app->runningInBackend()) {
+            $this->loadJsonTranslationsFrom($modulePath . '/lang');
+        }
+
+        // Add routes, if available
+        $routesFile = $modulePath . '/routes.php';
+        if (!$this->app->routesAreCached() && file_exists($routesFile)) {
+            $this->loadRoutesFrom($routesFile);
+        }
+    }
+
+    /**
+     * boot bootstraps the application events
+     */
+    public function boot()
+    {
+        $module = $this->getModule(func_get_args());
+        if (!$module) {
+            return;
+        }
+
+        // Reserved for boot logic
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerMarkupTags()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerComponents()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerPageSnippets()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerContentFields()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerNavigation()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerPermissions()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerSettings()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerSchedule($schedule)
+    {
+    }
+
+    /**
+     * registerDashboards registers dashboards, report widgets and data sources using the
+     * dashboards, widgets and dataSources keys, where a plain array registers dashboards only.
+     * @return array
+     */
+    public function registerDashboards()
+    {
+        return [];
+    }
+
+    /**
+     * registerReportWidgets registers any report widgets provided by this package.
+     * @deprecated use the widgets key of registerDashboards
+     * @return array
+     */
+    public function registerReportWidgets()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerFormWidgets()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerFilterWidgets()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerListColumnTypes()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerMailLayouts()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerMailTemplates()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerMailPartials()
+    {
+        return [];
+    }
+
+    /**
+     * getModule gets the module name from method args
+     */
+    protected function getModule($args)
+    {
+        return isset($args[0]) && is_string($args[0]) ? $args[0] : null;
+    }
+
+    /**
+     * discoverConsoleCommands automatically finds and registers console
+     * commands from the module's console directory
+     */
+    protected function discoverConsoleCommands(string $module): void
+    {
+        Artisan::starting(function ($artisan) use ($module) {
+            $consolePath = base_path('modules/' . $module . '/console');
+
+            if (!is_dir($consolePath)) {
+                return;
+            }
+
+            $namespace = ucfirst($module) . '\\Console\\';
+            $commands = [];
+
+            foreach (glob($consolePath . '/*.php') as $file) {
+                $className = $namespace . basename($file, '.php');
+
+                if (!class_exists($className)) {
+                    continue;
+                }
+
+                $reflection = new \ReflectionClass($className);
+
+                if (
+                    $reflection->isSubclassOf(\Illuminate\Console\Command::class) &&
+                    !$reflection->isAbstract()
+                ) {
+                    $commands[] = $className;
+                }
+            }
+
+            $artisan->resolveCommands($commands);
+        });
+    }
+
+    /**
+     * registerConsoleCommand registers a new console (artisan) command
+     */
+    protected function registerConsoleCommand(string $key, string $class)
+    {
+        $key = 'command.'.$key;
+
+        $this->app->singleton($key, function ($app) use ($class) {
+            return $this->app->make($class);
+        });
+
+        $this->commands($key);
+    }
+
+    /**
+     * loadConfigFrom registers a config file namespace
+     * @param  string  $path
+     * @param  string  $namespace
+     */
+    protected function loadConfigFrom($path, $namespace)
+    {
+        $this->app['config']->package($namespace, $path);
+    }
+}

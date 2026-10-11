@@ -1,0 +1,13 @@
+<a
+    href="{{ item.url ?: '#' }}"
+    class="{{ class }} {{ item.isActive or item.isChildActive ? activeClass|default('text-primary') : (inactiveClass is defined ? inactiveClass : 'text-slate-900') }}"
+    {% if item.isActive %}aria-current="page"{% endif %}
+    {% if item.isExternal %}target="_blank" rel="noopener noreferrer"{% endif %}
+>
+    {{ item.title }}
+    {% if item.items and caret|default(false) %}
+        <svg class="ms-1 inline size-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+    {% endif %}
+</a>

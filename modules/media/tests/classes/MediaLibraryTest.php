@@ -1,0 +1,232 @@
+<?php
+
+use Illuminate\Filesystem\FilesystemAdapter;
+use Media\Classes\MediaLibrary;
+
+/**
+ * MediaLibraryTest
+ */
+class MediaLibraryTest extends TestCase
+{
+    /**
+     * testInvalidPathsOnValidatePath
+     * @dataProvider invalidPathsProvider
+     */
+    public function testInvalidPathsOnValidatePath($path)
+    {
+        $this->expectException('ApplicationException');
+        MediaLibrary::validatePath($path);
+    }
+
+    /**
+     * invalidPathsProvider
+     */
+    public function invalidPathsProvider()
+    {
+        return [
+            ['./file'],
+            ['../secret'],
+            ['.../secret'],
+            ['/../secret'],
+            ['/.../secret'],
+            ['/secret/..'],
+            ['file/../secret'],
+            ['file/..'],
+            ['......./secret'],
+            ['./file'],
+            ["file\0.jpg"],
+            ["file\x1F.jpg"],
+            ["file\u{202E}gpj.exe"],
+            ["\xC3\x28file.jpg"],
+            ['file:alt.jpg'],
+            ['file?.jpg'],
+            ['file*.jpg'],
+            ['file"quote".jpg'],
+            ['<script>.jpg'],
+            ['file|pipe.jpg'],
+        ];
+    }
+
+    /**
+     * testValidPathsOnValidatePath
+     * @dataProvider validPathsProvider
+     */
+    public function testValidPathsOnValidatePath($path)
+    {
+        $result = MediaLibrary::validatePath($path);
+        $this->assertIsString($result);
+    }
+
+    /**
+     * validPathsProvider
+     */
+    public function validPathsProvider()
+    {
+        return [
+            ['file'],
+            ['folder/file'],
+            ['/file'],
+            ['/folder/file'],
+            ['/.file'],
+            ['/..file'],
+            ['/...file'],
+            ['file.ext'],
+            ['file..ext'],
+            ['file...ext'],
+            ['one,two.ext'],
+            ['one(two)[].ext'],
+            ['one=(two)[].ext'],
+            ['one_(two)[].ext'],
+            ['BG中国通讯期刊(Blend\'r)创刊号.pdf'],
+            ['файл-тест.jpg'],
+            ['Caldeirões/água.png'],
+            ["Caldeiro\u{0303}es.jpg"],
+            ['ملف.jpg'],
+            ['קובץ.jpg'],
+            ['photo #1.jpg'],
+            ['a+b 100%.jpg'],
+            ['tom & jerry!.jpg'],
+        ];
+    }
+
+    /**
+     * testListAllDirectories
+     */
+    public function testListAllDirectories()
+    {
+        $disk = $this->createConfiguredMock(FilesystemAdapter::class, [
+            'allDirectories' => [
+                '/.ignore1',
+                '/.ignore2',
+                '/dir',
+                '/dir/sub',
+                '/exclude',
+                '/hidden',
+                '/hidden/sub1',
+                '/hidden/sub1/deep1',
+                '/hidden/sub2',
+                '/hidden but not really',
+                '/name'
+            ]
+        ]);
+
+        $this->app['config']->set('media.ignore_files', ['hidden']);
+        $this->app['config']->set('media.ignore_patterns', ['^\..*']);
+        $instance = MediaLibrary::instance();
+        $this->setProtectedProperty($instance, 'storageDisk', $disk);
+
+        $expect = ['/', '/dir', '/dir/sub', '/hidden but not really', '/name'];
+        $actual = $instance->listAllDirectories(['/exclude']);
+        $this->assertEquals($expect, $actual);
+    }
+
+    /**
+     * testScanFolderContents checks the assumption that all resulting paths are normalized
+     * to include a leading slash.
+     */
+    public function testScanFolderContents()
+    {
+        $this->app['config']->set('filesystems.disks.media.root', base_path('modules/media/tests/fixtures/media'));
+
+        $instance = MediaLibrary::instance();
+        $result = self::callProtectedMethod($instance, 'scanFolderContents', ['']);
+
+        foreach ($result['files'] as $item) {
+            $this->assertTrue(
+                str_starts_with($item->path, '/'),
+                "Path [$item->path] should start with a forward slash"
+            );
+        }
+    }
+
+    /**
+     * testFoldersCacheUnderIndependentKeys checks that listing one folder never
+     * rewrites the cached contents of another, which a shared blob allowed
+     * concurrent requests to do.
+     */
+    public function testFoldersCacheUnderIndependentKeys()
+    {
+        $instance = $this->makeFixtureLibrary();
+
+        $rootKey = self::callProtectedMethod($instance, 'makeFolderCacheKey', ['/']);
+        $imagesKey = self::callProtectedMethod($instance, 'makeFolderCacheKey', ['/images']);
+        $this->assertNotEquals($rootKey, $imagesKey);
+
+        $instance->listFolderContents('/');
+        $storedRoot = Cache::get($rootKey);
+        $this->assertNotNull($storedRoot);
+
+        $instance->listFolderContents('/images');
+        $this->assertEquals($storedRoot, Cache::get($rootKey));
+        $this->assertNotNull(Cache::get($imagesKey));
+    }
+
+    /**
+     * testResetCacheInvalidatesForAllInstances
+     */
+    public function testResetCacheInvalidatesForAllInstances()
+    {
+        $instance = $this->makeFixtureLibrary();
+
+        $instance->listFolderContents('/images');
+        $key = self::callProtectedMethod($instance, 'makeFolderCacheKey', ['/images']);
+        $this->assertNotNull(Cache::get($key));
+
+        // Any instance resets the cache, the generation bump makes old entries
+        // unreachable everywhere, including this request
+        $instance->resetCache();
+
+        $newKey = self::callProtectedMethod($instance, 'makeFolderCacheKey', ['/images']);
+        $this->assertNotEquals($key, $newKey);
+        $this->assertNull(Cache::get($newKey));
+
+        // Contents still resolve, rescanned under the new generation
+        $this->assertNotEmpty($instance->listFolderContents('/images'));
+        $this->assertNotNull(Cache::get($newKey));
+    }
+
+    /**
+     * testRepeatListingsInOneRequestScanOnce checks the cache write clears the
+     * memoized miss, otherwise every repeat listing rescans the disk.
+     */
+    public function testRepeatListingsInOneRequestScanOnce()
+    {
+        $this->app['config']->set('filesystems.disks.media.root', base_path('modules/media/tests/fixtures/media'));
+
+        $instance = $this->getMockBuilder(MediaLibrary::class)
+            ->onlyMethods(['scanFolderContents'])
+            ->getMock();
+
+        $instance->expects($this->once())
+            ->method('scanFolderContents')
+            ->willReturn(['files' => [], 'folders' => []]);
+
+        $instance->listFolderContents('/');
+        $instance->listFolderContents('/');
+    }
+
+    /**
+     * testResetCachePurgesLegacyContents
+     */
+    public function testResetCachePurgesLegacyContents()
+    {
+        $instance = $this->makeFixtureLibrary();
+        $legacyKey = $instance->getCacheKey();
+
+        Cache::forever($legacyKey, base64_encode(serialize(['/' => []])));
+
+        $instance->resetCache();
+
+        $this->assertNull(Cache::get($legacyKey));
+    }
+
+    /**
+     * makeFixtureLibrary points the media disk at the test fixtures.
+     */
+    protected function makeFixtureLibrary(): MediaLibrary
+    {
+        $this->app['config']->set('filesystems.disks.media.root', base_path('modules/media/tests/fixtures/media'));
+
+        return new MediaLibrary;
+    }
+}

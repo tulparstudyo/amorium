@@ -1,0 +1,700 @@
+<?php namespace October\Rain\Halcyon\Datasource;
+
+use Db;
+use Cache;
+use October\Rain\Halcyon\Processors\Processor;
+use October\Rain\Halcyon\Exception\CreateFileException;
+use October\Rain\Halcyon\Exception\DeleteFileException;
+use October\Rain\Halcyon\Exception\FileExistsException;
+use Carbon\Carbon;
+use Exception;
+
+/**
+ * DbDatasource looks at the database for templates
+ *
+ * @package october\halcyon
+ * @author Alexey Bobkov, Samuel Georges
+ */
+class DbDatasource extends Datasource implements DatasourceInterface
+{
+    /**
+     * @var string source identifier for this datasource instance
+     */
+    protected $source;
+
+    /**
+     * @var string table name of the datasource
+     */
+    protected $table;
+
+    /**
+     * @var array pathCache
+     */
+    protected static $pathCache = [];
+
+    /**
+     * @var array|null mtimeCache
+     */
+    protected static $mtimeCache = [];
+
+    /**
+     * @var array trashedPathCache
+     */
+    protected static $trashedPathCache = [];
+
+    /**
+     * __construct a new datasource instance
+     */
+    public function __construct(string $source, string $table)
+    {
+        $this->source = $source;
+
+        $this->table = $table;
+
+        $this->postProcessor = new Processor;
+    }
+
+    /**
+     * hasTemplate checks if a template is found in the datasource
+     */
+    public function hasTemplate(string $dirName, string $fileName, string $extension): bool
+    {
+        return (bool) $this->lastModified($dirName, $fileName, $extension);
+    }
+
+    /**
+     * selectOne returns a single template
+     */
+    public function selectOne(string $dirName, string $fileName, string $extension)
+    {
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
+
+        if ($this->canShareIndexCache() && isset(self::$pathCache[$this->source][$path])) {
+            $result = self::$pathCache[$this->source][$path];
+        }
+        else {
+            $result = $this->getQuery()->where('path', $path)->first();
+        }
+
+        if (!$result) {
+            return $result;
+        }
+
+        return [
+            'fileName' => $fileName . '.' . $extension,
+            'content' => $result->content,
+            'mtime' => Carbon::parse($result->updated_at)->timestamp,
+            'record' => $result
+        ];
+    }
+
+    /**
+     * select returns all templates, with availableoptions:
+     *
+     * - columns: only return specific columns, eg: ['fileName', 'mtime', 'content']
+     * - extensions: extensions to search for, eg: ['htm', 'md', 'twig']
+     * - fileMatch: pattern to match the filename against using the fnmatch function, eg: *gr[ae]y
+     */
+    public function select(string $dirName, array $options = []): array
+    {
+        $result = [];
+
+        extract(array_merge([
+            'columns' => null,
+            'extensions' => null,
+            'fileMatch' => null,
+        ], $options));
+
+        if ($columns === ['*'] || !is_array($columns)) {
+            $columns = null;
+        }
+
+        $results = $this->buildDirectoryQuery($dirName, $extensions)->get();
+
+        $shareCache = $this->canShareIndexCache();
+        foreach ($results as $item) {
+            if ($shareCache) {
+                self::$pathCache[$this->source][$item->path] = $item;
+            }
+
+            $resultItem = [];
+            $fileName = $this->pathToFileName($dirName, $item->path);
+
+            if (!$this->matchesFileMatch($fileMatch, $fileName)) {
+                continue;
+            }
+
+            // Apply the columns filter on the data returned
+            if ($columns === null) {
+                $resultItem = [
+                    'fileName' => $fileName,
+                    'content' => $item->content,
+                    'mtime' => Carbon::parse($item->updated_at)->timestamp,
+                    'record' => $item,
+                ];
+            }
+            else {
+                if (in_array('fileName', $columns)) {
+                    $resultItem['fileName'] = $fileName;
+                }
+
+                if (in_array('content', $columns)) {
+                    $resultItem['content'] = $item->content;
+                }
+
+                if (in_array('mtime', $columns)) {
+                    $resultItem['mtime'] = Carbon::parse($item->updated_at)->timestamp;
+                }
+
+                if (in_array('record', $columns)) {
+                    $resultItem['record'] = $item;
+                }
+            }
+
+            $result[] = $resultItem;
+        }
+
+        return $result;
+    }
+
+    /**
+     * insert creates a new template
+     */
+    public function insert(string $dirName, string $fileName, string $extension, string $content): bool
+    {
+        $this->prepareCacheInvalidation();
+
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
+
+        if ($this->getQuery()->where('path', $path)->count() > 0) {
+            throw (new FileExistsException())->setInvalidPath($path);
+        }
+
+        // Update a trashed record
+        if ($this->getQuery(false)->where('path', $path)->first()) {
+            return $this->update($dirName, $fileName, $extension, $content);
+        }
+
+        try {
+            $record = [
+                'source' => $this->source,
+                'path' => $path,
+                'content' => $content,
+                'file_size' => mb_strlen($content, '8bit'),
+                'updated_at' => Carbon::now()->toDateTimeString(),
+                'deleted_at' => null,
+            ];
+
+            /**
+             * @event halcyon.datasource.db.beforeInsert
+             * Provides an opportunity to modify records before being inserted into the DB
+             *
+             * Example usage:
+             *
+             *     $datasource->bindEvent('halcyon.datasource.db.beforeInsert', function ((array) &$record) {
+             *         // Attach a site id to every record in a multi-tenant application
+             *         $record['site_id'] = SiteManager::getSite()->id;
+             *     });
+             *
+             */
+            $this->fireEvent('halcyon.datasource.db.beforeInsert', [&$record]);
+
+            $this->getBaseQuery()->insert($record);
+
+            $this->flushCache();
+
+            return $record['file_size'];
+        }
+        catch (Exception $ex) {
+            throw (new CreateFileException)->setInvalidPath($path);
+        }
+    }
+
+    /**
+     * update an existing template
+     */
+    public function update(string $dirName, string $fileName, string $extension, string $content, $oldFileName = null, $oldExtension = null): int
+    {
+        $this->prepareCacheInvalidation();
+
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
+
+        // Check if this file has been renamed
+        if ($oldFileName !== null) {
+            $fileName = $oldFileName;
+        }
+        if ($oldExtension !== null) {
+            $extension = $oldExtension;
+        }
+
+        $oldPath = $this->makeFilePath($dirName, $fileName, $extension);
+
+        try {
+            $fileSize = mb_strlen($content, '8bit');
+
+            $data = [
+                'path' => $path,
+                'content' => $content,
+                'file_size' => $fileSize,
+                'updated_at' => Carbon::now()->toDateTimeString(),
+                'deleted_at' => null
+            ];
+
+            /**
+             * @event halcyon.datasource.db.beforeUpdate
+             * Provides an opportunity to modify records before being updated into the DB
+             *
+             * Example usage:
+             *
+             *     $datasource->bindEvent('halcyon.datasource.db.beforeUpdate', function ((array) &$data) {
+             *         // Attach a site id to every record in a multi-tenant application
+             *         $data['site_id'] = SiteManager::getSite()->id;
+             *     });
+             *
+             */
+            $this->fireEvent('halcyon.datasource.db.beforeUpdate', [&$data]);
+
+            $this->getQuery(false)->where('path', $oldPath)->update($data);
+
+            $this->flushCache();
+
+            return $fileSize;
+        }
+        catch (Exception $ex) {
+            throw (new CreateFileException)->setInvalidPath($path);
+        }
+    }
+
+    /**
+     * tombstone creates a soft-deleted record for a path with no active DB template
+     */
+    public function tombstone(string $dirName, string $fileName, string $extension): bool
+    {
+        $this->prepareCacheInvalidation();
+
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
+
+        if ($this->getQuery()->where('path', $path)->exists()) {
+            return $this->delete($dirName, $fileName, $extension);
+        }
+
+        if ($this->isTemplateTrashed($dirName, $fileName, $extension)) {
+            return true;
+        }
+
+        try {
+            $now = Carbon::now()->toDateTimeString();
+
+            $record = [
+                'source' => $this->source,
+                'path' => $path,
+                'content' => '',
+                'file_size' => 0,
+                'updated_at' => $now,
+                'deleted_at' => $now,
+            ];
+
+            $this->fireEvent('halcyon.datasource.db.beforeInsert', [&$record]);
+
+            $this->getBaseQuery()->insert($record);
+
+            $this->flushCache();
+
+            return true;
+        }
+        catch (Exception $ex) {
+            throw (new DeleteFileException)->setInvalidPath($path);
+        }
+    }
+
+    /**
+     * delete against the datasource
+     */
+    public function delete(string $dirName, string $fileName, string $extension): bool
+    {
+        $this->prepareCacheInvalidation();
+
+        try {
+            $path = $this->makeFilePath($dirName, $fileName, $extension);
+            $recordQuery = $this->getQuery()->where('path', $path);
+
+            if ($this->forceDeleting) {
+                $result = $recordQuery->delete();
+            }
+            else {
+                $result = $recordQuery->update(['deleted_at' => Carbon::now()->toDateTimeString()]);
+            }
+
+            $this->flushCache();
+
+            return (bool) $result;
+        }
+        catch (Exception $ex) {
+            throw (new DeleteFileException)->setInvalidPath($path);
+        }
+    }
+
+    /**
+     * lastModified date of an object
+     */
+    public function lastModified(string $dirName, string $fileName, string $extension): ?int
+    {
+        try {
+            if (!$this->canShareIndexCache()) {
+                $result = $this->getQuery()
+                    ->where('path', $this->makeFilePath($dirName, $fileName, $extension))
+                    ->value('updated_at');
+
+                return $result !== null ? Carbon::parse($result)->timestamp : null;
+            }
+
+            $this->fillIndexCaches();
+
+            $path = $this->makeFilePath($dirName, $fileName, $extension);
+            if (!isset(self::$mtimeCache[$this->source][$path])) {
+                return null;
+            }
+
+            $result = self::$mtimeCache[$this->source][$path];
+            return Carbon::parse($result)->timestamp;
+        }
+        catch (Exception $ex) {
+            return null;
+        }
+    }
+
+    /**
+     * clearCache drops in-memory indexes and the application cache entry for a source
+     */
+    public static function clearCache(string $source, string $table): void
+    {
+        self::invalidateCacheAfterCommit(Db::connection(), $source, $table);
+        self::forgetCache($source, $table);
+    }
+
+    /**
+     * forgetCache invalidates both request-local data and shared index snapshots.
+     */
+    protected static function forgetCache(string $source, string $table): void
+    {
+        unset(self::$pathCache[$source]);
+        unset(self::$mtimeCache[$source]);
+        unset(self::$trashedPathCache[$source]);
+
+        $key = self::makeIndexCacheKey($source, $table);
+        Cache::forever($key . '.generation', bin2hex(random_bytes(16)));
+        Cache::memo()->forget($key);
+    }
+
+    /**
+     * makeCacheKey unique to this datasource
+     */
+    public function makeCacheKey(string $name = ''): string
+    {
+        return (string) crc32($this->source . $name);
+    }
+
+    /**
+     * isTemplateTrashed returns true when a soft-deleted record exists at the path
+     */
+    public function isTemplateTrashed(string $dirName, string $fileName, string $extension): bool
+    {
+        $path = $this->makeFilePath($dirName, $fileName, $extension);
+
+        return isset($this->getTrashedPaths()[$path]);
+    }
+
+    /**
+     * selectTrashedFileNames returns file names for soft-deleted templates in a directory
+     */
+    public function selectTrashedFileNames(string $dirName, array $options = []): array
+    {
+        extract(array_merge([
+            'extensions' => null,
+            'fileMatch' => null,
+        ], $options));
+
+        $fileNames = [];
+
+        $prefix = rtrim($dirName, '/') . '/';
+
+        foreach (array_keys($this->getTrashedPaths()) as $path) {
+            if (!str_starts_with($path, $prefix)) {
+                continue;
+            }
+
+            if (!$this->matchesExtensionFilter($path, $extensions)) {
+                continue;
+            }
+
+            $fileName = $this->pathToFileName($dirName, $path);
+
+            if (!$this->matchesFileMatch($fileMatch, $fileName)) {
+                continue;
+            }
+
+            $fileNames[] = $fileName;
+        }
+
+        return $fileNames;
+    }
+
+    /**
+     * getTrashedPaths returns cached tombstoned paths for this datasource source
+     */
+    protected function getTrashedPaths(): array
+    {
+        if (!$this->canShareIndexCache()) {
+            return array_fill_keys(
+                $this->getQuery(false)->whereNotNull('deleted_at')->pluck('path')->all(),
+                true
+            );
+        }
+
+        $this->fillIndexCaches();
+
+        if (!isset(self::$trashedPathCache[$this->source])) {
+            self::$trashedPathCache[$this->source] = array_fill_keys(
+                $this->getQuery(false)->whereNotNull('deleted_at')->pluck('path')->all(),
+                true
+            );
+        }
+
+        return self::$trashedPathCache[$this->source];
+    }
+
+    /**
+     * canShareIndexCache excludes custom scopes and transactions from shared
+     * content, mtime and tombstone indexes. Scopes may select an unkeyed tenant;
+     * transactional reads must not reuse or publish uncommitted snapshots.
+     */
+    protected function canShareIndexCache(): bool
+    {
+        $event = 'halcyon.datasource.db.extendQuery';
+        if (isset($this->emitterEventCollection[$event]) || isset($this->emitterSingleEventCollection[$event])) {
+            return false;
+        }
+
+        foreach (['getQuery', 'getBaseQuery'] as $method) {
+            if ((new \ReflectionMethod($this, $method))->getDeclaringClass()->getName() !== self::class) {
+                return false;
+            }
+        }
+
+        // Transactional reads must see their own writes without publishing them.
+        return Db::connection()->transactionLevel() === 0;
+    }
+
+    /**
+     * fillIndexCaches loads mtime and trashed path indexes from cache or the database
+     */
+    protected function fillIndexCaches(): void
+    {
+        if (isset(self::$mtimeCache[$this->source]) && isset(self::$trashedPathCache[$this->source])) {
+            return;
+        }
+
+        $key = self::makeIndexCacheKey($this->source, $this->table);
+        // Read the generation from the backing store, not the request memo cache.
+        $generation = Cache::get($key . '.generation');
+        if (!is_string($generation)) {
+            $generation = bin2hex(random_bytes(16));
+            Cache::forever($key . '.generation', $generation);
+        }
+
+        $cached = Cache::memo()->get($key);
+
+        if (
+            is_array($cached) &&
+            ($cached['generation'] ?? null) === $generation &&
+            isset($cached['mtime']) &&
+            is_array($cached['mtime']) &&
+            isset($cached['trashed']) &&
+            is_array($cached['trashed'])
+        ) {
+            self::$mtimeCache[$this->source] = $cached['mtime'];
+            self::$trashedPathCache[$this->source] = $cached['trashed'];
+            return;
+        }
+
+        $mtime = self::$mtimeCache[$this->source] ?? $this->getQuery()->pluck('updated_at', 'path')->all();
+        $trashed = self::$trashedPathCache[$this->source] ?? array_fill_keys(
+            $this->getQuery(false)->whereNotNull('deleted_at')->pluck('path')->all(),
+            true
+        );
+
+        self::$mtimeCache[$this->source] = $mtime;
+        self::$trashedPathCache[$this->source] = $trashed;
+
+        // A concurrent writer may invalidate while these queries run. Its new
+        // generation makes this snapshot unusable on the next request.
+        Cache::memo()->forever($key, [
+            'generation' => $generation,
+            'mtime' => $mtime,
+            'trashed' => $trashed,
+        ]);
+    }
+
+    /**
+     * makeIndexCacheKey unique to a datasource table and source
+     */
+    protected static function makeIndexCacheKey(string $source, string $table): string
+    {
+        return 'halcyon.db.' . $table . '.' . $source;
+    }
+
+    /**
+     * buildDirectoryQuery for active templates in a directory
+     */
+    protected function buildDirectoryQuery(string $dirName, ?array $extensions)
+    {
+        $query = $this->getQuery()->where('path', 'like', rtrim($dirName, '/') . '/%');
+
+        if (is_array($extensions) && !empty($extensions)) {
+            $this->applyExtensionsFilter($query, $extensions);
+        }
+
+        return $query;
+    }
+
+    /**
+     * applyExtensionsFilter to a directory query
+     */
+    protected function applyExtensionsFilter($query, array $extensions)
+    {
+        $query->where(function ($query) use ($extensions) {
+            $query->where('path', 'like', '%' . '.' . array_pop($extensions));
+
+            if (count($extensions)) {
+                foreach ($extensions as $ext) {
+                    $query->orWhere('path', 'like', '%' . '.' . $ext);
+                }
+            }
+        });
+    }
+
+    /**
+     * pathToFileName converts a stored path to a file name within a directory
+     */
+    protected function pathToFileName(string $dirName, string $path): string
+    {
+        return ltrim(str_replace($dirName, '', $path), '/');
+    }
+
+    /**
+     * matchesFileMatch checks a file name against an optional fnmatch pattern
+     */
+    protected function matchesFileMatch(?string $fileMatch, string $fileName): bool
+    {
+        return empty($fileMatch) || fnmatch($fileMatch, $fileName);
+    }
+
+    /**
+     * matchesExtensionFilter checks a stored path against optional extensions
+     */
+    protected function matchesExtensionFilter(string $path, ?array $extensions): bool
+    {
+        if (!is_array($extensions) || empty($extensions)) {
+            return true;
+        }
+
+        foreach ($extensions as $ext) {
+            if (str_ends_with($path, '.' . $ext)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * getBaseQuery builder object
+     */
+    protected function getBaseQuery()
+    {
+        return Db::table($this->table);
+    }
+
+    /**
+     * getQuery object
+     */
+    protected function getQuery(bool $withTrashed = true)
+    {
+        $query = $this->getBaseQuery();
+        $query->where('source', $this->source);
+
+        if ($withTrashed) {
+            $query->whereNull('deleted_at');
+        }
+
+        /**
+         * @event halcyon.datasource.db.extendQuery
+         * Provides an opportunity to modify the query object used by the Halycon DbDatasource
+         *
+         * Example usage:
+         *
+         *     $datasource->bindEvent('halcyon.datasource.db.extendQuery', function ((QueryBuilder) $query, (bool) $withTrashed) {
+         *         // Apply a site filter in a multi-tenant application
+         *         $query->where('site_id', SiteManager::getSite()->id);
+         *     });
+         *
+         */
+        $this->fireEvent('halcyon.datasource.db.extendQuery', [$query, $withTrashed]);
+
+        return $query;
+    }
+
+    /**
+     * makeFilePath helper to make file path
+     */
+    protected function makeFilePath(string $dirName, string $fileName, string $extension): string
+    {
+        return $dirName . '/' . $fileName . '.' . $extension;
+    }
+
+    /**
+     * flushCache
+     */
+    protected function flushCache()
+    {
+        self::forgetCache($this->source, $this->table);
+    }
+
+    /**
+     * prepareCacheInvalidation registers commit invalidation before any write,
+     * so an unsupported standalone transaction fails without mutating a record.
+     */
+    protected function prepareCacheInvalidation(): void
+    {
+        self::invalidateCacheAfterCommit($this->getBaseQuery()->getConnection(), $this->source, $this->table);
+    }
+
+    /**
+     * invalidateCacheAfterCommit rejects snapshots another request may fill from
+     * committed rows while this connection's changes are still uncommitted.
+     */
+    protected static function invalidateCacheAfterCommit($connection, string $source, string $table): void
+    {
+        if ($connection->transactionLevel() === 0) {
+            return;
+        }
+
+        try {
+            $connection->afterCommit(function () use ($source, $table) {
+                self::forgetCache($source, $table);
+            });
+        }
+        catch (\RuntimeException $exception) {
+            if ($exception->getMessage() !== 'Transactions Manager has not been set.') {
+                throw $exception;
+            }
+
+            throw new \RuntimeException(
+                'Transactional DbDatasource writes require a transaction manager. Configure '
+                . 'Illuminate\\Database\\DatabaseTransactionsManager on the connection before beginning the transaction.',
+                0,
+                $exception
+            );
+        }
+    }
+}

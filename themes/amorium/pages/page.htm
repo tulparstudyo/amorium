@@ -1,0 +1,33 @@
+##
+title = "Page"
+url = "/:fullslug*"
+layout = "default"
+
+[section]
+handle = "Amorium\Page"
+identifier = "fullslug"
+isDefault = 1
+==
+function onStart()
+{
+    if ($this->param('fullslug') === 'home-page') {
+        return redirect($this->controller->pageUrl('index'));
+    }
+}
+==
+{% if section is empty %}
+    {% do abort(404) %}
+{% endif %}
+
+{% put metaTitle %}{{ section.meta_title ?: section.title }}{% endput %}
+{% put metaDescription %}{{ section.meta_description }}{% endput %}
+
+{% set sectionCounts = {} %}
+{% for item in section.sections %}
+    {% if item.section and not item.is_disabled %}
+        {# Prefixed so numeric slugs stay string keys in merge #}
+        {% set countKey = 'key-' ~ (item.section.slug ?: item.section.id) %}
+        {% set sectionCounts = sectionCounts|merge({ (countKey): sectionCounts[countKey]|default(0) + 1 }) %}
+        {% partial 'site/section' block=item.section type=item.section_type background=item.background_color data=item.section_data index=sectionCounts[countKey] %}
+    {% endif %}
+{% endfor %}

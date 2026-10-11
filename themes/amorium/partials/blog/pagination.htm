@@ -1,0 +1,27 @@
+{% if paginator.hasPages %}
+    <nav class="mt-12 flex justify-center" aria-label="{{ 'Pagination'|_ }}">
+        <ul class="inline-flex items-center gap-1">
+            {% if not paginator.onFirstPage %}
+                <li>
+                    <a href="{{ paginator.previousPageUrl }}" class="inline-flex size-10 items-center justify-center rounded-md border border-gray-100 text-slate-400 duration-500 hover:border-primary hover:bg-primary hover:text-white dark:border-gray-800" aria-label="{{ 'Previous'|_ }}"><i class="ri-arrow-left-s-line"></i></a>
+                </li>
+            {% endif %}
+
+            {% for number in 1..paginator.lastPage %}
+                <li>
+                    {% if number == paginator.currentPage %}
+                        <span class="inline-flex size-10 items-center justify-center rounded-md border border-primary bg-primary text-white" aria-current="page">{{ number }}</span>
+                    {% else %}
+                        <a href="{{ paginator.url(number) }}" class="inline-flex size-10 items-center justify-center rounded-md border border-gray-100 text-slate-400 duration-500 hover:border-primary hover:bg-primary hover:text-white dark:border-gray-800">{{ number }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            {% if paginator.hasMorePages %}
+                <li>
+                    <a href="{{ paginator.nextPageUrl }}" class="inline-flex size-10 items-center justify-center rounded-md border border-gray-100 text-slate-400 duration-500 hover:border-primary hover:bg-primary hover:text-white dark:border-gray-800" aria-label="{{ 'Next'|_ }}"><i class="ri-arrow-right-s-line"></i></a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

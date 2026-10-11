@@ -1,0 +1,57 @@
+##
+description = "Default layout"
+
+[sitePicker]
+
+[navigation mainNavigation]
+slug = "main-menu"
+
+[navigation footerNavigation]
+slug = "footer-menu"
+==
+{% set brandName = business().business_name ?: this.theme.getConfigValue('name') %}
+{% set isRtl = this.site.hard_locale|slice(0, 2) in ['ar', 'fa', 'he', 'ur'] %}
+<!DOCTYPE html>
+<html lang="{{ this.site.hard_locale }}" dir="{{ isRtl ? 'rtl' : 'ltr' }}" class="light scroll-smooth scroll-pt-24">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{ placeholder('metaTitle') ?: (this.page.meta_title ?: this.page.title)|_ }} | {{ brandName }}</title>
+        <meta name="description" content="{{ placeholder('metaDescription') ?: this.page.meta_description }}" />
+        {% if sitePicker.isEnabled %}
+            {% for site in sitePicker.sites %}
+                <link rel="alternate" hreflang="{{ site.hard_locale }}" href="{{ site.url }}" />
+            {% endfor %}
+        {% endif %}
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link href="https://fonts.bunny.net/css?family=rubik:300,400,500,600,700&display=swap" rel="stylesheet" />
+        {% if isRtl %}
+            <link href="https://fonts.bunny.net/css?family=cairo:300,400,500,600,700&display=swap" rel="stylesheet" />
+        {% endif %}
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
+        <link href="{{ 'modules/system/assets/toolbox/elements/flag/flag.css'|app }}" rel="stylesheet" />
+        <link href="{{ 'assets/css/theme.css'|themeAsset }}" rel="stylesheet" />
+        {% styles %}
+    </head>
+    {% set hasHero = this.page.id == 'index' or this.page.hasHero %}
+    <body class="flex min-h-screen flex-col bg-white font-rubik text-base text-slate-900 antialiased dark:bg-slate-900 dark:text-white {{ hasHero ? 'has-hero' : '' }}">
+        {% partial 'site/header' hasHero=hasHero %}
+
+        <main class="flex-1 {{ hasHero ? '' : 'pt-24' }}">
+            {% page %}
+        </main>
+
+        {% partial 'site/footer' %}
+
+        <a href="#" id="back-to-top" class="back-to-top fixed end-5 bottom-5 z-10 hidden size-8 items-center justify-center rounded-full bg-primary text-lg leading-8 text-white" aria-label="{{ 'Back to top'|_ }}">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+        </a>
+
+        {% framework extras %}
+        <script src="{{ 'assets/vendor/flowbite/flowbite.min.js'|theme }}"></script>
+        <script src="{{ 'assets/js/app.js'|themeAsset }}"></script>
+        {% scripts %}
+    </body>
+</html>
