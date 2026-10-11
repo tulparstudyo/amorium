@@ -1,0 +1,8 @@
+{
+    "name": "amorium/demo-plugin",
+    "type": "october-plugin",
+    "description": "Saves the content of a site as demo content and installs it on a new site",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

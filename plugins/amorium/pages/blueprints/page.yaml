@@ -10,7 +10,7 @@ structure:
     maxDepth: 3
 
 primaryNavigation:
-    label: Pages
+    label: Amorium
     icon: icon-file-text-o
     order: 110
 

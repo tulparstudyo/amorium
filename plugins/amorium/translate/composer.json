@@ -1,0 +1,8 @@
+{
+    "name": "amorium/translate-plugin",
+    "type": "october-plugin",
+    "description": "Automatic content translation for Amorium sites",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
