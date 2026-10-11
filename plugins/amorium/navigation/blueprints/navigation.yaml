@@ -42,6 +42,7 @@ fields:
         label: URL
         type: text
         placeholder: https://example.com
+        comment: Addresses starting with / open on the current site, and the language prefix is added automatically. Example /contact becomes /en/contact on the English site.
         trigger:
             action: show
             field: link_type

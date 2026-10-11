@@ -1,5 +1,7 @@
 <?php namespace Amorium\Navigation\Components;
 
+use Url;
+use Site;
 use Request;
 use Cms\Classes\ComponentBase;
 use Cms\Classes\PageManager;
@@ -65,7 +67,7 @@ class Navigation extends ComponentBase
                 'title' => $record->title,
                 'url' => $url,
                 'type' => $record->link_type,
-                'isExternal' => $record->link_type === 'external',
+                'isExternal' => $record->link_type === 'external' && !$this->isSitePath((string) $record->link_url),
                 'isActive' => $url !== '' && rtrim($url, '/') === $currentUrl,
                 'isChildActive' => collect($children)->contains(fn($child) => $child->isActive || $child->isChildActive),
                 'items' => $children
@@ -79,10 +81,41 @@ class Navigation extends ComponentBase
     {
         return match ($record->link_type) {
             'page' => $record->link_page ? PageManager::url($record->link_page) : '',
-            'external' => (string) $record->link_url,
+            'external' => $this->makeExternalUrl((string) $record->link_url),
             'anchor' => $this->makeAnchorUrl($record),
             default => ''
         };
+    }
+
+    /**
+     * makeExternalUrl opens paths starting with a slash on the active site,
+     * so "/contact" becomes "/en/contact" on the English site.
+     */
+    protected function makeExternalUrl(string $url): string
+    {
+        $url = trim($url);
+        if (!$this->isSitePath($url)) {
+            return $url;
+        }
+
+        $site = Site::getActiveSite();
+        $prefix = $site && $site->is_prefixed ? '/' . trim($site->route_prefix, '/') : '';
+
+        if ($prefix !== '' && ($url === $prefix || str_starts_with($url, $prefix . '/') || str_starts_with($url, $prefix . '?') || str_starts_with($url, $prefix . '#'))) {
+            return Url::to($url);
+        }
+
+        return Url::to($site ? $site->attachRoutePrefix($url) : $url);
+    }
+
+    /**
+     * isSitePath returns true for paths like "/contact", but not for "//cdn.example.com".
+     */
+    protected function isSitePath(string $url): bool
+    {
+        $url = trim($url);
+
+        return str_starts_with($url, '/') && !str_starts_with($url, '//');
     }
 
     /**

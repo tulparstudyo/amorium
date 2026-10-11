@@ -9,6 +9,7 @@
     "Anchor": "Çapa (#anchor)",
     "Page": "Sayfa",
     "URL": "URL",
+    "Addresses starting with / open on the current site, and the language prefix is added automatically. Example /contact becomes /en/contact on the English site.": "/ ile başlayan adresler aktif sitede açılır ve dil öneki otomatik eklenir. Örnek: /iletisim, İngilizce sitede /en/iletisim olur.",
     "The element ID without the # sign. It opens on the selected page, or on the home page when no page is selected.": "Öğe kimliği, # işareti olmadan. Seçilen sayfada, sayfa seçilmezse ana sayfada açılır.",
     "Displays the nested links of a menu, found by the slug of its top level record.": "En üst kaydın slug değeriyle bulunan menünün iç içe linklerini gösterir.",
     "Menu Slug": "Menü Slug",
