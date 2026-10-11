@@ -4,7 +4,6 @@ use Backend;
 use BackendMenu;
 use Flash;
 use Lang;
-use System\Classes\SettingsManager;
 use System\Controllers\Sites;
 use Backend\Widgets\Form;
 use Amorium\Business\Models\BusinessSetting;
@@ -15,6 +14,13 @@ use Exception;
  */
 class SitesExtension
 {
+    /**
+     * Main menu item of the Amorium\Page blueprint, the business page is listed under it.
+     */
+    public const MENU_OWNER = 'October.Tailor';
+
+    public const MENU_CODE = 'entry_amorium-page';
+
     public static function boot()
     {
         Sites::extend(function ($controller) {
@@ -28,8 +34,7 @@ class SitesExtension
                     return;
                 }
 
-                BackendMenu::setContext('October.System', 'system', 'settings');
-                SettingsManager::setContext('Amorium.Business', 'business');
+                BackendMenu::setContext(static::MENU_OWNER, static::MENU_CODE, 'business');
                 $controller->pageTitle = 'Business Information';
 
                 try {

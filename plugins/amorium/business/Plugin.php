@@ -1,5 +1,6 @@
 <?php namespace Amorium\Business;
 
+use Event;
 use Backend;
 use System\Classes\PluginBase;
 use System\Classes\SettingsManager;
@@ -21,6 +22,18 @@ class Plugin extends PluginBase
     public function boot()
     {
         SitesExtension::boot();
+
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems(SitesExtension::MENU_OWNER, SitesExtension::MENU_CODE, [
+                'business' => [
+                    'label' => 'Business Information',
+                    'icon' => 'icon-building',
+                    'url' => Backend::url('system/sites/business'),
+                    'permissions' => ['settings.manage_sites'],
+                    'order' => 70
+                ]
+            ]);
+        });
     }
 
     public function registerSettings()
