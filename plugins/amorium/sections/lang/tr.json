@@ -3,6 +3,7 @@
     "Reusable page sections built from HTML, CSS and JS": "HTML, CSS ve JS ile oluşturulan, tekrar kullanılabilir sayfa section'ları",
     "Section": "Section",
     "Sections": "Section'lar",
+    "Pick a font...": "Bir font seçin...",
     "The markup is rendered with Twig and placed inside a wrapper element with the data-amorium-section attribute. The values of the fields defined in the Fields tab are available as \"data\".": "HTML, Twig ile işlenir ve data-amorium-section özelliğine sahip bir kapsayıcı öğenin içine yerleştirilir. Alanlar sekmesinde tanımlanan alanların değerlerine \"data\" ile erişilir.",
     "Fields": "Alanlar",
     "Form fields shown on the page when this section is used, written in October form field YAML. Use mediafinder for images, pagefinder for links and remixicon for icons.": "Bu section bir sayfada kullanıldığında gösterilecek form alanları, October form alanı YAML biçiminde yazılır. Resimler için mediafinder, linkler için pagefinder, ikonlar için remixicon kullanın.",

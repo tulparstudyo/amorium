@@ -31,6 +31,7 @@ class Plugin extends PluginBase
         return [
             \Amorium\Sections\FormWidgets\SectionFields::class => 'sectionfields',
             \Amorium\Sections\FormWidgets\RemixIcon::class => 'remixicon',
+            \Amorium\Sections\FormWidgets\FontPicker::class => 'fontpicker',
         ];
     }
 

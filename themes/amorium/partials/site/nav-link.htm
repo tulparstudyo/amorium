@@ -1,6 +1,6 @@
 <a
     href="{{ item.url ?: '#' }}"
-    class="{{ class }} {{ item.isActive or item.isChildActive ? activeClass|default('text-primary') : (inactiveClass is defined ? inactiveClass : 'text-slate-900') }}"
+    class="{{ class }} {{ item.isActive or item.isChildActive ? activeClass|default('text-primary') : (inactiveClass is defined ? inactiveClass : 'text-body') }}"
     {% if item.isActive %}aria-current="page"{% endif %}
     {% if item.isExternal %}target="_blank" rel="noopener noreferrer"{% endif %}
 >

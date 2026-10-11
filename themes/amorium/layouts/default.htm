@@ -14,6 +14,27 @@ slug = "footer-menu"
 {% set settings = this.theme %}
 {% set fontPattern = '/^[A-Za-z0-9 ]+$/' %}
 {% set colorPattern = '/^#[0-9A-Fa-f]{3,8}$/' %}
+{% set colorSettings = {
+    primary_color: 'primary',
+    primary_dark_color: 'primary-dark',
+    heading_color: 'heading',
+    body_color: 'body',
+    muted_color: 'muted',
+    page_color: 'page',
+    surface_color: 'surface',
+    line_color: 'line',
+    contrast_color: 'contrast',
+    footer_color: 'footer',
+    footer_text_color: 'footer-text',
+    night_page_color: 'night-page',
+    night_surface_color: 'night-surface',
+    night_heading_color: 'night-heading',
+    night_body_color: 'night-body',
+    night_muted_color: 'night-muted',
+    night_line_color: 'night-line',
+    success_color: 'success',
+    danger_color: 'danger'
+} %}
 {% set bodyFont = settings.body_font|default('') matches fontPattern ? settings.body_font : 'Rubik' %}
 {% set headingFont = settings.heading_font|default('') matches fontPattern ? settings.heading_font : bodyFont %}
 {% set fontFamilies = headingFont != bodyFont ? [bodyFont, headingFont] : [bodyFont] %}
@@ -47,18 +68,18 @@ slug = "footer-menu"
                 --theme-font-heading: "{{ headingFont }}";
                 --theme-font-size: {{ (settings.base_font_size ?: 16)|round }}px;
                 --theme-logo-height: {{ (settings.logo_height ?: 32)|round }}px;
-                {% if settings.primary_color|default('') matches colorPattern %}
-                    --theme-color-primary: {{ settings.primary_color }};
-                {% endif %}
-                {% if settings.primary_dark_color|default('') matches colorPattern %}
-                    --theme-color-primary-dark: {{ settings.primary_dark_color }};
-                {% endif %}
+                {% for field, name in colorSettings %}
+                    {% set color = attribute(settings, field)|default('') %}
+                    {% if color matches colorPattern %}
+                        --theme-color-{{ name }}: {{ color }};
+                    {% endif %}
+                {% endfor %}
             }
         </style>
         {% styles %}
     </head>
     {% set hasHero = this.page.id == 'index' or this.page.hasHero %}
-    <body class="flex min-h-screen flex-col bg-white font-body text-base text-slate-900 antialiased dark:bg-slate-900 dark:text-white {{ hasHero ? 'has-hero' : '' }}">
+    <body class="flex min-h-screen flex-col bg-page font-body text-base text-body antialiased dark:bg-night-page dark:text-night-body {{ hasHero ? 'has-hero' : '' }}">
         {% partial 'site/header' hasHero=hasHero %}
 
         <main class="flex-1 {{ hasHero ? '' : 'pt-24' }}">

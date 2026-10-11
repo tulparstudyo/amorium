@@ -5,7 +5,6 @@ tabs:
             label: Logo
             type: mediafinder
             mode: image
-            span: left
             comment: Shown on light backgrounds. The business name is shown when left empty.
 
         logo_light:
@@ -13,7 +12,6 @@ tabs:
             label: Light Logo
             type: mediafinder
             mode: image
-            span: right
             comment: Shown over the hero image and in the footer. The logo is used when left empty.
 
         logo_height:
@@ -23,14 +21,12 @@ tabs:
             min: 16
             max: 120
             default: 32
-            span: left
 
         favicon:
             tab: General
             label: Favicon
             type: mediafinder
             mode: image
-            span: right
             comment: Square PNG or SVG, at least 32x32 pixels.
 
         show_back_to_top:
@@ -40,50 +36,187 @@ tabs:
             default: true
             span: full
 
+        _section_brand:
+            tab: Color
+            label: Brand
+            type: section
+
         primary_color:
             tab: Color
             label: Primary Color
             type: colorpicker
+            availableColors: false
             default: '#f54a00'
-            span: left
             comment: Used for buttons, links and highlights.
 
         primary_dark_color:
             tab: Color
             label: Primary Hover Color
             type: colorpicker
+            availableColors: false
             default: '#cc3d00'
-            span: right
             comment: Used when hovering buttons. Usually a darker shade of the primary color.
+
+        _section_text:
+            tab: Color
+            label: Text
+            type: section
+
+        heading_color:
+            tab: Color
+            label: Heading Color
+            type: colorpicker
+            availableColors: false
+            default: '#0f172a'
+
+        body_color:
+            tab: Color
+            label: Body Text Color
+            type: colorpicker
+            availableColors: false
+            default: '#0f172a'
+            comment: Also used for the menu links.
+
+        muted_color:
+            tab: Color
+            label: Muted Text Color
+            type: colorpicker
+            availableColors: false
+            default: '#94a3b8'
+            comment: Descriptions, dates and secondary text.
+
+        _section_backgrounds:
+            tab: Color
+            label: Backgrounds
+            type: section
+
+        page_color:
+            tab: Color
+            label: Page Background
+            type: colorpicker
+            availableColors: false
+            default: '#ffffff'
+            comment: Also used for cards, menus and form boxes.
+
+        surface_color:
+            tab: Color
+            label: Alternate Background
+            type: colorpicker
+            availableColors: false
+            default: '#f9fafb'
+            comment: Used for every second section and highlighted boxes.
+
+        line_color:
+            tab: Color
+            label: Border Color
+            type: colorpicker
+            availableColors: false
+            default: '#e5e7eb'
+            comment: Borders, dividers, input fields and card shadows.
+
+        contrast_color:
+            tab: Color
+            label: Dark Section Background
+            type: colorpicker
+            availableColors: false
+            default: '#0f172a'
+            comment: Hero and call to action sections, image overlays and popups.
+
+        footer_color:
+            tab: Color
+            label: Footer Background
+            type: colorpicker
+            availableColors: false
+            default: '#1e293b'
+
+        footer_text_color:
+            tab: Color
+            label: Footer Text Color
+            type: colorpicker
+            availableColors: false
+            default: '#9ca3af'
+
+        _section_night:
+            tab: Color
+            label: Dark Mode
+            type: section
+
+        night_page_color:
+            tab: Color
+            label: Page Background
+            type: colorpicker
+            availableColors: false
+            default: '#0f172a'
+            comment: Also used for cards, menus, form boxes and the footer.
+
+        night_surface_color:
+            tab: Color
+            label: Alternate Background
+            type: colorpicker
+            availableColors: false
+            default: '#1e293b'
+
+        night_heading_color:
+            tab: Color
+            label: Heading Color
+            type: colorpicker
+            availableColors: false
+            default: '#ffffff'
+
+        night_body_color:
+            tab: Color
+            label: Body Text Color
+            type: colorpicker
+            availableColors: false
+            default: '#ffffff'
+
+        night_muted_color:
+            tab: Color
+            label: Muted Text Color
+            type: colorpicker
+            availableColors: false
+            default: '#cbd5e1'
+
+        night_line_color:
+            tab: Color
+            label: Border Color
+            type: colorpicker
+            availableColors: false
+            default: '#1f2937'
+
+        _section_status:
+            tab: Color
+            label: Messages
+            type: section
+
+        success_color:
+            tab: Color
+            label: Success Color
+            type: colorpicker
+            availableColors: false
+            default: '#16a34a'
+            comment: Form sent messages.
+
+        danger_color:
+            tab: Color
+            label: Error Color
+            type: colorpicker
+            availableColors: false
+            default: '#dc2626'
+            comment: Form errors and required field marks.
 
         body_font:
             tab: Typography
             label: Body Font
-            type: dropdown
+            type: fontpicker
             default: Rubik
-            span: left
-            options: &fonts
-                Rubik: Rubik
-                Inter: Inter
-                Poppins: Poppins
-                Roboto: Roboto
-                Open Sans: Open Sans
-                Montserrat: Montserrat
-                Nunito: Nunito
-                Lato: Lato
-                Raleway: Raleway
-                Work Sans: Work Sans
-                DM Sans: DM Sans
-                Playfair Display: Playfair Display
-                Merriweather: Merriweather
 
         heading_font:
             tab: Typography
             label: Heading Font
-            type: dropdown
-            emptyOption: Same as body font
-            span: right
-            options: *fonts
+            type: fontpicker
+            allowEmpty: true
+            placeholder: Same as body font
 
         base_font_size:
             tab: Typography
@@ -92,5 +225,4 @@ tabs:
             min: 12
             max: 22
             default: 16
-            span: left
             comment: Body text size. Line height is adjusted automatically.

@@ -23,7 +23,7 @@ sortDirection = "desc"
         </div>
 
         {% if paginator.isEmpty %}
-            <p class="text-center text-slate-400">{{ 'No posts have been published yet.'|_ }}</p>
+            <p class="text-center text-muted">{{ 'No posts have been published yet.'|_ }}</p>
         {% else %}
             <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {% for post in posts %}

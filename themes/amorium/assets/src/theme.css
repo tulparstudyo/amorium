@@ -25,6 +25,26 @@
     --color-primary-400: color-mix(in oklab, var(--color-primary) 90%, white);
     --color-primary-dark: var(--theme-color-primary-dark, #cc3d00);
 
+    --color-page: var(--theme-color-page, var(--color-white));
+    --color-surface: var(--theme-color-surface, var(--color-gray-50));
+    --color-heading: var(--theme-color-heading, var(--color-slate-900));
+    --color-body: var(--theme-color-body, var(--color-slate-900));
+    --color-muted: var(--theme-color-muted, var(--color-slate-400));
+    --color-line: var(--theme-color-line, var(--color-gray-200));
+    --color-contrast: var(--theme-color-contrast, var(--color-slate-900));
+    --color-footer: var(--theme-color-footer, var(--color-slate-800));
+    --color-footer-text: var(--theme-color-footer-text, var(--color-gray-400));
+
+    --color-night-page: var(--theme-color-night-page, var(--color-slate-900));
+    --color-night-surface: var(--theme-color-night-surface, var(--color-slate-800));
+    --color-night-heading: var(--theme-color-night-heading, var(--color-white));
+    --color-night-body: var(--theme-color-night-body, var(--color-white));
+    --color-night-muted: var(--theme-color-night-muted, var(--color-slate-300));
+    --color-night-line: var(--theme-color-night-line, var(--color-gray-800));
+
+    --color-success: var(--theme-color-success, var(--color-green-600));
+    --color-danger: var(--theme-color-danger, var(--color-red-600));
+
     --breakpoint-lg_992: 992px;
 
     --text-base: var(--theme-font-size, 16px);
@@ -40,6 +60,15 @@
 @layer base {
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-heading);
+    }
+
+    /* Headings inside rich text keep the color of the text around them. */
+    :where(h1, h2, h3, h4, h5, h6):not(.rich-content *) {
+        color: var(--color-heading);
+
+        &:where(.dark, .dark *) {
+            color: var(--color-night-heading);
+        }
     }
 }
 
@@ -114,7 +143,7 @@
         .nav-link {
             display: block;
             padding: calc(var(--spacing) * 3);
-            color: var(--color-slate-900);
+            color: var(--color-body);
 
             &:hover {
                 @media (hover: hover) {
@@ -123,11 +152,11 @@
             }
 
             &:where(.dark, .dark *) {
-                color: color-mix(in oklab, var(--color-white) 60%, transparent);
+                color: color-mix(in oklab, var(--color-night-body) 60%, transparent);
 
                 &:hover {
                     @media (hover: hover) {
-                        color: var(--color-white);
+                        color: var(--color-night-body);
                     }
                 }
             }
@@ -138,7 +167,7 @@
             color: var(--color-primary);
 
             &:where(.dark, .dark *) {
-                color: var(--color-white);
+                color: var(--color-night-body);
             }
         }
     }
@@ -159,14 +188,14 @@
     }
 
     &.is-sticky {
-        background-color: rgb(255 255 255 / 0.7);
+        background-color: color-mix(in oklab, var(--color-page) 70%, transparent);
         box-shadow: 0 0 3px rgb(0 0 0 / 0.1);
         -webkit-backdrop-filter: blur(12px);
         backdrop-filter: blur(12px);
 
         &:where(.dark, .dark *) {
-            background-color: color-mix(in oklab, var(--color-slate-900) 70%, transparent);
-            box-shadow: 0 0 3px var(--color-slate-800);
+            background-color: color-mix(in oklab, var(--color-night-page) 70%, transparent);
+            box-shadow: 0 0 3px var(--color-night-line);
         }
 
         .navbar-brand {
@@ -181,7 +210,7 @@
     }
 
     .lang-link {
-        color: var(--color-slate-500);
+        color: var(--color-muted);
 
         &:hover,
         &[aria-current="true"] {
@@ -192,12 +221,12 @@
 
 @media (max-width: 991.98px) {
     .navbar {
-        background-color: var(--color-white) !important;
+        background-color: var(--color-page) !important;
         box-shadow: 0 0 3px rgb(0 0 0 / 0.1) !important;
 
         &:where(.dark, .dark *) {
-            background-color: var(--color-slate-900) !important;
-            box-shadow: 0 0 3px var(--color-slate-800) !important;
+            background-color: var(--color-night-page) !important;
+            box-shadow: 0 0 3px var(--color-night-line) !important;
         }
 
         .navbar-brand {
@@ -215,10 +244,10 @@
             height: calc(var(--spacing) * 85);
 
             .nav-link {
-                color: var(--color-slate-900);
+                color: var(--color-body);
 
                 &:where(.dark, .dark *) {
-                    color: var(--color-white);
+                    color: var(--color-night-body);
                 }
             }
 
@@ -229,7 +258,7 @@
         }
 
         .lang-link {
-            color: var(--color-slate-500);
+            color: var(--color-muted);
 
             &:hover,
             &[aria-current="true"] {
@@ -288,7 +317,7 @@
             }
 
             .navbar-nav.nav-light .nav-link {
-                color: var(--color-slate-900);
+                color: var(--color-body);
 
                 &:hover {
                     @media (hover: hover) {
@@ -297,11 +326,11 @@
                 }
 
                 &:where(.dark, .dark *) {
-                    color: color-mix(in oklab, var(--color-white) 60%, transparent);
+                    color: color-mix(in oklab, var(--color-night-body) 60%, transparent);
 
                     &:hover {
                         @media (hover: hover) {
-                            color: var(--color-white);
+                            color: var(--color-night-body);
                         }
                     }
                 }
@@ -312,12 +341,12 @@
                 color: var(--color-primary);
 
                 &:where(.dark, .dark *) {
-                    color: var(--color-white);
+                    color: var(--color-night-body);
                 }
             }
 
             .lang-link {
-                color: var(--color-slate-500);
+                color: var(--color-muted);
 
                 &:hover,
                 &[aria-current="true"] {

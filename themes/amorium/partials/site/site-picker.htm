@@ -16,13 +16,13 @@
             </svg>
         </button>
 
-        <ul class="absolute end-0 top-full z-50 mt-2 hidden min-w-40 rounded-md bg-white p-2 shadow-lg dark:bg-slate-900" data-dropdown-menu>
+        <ul class="absolute end-0 top-full z-50 mt-2 hidden min-w-40 rounded-md bg-page p-2 shadow-lg dark:bg-night-page" data-dropdown-menu>
             {% for site in sitePicker.sites %}
                 <li>
                     <a
                         href="{{ site.url }}"
                         hreflang="{{ site.hard_locale }}"
-                        class="flex items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap duration-300 hover:bg-gray-50 hover:text-primary dark:hover:bg-slate-800 {{ site.id == this.site.id ? 'text-primary' : 'text-slate-700 dark:text-slate-200' }}"
+                        class="flex items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap duration-300 hover:bg-surface hover:text-primary dark:hover:bg-night-surface {{ site.id == this.site.id ? 'text-primary' : 'text-body dark:text-night-muted' }}"
                         {% if site.id == this.site.id %}aria-current="true"{% endif %}
                     >
                         {% if site.flag_icon %}<i class="{{ site.flag_icon }} rounded-sm" aria-hidden="true"></i>{% endif %}
