@@ -4,7 +4,6 @@ use Flash;
 use Backend;
 use BackendMenu;
 use Backend\Classes\Controller;
-use System\Classes\SettingsManager;
 use Amorium\Demo\Classes\DemoContent;
 
 /**
@@ -18,8 +17,7 @@ class Content extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Amorium.Demo', 'demo');
+        BackendMenu::setContext('October.Tailor', 'entry_amorium-page', 'demo');
     }
 
     public function index()
