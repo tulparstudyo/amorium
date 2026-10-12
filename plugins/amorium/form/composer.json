@@ -1,8 +1,0 @@
-{
-    "name": "amorium/form-plugin",
-    "type": "october-plugin",
-    "description": "Stores the submissions of the forms built with the Form section",
-    "require": {
-        "composer/installers": "~1.0"
-    }
-}

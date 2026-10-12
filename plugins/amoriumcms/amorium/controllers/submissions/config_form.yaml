@@ -1,0 +1,7 @@
+name: Submission
+form: $/amoriumcms/amorium/models/submission/fields.yaml
+modelClass: AmoriumCms\Amorium\Models\Submission
+defaultRedirect: amoriumcms/amorium/submissions
+
+preview:
+    title: Submission

@@ -1,0 +1,14 @@
+scopes:
+    form_name:
+        label: Form
+        type: group
+        optionsMethod: AmoriumCms\Amorium\Models\Submission::getFormNameOptions
+
+    unread:
+        label: Unread only
+        type: checkbox
+        conditions: read_at is null
+
+    created_at:
+        label: Date
+        type: date

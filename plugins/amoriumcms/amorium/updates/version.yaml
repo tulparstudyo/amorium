@@ -1,0 +1,7 @@
+v1.0.0:
+    - First version, the Amorium plugins are merged into a single plugin
+    - create_submissions_table.php
+    - create_translate_logs_table.php
+    - create_translate_memory_table.php
+    - remove_site_copies.php
+    - remove_old_plugins.php

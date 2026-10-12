@@ -1,5 +1,5 @@
 {
-    "name": "amorium/amorium-theme",
+    "name": "amoriumcms/amorium-theme",
     "type": "october-theme",
     "description": "Custom theme for Amorium built with Tailwind CSS 4.3",
     "require": {

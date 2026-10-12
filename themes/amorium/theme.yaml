@@ -1,6 +1,9 @@
 name: Amorium
 description: 'Custom theme for Amorium built with Tailwind CSS 4.3'
 author: Amorium
+authorCode: AmoriumCms
 homepage: ''
 code: amorium
 form: config/fields.yaml
+require:
+    - AmoriumCms.Amorium

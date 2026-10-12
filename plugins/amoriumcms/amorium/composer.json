@@ -1,0 +1,8 @@
+{
+    "name": "amoriumcms/amorium-plugin",
+    "type": "october-plugin",
+    "description": "Pages, sections, posts, navigation, forms, business details, demo content and AI translation for the Amorium theme",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

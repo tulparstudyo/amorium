@@ -1,0 +1,47 @@
+AMORIUM KURULUMU
+================
+
+Gereksinim: Kurulu bir October CMS 4 sitesi (PHP 8.2+, MySQL InnoDB).
+
+1. Bu arşivdeki "themes" ve "plugins" klasörlerini October kök dizinine kopyalayın.
+   - themes/amorium (demo içerik "demo" klasöründedir)
+   - plugins/amoriumcms/amorium (AmoriumCms.Amorium eklentisi)
+
+2. .env.example içindeki değerleri sitenin .env dosyasına aktarın:
+   - DB_URL sonuna "?engine=InnoDB" eklenmeli.
+   - Otomatik çeviri için TRANSLATE_ENABLED=true ve TRANSLATE_API_KEY doldurulmalı.
+
+3. Kök dizinde sırasıyla çalıştırın:
+
+   php artisan october:migrate
+   php artisan tailor:migrate
+   php artisan theme:use amorium
+
+4. Demo içeriği yükleyin. Panelde:
+
+   Ayarlar > CMS > Demo İçerik > "Demo İçeriği Yükle"
+
+   veya komut satırından:
+
+   php artisan amorium:demo-install
+
+   Diller (Türkçe, English, Русский, عربي), sayfalar, yazılar, kategoriler,
+   menüler, section'lar, işletme bilgileri, tema ayarları ve medya dosyaları
+   birlikte yüklenir. Bu işlem sitedeki mevcut içeriğin yerine geçer.
+
+5. Sonradan yeni bir dil (site) eklediğinizde şu komutu çalıştırın:
+
+   php artisan tailor:propagate
+
+DEMO İÇERİĞİ GÜNCELLEME (geliştirici için)
+-----------------------------------------
+Geliştirme ortamında (APP_ENV=local) Ayarlar > CMS > Demo İçerik sayfasındaki
+"Mevcut İçeriği Demo Olarak Kaydet" butonu veya
+
+   php artisan amorium:demo-export
+
+komutu sitenin içeriğini themes/amorium/demo klasörüne yazar. Ardından paket
+yeniden oluşturulur.
+
+Tema CSS dosyası derlenmiş olarak gelir. Tasarımı değiştirmek için
+themes/amorium klasöründe "npm install" ve "npm run build" çalıştırın.

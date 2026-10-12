@@ -1,0 +1,4 @@
+fields:
+    _data:
+        type: partial
+        path: $/amoriumcms/amorium/models/submission/_field_data.php

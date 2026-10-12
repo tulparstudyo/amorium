@@ -1,8 +1,0 @@
-{
-    "name": "amorium/navigation-plugin",
-    "type": "october-plugin",
-    "description": "Nested navigation menus managed with blueprints",
-    "require": {
-        "composer/installers": "~1.0"
-    }
-}

@@ -1,0 +1,17 @@
+title: Form Submissions
+list: $/amoriumcms/amorium/models/submission/columns.yaml
+filter: $/amoriumcms/amorium/models/submission/scopes.yaml
+modelClass: AmoriumCms\Amorium\Models\Submission
+recordUrl: amoriumcms/amorium/submissions/preview/:id
+noRecordsMessage: No submissions yet.
+recordsPerPage: 30
+showSetup: true
+showCheckboxes: true
+defaultSort:
+    column: created_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: backend::lang.list.search_prompt

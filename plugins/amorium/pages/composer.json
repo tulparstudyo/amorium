@@ -1,8 +1,0 @@
-{
-    "name": "amorium/pages-plugin",
-    "type": "october-plugin",
-    "description": "Site pages managed with blueprints",
-    "require": {
-        "composer/installers": "~1.0"
-    }
-}

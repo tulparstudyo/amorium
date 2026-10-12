@@ -4,7 +4,9 @@
     "scripts": {
         "vendor": "node -e \"const fs=require('fs');fs.mkdirSync('assets/vendor/flowbite',{recursive:true});fs.copyFileSync('node_modules/flowbite/dist/flowbite.min.js','assets/vendor/flowbite/flowbite.min.js')\"",
         "dev": "npm run vendor && tailwindcss -i ./assets/src/theme.css -o ./assets/css/theme.css --watch",
-        "build": "npm run vendor && tailwindcss -i ./assets/src/theme.css -o ./assets/css/theme.css --minify"
+        "build": "npm run vendor && tailwindcss -i ./assets/src/theme.css -o ./assets/css/theme.css --minify",
+        "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1",
+        "package:minor": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1 -Minor"
     },
     "dependencies": {
         "flowbite": "^4.0.2"
