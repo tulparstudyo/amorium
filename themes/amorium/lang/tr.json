@@ -93,5 +93,15 @@
     "Success Color": "Başarı Rengi",
     "Form sent messages.": "Form gönderildi mesajları.",
     "Error Color": "Hata Rengi",
-    "Form errors and required field marks.": "Form hataları ve zorunlu alan işaretleri."
+    "Form errors and required field marks.": "Form hataları ve zorunlu alan işaretleri.",
+    "Site under maintenance": "Site bakımda",
+    "The Amorium theme needs the :plugin plugin. The plugin is disabled, so the site cannot be shown.": "Amorium teması :plugin eklentisine ihtiyaç duyar. Eklenti devre dışı olduğu için site gösterilemiyor.",
+    "The Amorium theme needs the :plugin plugin. The plugin is not installed, so the site cannot be shown.": "Amorium teması :plugin eklentisine ihtiyaç duyar. Eklenti kurulu olmadığı için site gösterilemiyor.",
+    "How to fix it": "Nasıl düzeltilir",
+    "Enable the plugin in the admin panel under Settings > Updates & Plugins. From the command line, enable it and delete the plugin cache file, which October rebuilds automatically:": "Eklentiyi yönetim panelinde Ayarlar > Güncellemeler ve Eklentiler bölümünden etkinleştirin. Komut satırından etkinleştirirseniz eklenti önbellek dosyasını da silin; October bu dosyayı otomatik olarak yeniden oluşturur:",
+    "Install the plugin from the October Marketplace, or run:": "Eklentiyi October Marketplace üzerinden kurun veya şu komutu çalıştırın:",
+    "Run the migrations and clear the cache:": "Migration'ları çalıştırın ve önbelleği temizleyin:",
+    "Reload this page.": "Bu sayfayı yenileyin.",
+    "Pages, posts, menus, sections, forms and business information are kept in the database and come back when the plugin is enabled. Only administrators see these instructions.": "Sayfalar, yazılar, menüler, bölümler, formlar ve işletme bilgileri veritabanında korunur ve eklenti etkinleştirildiğinde geri gelir. Bu talimatları yalnızca yöneticiler görür.",
+    "We are working on the site. Please try again shortly.": "Sitede çalışma yapıyoruz. Lütfen kısa bir süre sonra tekrar deneyin."
 }

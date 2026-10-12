@@ -48,5 +48,15 @@
     "Next": "Вперёд",
     "Recent Posts": "Последние записи",
     "Related Posts": "Похожие записи",
-    "Compare before and after": "Сравнить до и после"
+    "Compare before and after": "Сравнить до и после",
+    "Site under maintenance": "Сайт на обслуживании",
+    "The Amorium theme needs the :plugin plugin. The plugin is disabled, so the site cannot be shown.": "Теме Amorium нужен плагин :plugin. Плагин отключён, поэтому сайт не может быть показан.",
+    "The Amorium theme needs the :plugin plugin. The plugin is not installed, so the site cannot be shown.": "Теме Amorium нужен плагин :plugin. Плагин не установлен, поэтому сайт не может быть показан.",
+    "How to fix it": "Как исправить",
+    "Enable the plugin in the admin panel under Settings > Updates & Plugins. From the command line, enable it and delete the plugin cache file, which October rebuilds automatically:": "Включите плагин в панели управления в разделе Настройки > Обновления и плагины. Если включаете его из командной строки, удалите также файл кэша плагинов — October создаст его заново автоматически:",
+    "Install the plugin from the October Marketplace, or run:": "Установите плагин из October Marketplace или выполните:",
+    "Run the migrations and clear the cache:": "Выполните миграции и очистите кэш:",
+    "Reload this page.": "Обновите эту страницу.",
+    "Pages, posts, menus, sections, forms and business information are kept in the database and come back when the plugin is enabled. Only administrators see these instructions.": "Страницы, записи, меню, секции, формы и данные компании хранятся в базе данных и вернутся после включения плагина. Эти инструкции видят только администраторы.",
+    "We are working on the site. Please try again shortly.": "Мы работаем над сайтом. Пожалуйста, повторите попытку чуть позже."
 }

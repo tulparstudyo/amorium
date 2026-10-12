@@ -9,6 +9,23 @@ slug = "main-menu"
 [navigation footerNavigation]
 slug = "footer-menu"
 ==
+<?php
+function onStart()
+{
+    $plugins = \System\Classes\PluginManager::instance();
+    if ($plugins->exists('AmoriumCms.Amorium')) {
+        return;
+    }
+
+    $html = $this->controller->renderPartial('site/plugin-required', [
+        'isPluginInstalled' => (bool) $plugins->findByIdentifier('AmoriumCms.Amorium'),
+        'isBackendUser' => \Backend\Facades\BackendAuth::check(),
+    ]);
+
+    return \Response::make($html, 503, ['Retry-After' => 3600]);
+}
+?>
+==
 {% set brandName = business().business_name ?: this.theme.getConfigValue('name') %}
 {% set isRtl = this.site.hard_locale|slice(0, 2) in ['ar', 'fa', 'he', 'ur'] %}
 {% set settings = this.theme %}

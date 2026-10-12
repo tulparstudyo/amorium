@@ -1,0 +1,54 @@
+{# Rendered by the default layout when the AmoriumCms.Amorium plugin is missing or disabled, so only core Twig filters are used here. #}
+{% set brandName = this.theme.getConfigValue('name') %}
+{% set isRtl = this.site.hard_locale|slice(0, 2) in ['ar', 'fa', 'he', 'ur'] %}
+<!DOCTYPE html>
+<html lang="{{ this.site.hard_locale }}" dir="{{ isRtl ? 'rtl' : 'ltr' }}" class="light">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <title>{{ 'Site under maintenance'|_ }} | {{ brandName }}</title>
+        <link href="{{ 'assets/css/theme.css'|theme }}" rel="stylesheet" />
+    </head>
+    <body class="flex min-h-screen items-center justify-center bg-page px-4 py-16 font-body text-base text-body antialiased">
+        <main class="w-full max-w-2xl rounded-lg border border-line bg-surface p-8">
+            <p class="text-sm font-medium uppercase tracking-wide text-primary">{{ brandName }}</p>
+            <h1 class="mt-2 text-2xl font-semibold text-heading">{{ 'Site under maintenance'|_ }}</h1>
+
+            {% if isBackendUser %}
+                {% if isPluginInstalled %}
+                    <p class="mt-4">{{ 'The Amorium theme needs the :plugin plugin. The plugin is disabled, so the site cannot be shown.'|_({ plugin: 'AmoriumCms.Amorium' }) }}</p>
+                {% else %}
+                    <p class="mt-4">{{ 'The Amorium theme needs the :plugin plugin. The plugin is not installed, so the site cannot be shown.'|_({ plugin: 'AmoriumCms.Amorium' }) }}</p>
+                {% endif %}
+
+                <h2 class="mt-6 text-lg font-semibold text-heading">{{ 'How to fix it'|_ }}</h2>
+                <ol class="mt-3 list-decimal space-y-3 ps-5">
+                    {% if isPluginInstalled %}
+                        <li>
+                            {{ 'Enable the plugin in the admin panel under Settings > Updates & Plugins. From the command line, enable it and delete the plugin cache file, which October rebuilds automatically:'|_ }}
+                            <pre class="mt-2 overflow-x-auto rounded bg-page p-3 text-sm" dir="ltr">php artisan plugin:enable AmoriumCms.Amorium
+rm storage/cms/disabled.php</pre>
+                        </li>
+                    {% else %}
+                        <li>
+                            {{ 'Install the plugin from the October Marketplace, or run:'|_ }}
+                            <pre class="mt-2 overflow-x-auto rounded bg-page p-3 text-sm" dir="ltr">php artisan plugin:install AmoriumCms.Amorium --from=https://github.com/AmoriumCms/plugin.git</pre>
+                        </li>
+                    {% endif %}
+                    <li>
+                        {{ 'Run the migrations and clear the cache:'|_ }}
+                        <pre class="mt-2 overflow-x-auto rounded bg-page p-3 text-sm" dir="ltr">php artisan october:migrate
+php artisan tailor:migrate
+php artisan cache:clear</pre>
+                    </li>
+                    <li>{{ 'Reload this page.'|_ }}</li>
+                </ol>
+
+                <p class="mt-6 text-sm text-muted">{{ 'Pages, posts, menus, sections, forms and business information are kept in the database and come back when the plugin is enabled. Only administrators see these instructions.'|_ }}</p>
+            {% else %}
+                <p class="mt-4">{{ 'We are working on the site. Please try again shortly.'|_ }}</p>
+            {% endif %}
+        </main>
+    </body>
+</html>

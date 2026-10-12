@@ -48,5 +48,15 @@
     "Next": "التالي",
     "Recent Posts": "المقالات الأخيرة",
     "Related Posts": "مقالات ذات صلة",
-    "Compare before and after": "قارن بين قبل وبعد"
+    "Compare before and after": "قارن بين قبل وبعد",
+    "Site under maintenance": "الموقع قيد الصيانة",
+    "The Amorium theme needs the :plugin plugin. The plugin is disabled, so the site cannot be shown.": "يحتاج قالب Amorium إلى الإضافة :plugin. الإضافة معطلة، لذلك لا يمكن عرض الموقع.",
+    "The Amorium theme needs the :plugin plugin. The plugin is not installed, so the site cannot be shown.": "يحتاج قالب Amorium إلى الإضافة :plugin. الإضافة غير مثبتة، لذلك لا يمكن عرض الموقع.",
+    "How to fix it": "طريقة الإصلاح",
+    "Enable the plugin in the admin panel under Settings > Updates & Plugins. From the command line, enable it and delete the plugin cache file, which October rebuilds automatically:": "فعّل الإضافة من لوحة التحكم في الإعدادات > التحديثات والإضافات. إذا فعّلتها من سطر الأوامر فاحذف أيضًا ملف ذاكرة الإضافات المؤقتة، وسيعيد October إنشاءه تلقائيًا:",
+    "Install the plugin from the October Marketplace, or run:": "ثبّت الإضافة من October Marketplace، أو نفّذ:",
+    "Run the migrations and clear the cache:": "نفّذ الترحيلات وامسح ذاكرة التخزين المؤقت:",
+    "Reload this page.": "أعد تحميل هذه الصفحة.",
+    "Pages, posts, menus, sections, forms and business information are kept in the database and come back when the plugin is enabled. Only administrators see these instructions.": "تبقى الصفحات والمقالات والقوائم والأقسام والنماذج ومعلومات النشاط التجاري محفوظة في قاعدة البيانات وتعود عند تفعيل الإضافة. يرى المسؤولون فقط هذه التعليمات.",
+    "We are working on the site. Please try again shortly.": "نعمل على الموقع حاليًا. يرجى المحاولة مرة أخرى بعد قليل."
 }
