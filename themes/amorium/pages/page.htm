@@ -8,10 +8,24 @@ handle = "Amorium\Page"
 identifier = "fullslug"
 isDefault = 1
 ==
+use AmoriumCms\Amorium\Classes\Posts;
+
 function onStart()
 {
     if ($this->param('fullslug') === 'home-page') {
         return redirect($this->controller->pageUrl('index'));
+    }
+}
+
+function onEnd()
+{
+    if ($this['section']->getRecord()) {
+        return;
+    }
+
+    if ($page = Posts::resolveDetail($this->param('fullslug'))) {
+        $this['section'] = $page;
+        $this['post'] = Posts::current();
     }
 }
 ==
@@ -19,8 +33,13 @@ function onStart()
     {% do abort(404) %}
 {% endif %}
 
-{% put metaTitle %}{{ section.meta_title ?: section.title }}{% endput %}
-{% put metaDescription %}{{ section.meta_description }}{% endput %}
+{% if post %}
+    {% put metaTitle %}{{ post.meta_title ?: post.title }}{% endput %}
+    {% put metaDescription %}{{ post.meta_description ?: post.excerpt }}{% endput %}
+{% else %}
+    {% put metaTitle %}{{ section.meta_title ?: section.title }}{% endput %}
+    {% put metaDescription %}{{ section.meta_description }}{% endput %}
+{% endif %}
 
 {% set sectionCounts = {} %}
 {% for item in section.sections %}

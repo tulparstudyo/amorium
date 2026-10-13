@@ -94,6 +94,12 @@ class Plugin extends PluginBase
             ],
             'functions' => [
                 'selectedPosts' => [\AmoriumCms\Amorium\Classes\Posts::class, 'selected'],
+                'postList' => [\AmoriumCms\Amorium\Classes\Posts::class, 'paginate'],
+                'currentPost' => [\AmoriumCms\Amorium\Classes\Posts::class, 'current'],
+                'recentPosts' => [\AmoriumCms\Amorium\Classes\Posts::class, 'recent'],
+                'relatedPosts' => [\AmoriumCms\Amorium\Classes\Posts::class, 'related'],
+                'postUrl' => [\AmoriumCms\Amorium\Classes\Posts::class, 'url'],
+                'postListUrl' => [\AmoriumCms\Amorium\Classes\Posts::class, 'listUrl'],
                 'business' => [BusinessSetting::class, 'instance'],
                 'amoriumForm' => [\AmoriumCms\Amorium\Classes\FormDefinition::class, 'make'],
             ],
