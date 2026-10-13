@@ -1,0 +1,69 @@
+##
+title = "My Profile"
+url = "/account/profile"
+layout = "default"
+
+[session]
+security = "user"
+redirect = "account/login"
+
+[account]
+isDefault = 1
+
+[resetPassword]
+==
+<section class="relative py-16 md:py-24">
+    <div class="container">
+        <div class="mx-auto max-w-2xl space-y-8">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="{{ user.getAvatarThumb(64) }}" alt="" class="size-16 rounded-full object-cover" />
+                    <div>
+                        <h1 class="text-2xl font-medium">{{ user.full_name ?: user.email }}</h1>
+                        <p class="text-muted">{{ user.email }}</p>
+                    </div>
+                </div>
+                <button type="button" class="text-danger" data-request="onLogout" data-request-data="redirect: '{{ 'account/login'|page }}'">{{ 'Sign out'|_ }}</button>
+            </div>
+
+            {% if not user.hasVerifiedEmail %}
+                <div class="rounded-md border border-line p-6 dark:border-night-line">
+                    <p class="mb-4">{{ 'Your email address has not been verified.'|_ }}</p>
+                    <button type="button" class="text-primary" data-request="onVerifyEmail" data-request-flash data-attach-loading>{{ 'Send verification email'|_ }}</button>
+                </div>
+            {% endif %}
+
+            <form class="rounded-md bg-surface p-6 shadow dark:bg-night-surface md:p-8" data-request="onUpdateProfile" data-request-flash data-request-validate data-request-files>
+                <h2 class="mb-6 text-xl font-medium">{{ 'Profile information'|_ }}</h2>
+
+                {% partial 'account/field' name='first_name' label='First name' value=user.first_name autocomplete='given-name' %}
+                {% partial 'account/field' name='last_name' label='Last name' value=user.last_name autocomplete='family-name' %}
+                {% partial 'account/field' name='email' type='email' label='Email address' value=user.email autocomplete='email' %}
+
+                <div class="mb-6">
+                    <label for="avatar" class="mb-2 block font-medium text-heading dark:text-night-heading">{{ 'Avatar'|_ }}</label>
+                    <input id="avatar" name="avatar" type="file" accept="image/*" class="block w-full text-muted" />
+                    <p class="mt-1 text-sm text-danger" data-validate-for="avatar"></p>
+                    {% if user.avatar %}
+                        <label class="mt-2 flex items-center gap-2">
+                            <input type="checkbox" name="remove_avatar" value="1" class="accent-primary" />
+                            {{ 'Remove avatar'|_ }}
+                        </label>
+                    {% endif %}
+                </div>
+
+                {% partial 'account/button' label='Save changes' %}
+            </form>
+
+            <form class="rounded-md bg-surface p-6 shadow dark:bg-night-surface md:p-8" data-request="onChangePassword" data-request-flash data-request-validate data-request-success="this.reset()">
+                <h2 class="mb-6 text-xl font-medium">{{ 'Change password'|_ }}</h2>
+
+                {% partial 'account/field' name='current_password' type='password' label='Current password' autocomplete='current-password' %}
+                {% partial 'account/field' name='password' id='new_password' type='password' label='New password' autocomplete='new-password' %}
+                {% partial 'account/field' name='password_confirmation' type='password' label='Confirm password' autocomplete='new-password' %}
+
+                {% partial 'account/button' label='Update password' %}
+            </form>
+        </div>
+    </div>
+</section>

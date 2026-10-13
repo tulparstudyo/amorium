@@ -1,0 +1,30 @@
+{% if awaitingActivation or awaitingApproval %}
+    <h1 class="mb-4 text-center text-2xl font-medium">{{ 'Thank you'|_ }}</h1>
+    {% if awaitingActivation %}
+        <p class="text-center text-muted">{{ 'Please check your email to confirm your address.'|_ }}</p>
+    {% endif %}
+    {% if awaitingApproval %}
+        <p class="text-center text-muted">{{ 'Your account is awaiting approval from an administrator.'|_ }}</p>
+    {% endif %}
+{% elseif registration.canRegister %}
+    <form data-request="onRegister" data-request-flash data-request-validate data-request-update="{ 'account/register-form': '#registerForm' }">
+        <input type="hidden" name="redirect" value="true" />
+        <h1 class="mb-6 text-center text-2xl font-medium">{{ 'Create a new account'|_ }}</h1>
+
+        {% partial 'account/field' name='first_name' label='First name' autocomplete='given-name' %}
+        {% partial 'account/field' name='last_name' label='Last name' autocomplete='family-name' %}
+        {% partial 'account/field' name='email' type='email' label='Email address' autocomplete='email' %}
+        {% partial 'account/field' name='password' type='password' label='Password' autocomplete='new-password' %}
+        {% partial 'account/field' name='password_confirmation' type='password' label='Confirm password' autocomplete='new-password' %}
+
+        {% partial 'account/button' label='Create account' block=true %}
+    </form>
+{% else %}
+    <h1 class="mb-4 text-center text-2xl font-medium">{{ 'Create a new account'|_ }}</h1>
+    <p class="text-center text-muted">{{ 'Registrations are currently disabled'|_ }}</p>
+{% endif %}
+
+<p class="mt-6 text-center text-muted">
+    {{ 'Already have an account?'|_ }}
+    <a href="{{ 'account/login'|page }}" class="text-primary">{{ 'Sign in here'|_ }}</a>
+</p>

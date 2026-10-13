@@ -1,0 +1,45 @@
+##
+title = "Reset Password"
+url = "/account/reset"
+layout = "default"
+
+[resetPassword]
+isDefault = 1
+==
+{% if resetPassword.hasInvite %}
+    {% set passwordHandler = 'onConfirmPassword' %}
+    {% set redirectPage = 'account/profile' %}
+    {% set heading = 'Set your password' %}
+{% elseif resetPassword.hasToken %}
+    {% set passwordHandler = 'onResetPassword' %}
+    {% set redirectPage = 'account/login' %}
+    {% set heading = 'Reset password' %}
+{% endif %}
+
+<section class="relative py-16 md:py-24">
+    <div class="container">
+        <div class="mx-auto max-w-md rounded-md bg-surface p-6 shadow dark:bg-night-surface md:p-8">
+            {% if passwordHandler %}
+                <form data-request="{{ passwordHandler }}" data-request-flash data-request-validate>
+                    <input type="hidden" name="redirect" value="{{ redirectPage|page }}" />
+                    <input type="hidden" name="token" value="{{ resetPassword.token }}" />
+                    <input type="hidden" name="email" value="{{ resetPassword.email }}" />
+
+                    <h1 class="mb-6 text-center text-2xl font-medium">{{ heading|_ }}</h1>
+
+                    {% partial 'account/field' name='password' type='password' label='New password' autocomplete='new-password' %}
+                    {% partial 'account/field' name='password_confirmation' type='password' label='Confirm password' autocomplete='new-password' %}
+                    <p class="-mt-2 mb-4 text-sm text-danger" data-validate-for="token"></p>
+
+                    {% partial 'account/button' label='Save password' block=true %}
+                </form>
+            {% else %}
+                <h1 class="mb-4 text-center text-2xl font-medium">{{ 'Reset password'|_ }}</h1>
+                <p class="text-center text-muted">{{ 'This password reset link is invalid or has expired.'|_ }}</p>
+                <p class="mt-6 text-center">
+                    <a href="{{ 'account/login'|page }}" class="text-primary">{{ 'Back to sign in'|_ }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</section>

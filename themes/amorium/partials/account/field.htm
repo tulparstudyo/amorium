@@ -1,0 +1,13 @@
+{% set fieldId = id ?: name %}
+<div class="mb-4">
+    <label for="{{ fieldId }}" class="mb-2 block font-medium text-heading dark:text-night-heading">{{ label|_ }}</label>
+    <input
+        id="{{ fieldId }}"
+        name="{{ name }}"
+        type="{{ type ?: 'text' }}"
+        value="{{ value }}"
+        {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+        class="w-full rounded-md border border-line bg-page px-3 py-2 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body"
+    />
+    <p class="mt-1 text-sm text-danger" data-validate-for="{{ name }}"></p>
+</div>

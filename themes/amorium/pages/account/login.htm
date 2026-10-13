@@ -1,0 +1,68 @@
+##
+title = "Sign In"
+url = "/account/login"
+layout = "default"
+
+[session]
+security = "guest"
+redirect = "account/profile"
+
+[authentication]
+rememberMe = "ask"
+twoFactorAuth = 1
+recoverPassword = 1
+redirect = "account/profile"
+==
+<section class="relative py-16 md:py-24">
+    <div class="container">
+        <div class="mx-auto max-w-md rounded-md bg-surface p-6 shadow dark:bg-night-surface md:p-8">
+            {% if authentication.showTwoFactorChallenge %}
+                <form data-request="onTwoFactorChallenge" data-request-flash data-request-validate>
+                    <input type="hidden" name="redirect" value="true" />
+                    <h1 class="mb-6 text-center text-2xl font-medium">{{ 'Two-factor authentication'|_ }}</h1>
+                    {% partial 'account/field' name='code' label='Authentication code' autocomplete='one-time-code' %}
+                    {% partial 'account/field' name='recovery_code' label='Or use a recovery code' autocomplete='off' %}
+                    {% partial 'account/button' label='Confirm' block=true %}
+                </form>
+            {% else %}
+                <form data-request="onLogin" data-request-flash data-request-validate>
+                    <input type="hidden" name="redirect" value="true" />
+                    <h1 class="mb-6 text-center text-2xl font-medium">{{ 'Sign in to your account'|_ }}</h1>
+
+                    {% if authentication.showUsernameField %}
+                        {% partial 'account/field' name='username' label='Username' autocomplete='username' %}
+                    {% else %}
+                        {% partial 'account/field' name='email' type='email' label='Email address' autocomplete='email' %}
+                    {% endif %}
+                    {% partial 'account/field' name='password' type='password' label='Password' autocomplete='current-password' %}
+
+                    {% if authentication.showRememberMe %}
+                        <label class="mb-4 flex items-center gap-2">
+                            <input name="remember" type="checkbox" value="1" checked class="accent-primary" />
+                            {{ 'Remember me'|_ }}
+                        </label>
+                    {% endif %}
+
+                    {% partial 'account/button' label='Sign in' block=true %}
+                </form>
+
+                {% if authentication.usePasswordRecovery %}
+                    <details class="mt-6">
+                        <summary class="cursor-pointer text-primary">{{ 'Forgot your password?'|_ }}</summary>
+                        <form class="mt-4" data-request="onRecoverPassword" data-request-flash data-request-validate>
+                            {% partial 'account/field' id='recover_email' name='email' type='email' label='Email address' autocomplete='email' %}
+                            {% partial 'account/button' label='Send reset link' block=true %}
+                        </form>
+                    </details>
+                {% endif %}
+
+                {% if authentication.canRegister %}
+                    <p class="mt-6 text-center text-muted">
+                        {{ 'New user?'|_ }}
+                        <a href="{{ 'account/register'|page }}" class="text-primary">{{ 'Create a new account'|_ }}</a>
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</section>

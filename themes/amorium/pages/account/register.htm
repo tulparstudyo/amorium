@@ -1,0 +1,19 @@
+##
+title = "Create Account"
+url = "/account/register"
+layout = "default"
+
+[session]
+security = "guest"
+redirect = "account/profile"
+
+[registration]
+redirect = "account/profile"
+==
+<section class="relative py-16 md:py-24">
+    <div class="container">
+        <div id="registerForm" class="mx-auto max-w-md rounded-md bg-surface p-6 shadow dark:bg-night-surface md:p-8">
+            {% partial 'account/register-form' %}
+        </div>
+    </div>
+</section>
