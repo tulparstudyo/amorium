@@ -7,3 +7,4 @@ code: amorium
 form: config/fields.yaml
 require:
     - AmoriumCms.Amorium
+    - RainLab.User

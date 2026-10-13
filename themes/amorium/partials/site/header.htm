@@ -15,7 +15,33 @@
 
         <div class="nav-icons flex items-center lg_992:order-2 ms-auto">
             {% partial 'site/site-picker' %}
-            <a href="#contact" class="ms-3 hidden rounded-md border border-primary bg-primary px-5 py-2 text-center align-middle text-base font-normal tracking-wide text-white duration-500 hover:border-primary-dark hover:bg-primary-dark lg_992:inline-block">{{ 'Get in Touch'|_ }}</a>
+            {% set buttonClass = 'rounded-md border border-primary bg-primary px-5 py-2 text-center align-middle text-base font-normal tracking-wide text-white duration-500 hover:border-primary-dark hover:bg-primary-dark' %}
+            {% if user %}
+                <div class="relative ms-3 hidden lg_992:block" data-dropdown>
+                    <button type="button" class="{{ buttonClass }} inline-flex items-center gap-1.5" aria-haspopup="true" aria-expanded="false" data-dropdown-toggle>
+                        <i class="ri-user-line" aria-hidden="true"></i>
+                        <span class="max-w-40 truncate">{{ user.first_name ?: user.email }}</span>
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+
+                    <ul class="absolute end-0 top-full z-50 mt-2 hidden min-w-44 rounded-md bg-page p-2 shadow-lg dark:bg-night-page" data-dropdown-menu>
+                        <li>
+                            <a href="{{ 'account/profile'|page }}" class="flex items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap text-body duration-300 hover:bg-surface hover:text-primary dark:text-night-muted dark:hover:bg-night-surface">
+                                <i class="ri-user-settings-line" aria-hidden="true"></i> {{ 'My Profile'|_ }}
+                            </a>
+                        </li>
+                        <li>
+                            <button type="button" data-request="onLogout" data-request-data="redirect: '{{ 'index'|page }}'" class="flex w-full items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap text-body duration-300 hover:bg-surface hover:text-primary dark:text-night-muted dark:hover:bg-night-surface">
+                                <i class="ri-logout-box-r-line" aria-hidden="true"></i> {{ 'Sign out'|_ }}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <a href="{{ 'account/login'|page }}" class="{{ buttonClass }} ms-3 hidden lg_992:inline-block">{{ 'Sign in'|_ }}</a>
+            {% endif %}
             <button data-collapse="menu-collapse" type="button" class="collapse-btn group ms-3 inline-flex size-6 items-center justify-center text-body lg_992:hidden dark:text-night-body" aria-controls="menu-collapse" aria-expanded="false">
                 <span class="sr-only">{{ 'Open menu'|_ }}</span>
                 <span class="relative block h-3.5 w-5" aria-hidden="true">
