@@ -1,0 +1,15 @@
+# ===================================
+#  Relation Behavior Config
+# ===================================
+
+activity_log:
+    label: User Log
+    emptyMessage: User has no activity to show
+    list: $/rainlab/user/models/userlog/columns.yaml
+    readOnly: true
+    view:
+        customViewPath: $/rainlab/user/views/partials/timeline
+        showSorting: false
+        defaultSort:
+            column: created_at
+            direction: desc

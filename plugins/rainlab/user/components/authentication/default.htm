@@ -1,0 +1,219 @@
+{% if __SELF__.showLoginForm %}
+    <div class="collapse show login-collapse">
+        <form method="post" data-request="onLogin" data-request-flash>
+            <input type="hidden" name="redirect" value="true" />
+
+            <div class="text-center pb-3">
+                <h1 class="h2 mb-3">{{ 'Sign in to your account'|_ }}</h1>
+                <h2 class="h5 fw-normal">{{ 'Enter your email address and password'|_ }}</h2>
+            </div>
+
+            {% if __SELF__.showUsernameField %}
+                <div class="form-floating my-3">
+                    <input
+                        name="username"
+                        type="text"
+                        class="form-control"
+                        id="inputUsername"
+                    />
+                    <label for="inputEmail">{{ 'Username'|_ }}</label>
+                </div>
+            {% else %}
+                <div class="form-floating my-3">
+                    <input
+                        name="email"
+                        type="email"
+                        class="form-control"
+                        id="inputEmail"
+                        placeholder="name@example.com"
+                        oninput="document.getElementById('inputRecoverEmail').value = this.value"
+                    />
+                    <label for="inputEmail">{{ 'Email address'|_ }}</label>
+                </div>
+            {% endif %}
+
+            <div class="form-floating my-3">
+                <input
+                    name="password"
+                    type="password"
+                    class="form-control"
+                    id="inputPassword"
+                    placeholder="Password"
+                />
+                <label for="inputPassword">{{ 'Password'|_ }}</label>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100 py-2"
+                data-attach-loading
+                type="submit">
+                Sign in
+            </button>
+
+            {% if __SELF__.showRememberMe %}
+                <div class="text-center my-3">
+                    <div class="form-check form-check-inline">
+                        <input
+                            name="remember"
+                            type="checkbox"
+                            class="form-check-input"
+                            id="inputRemember"
+                            checked
+                        />
+                        <label class="form-check-label" for="inputRemember">
+                            {{ 'Remember me'|_ }}
+                        </label>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+
+        <div class="text-center">
+            {% if __SELF__.canRegister %}
+                <p class="mt-5 mb-1 text-body-secondary">
+                    {{ 'New user'|_ }}?
+                    <a href="{{ 'account/register'|page }}">
+                        {{ 'Create a new account'|_ }}
+                    </a>
+                </p>
+            {% endif %}
+
+            {% if __SELF__.usePasswordRecovery %}
+                <p class="mt-1 mb-3 text-body-secondary">
+                    Lost password?
+                    <a
+                        href="javascript:;"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".login-collapse">
+                        {{ 'Recover password'|_ }}
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% if __SELF__.usePasswordRecovery %}
+    <div class="collapse login-collapse">
+        <form method="post" data-request="onRecoverPassword" data-request-flash>
+            <input type="hidden" name="redirect" value="true" />
+
+            <div class="text-center pb-3">
+                <h1 class="h2 mb-3">{{ 'Recover password'|_ }}</h1>
+                <h2 class="h5 fw-normal">{{ 'Enter your email address'|_ }}</h2>
+            </div>
+
+            <div class="form-floating my-3">
+                <input
+                    name="email"
+                    type="email"
+                    class="form-control"
+                    id="inputRecoverEmail"
+                    placeholder="name@example.com"
+                />
+                <label for="inputRecoverEmail">{{ 'Email address'|_ }}</label>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100 py-2"
+                data-attach-loading
+                type="submit">
+                {{ 'Recover'|_ }}
+            </button>
+        </form>
+
+        <div class="text-center">
+            <p class="mt-5 mb-3 text-body-secondary">
+                {{ 'Remembered your password?'|_ }}
+                <a
+                    href="javascript:;"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".login-collapse">
+                    {{ 'Sign in again'|_ }}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endif %}
+
+{% if __SELF__.showTwoFactorChallenge %}
+    <div class="collapse show two-factor-collapse">
+        <form method="post" data-request="onTwoFactorChallenge" data-request-flash>
+            <input type="hidden" name="redirect" value="true" />
+
+            <div class="text-center pb-2">
+                <h1 class="h2 mb-3">{{ 'Enter the code found in your authenticator app'|_ }}</h1>
+            </div>
+
+            <div class="form-floating my-3">
+                <input
+                    name="code"
+                    type="text"
+                    class="form-control"
+                    id="inputTwoFactorCode"
+                    placeholder="name@example.com"
+                />
+                <label for="inputTwoFactorCode">{{ 'Authentication code'|_ }}</label>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100 py-2"
+                data-attach-loading
+                type="submit">
+                {{ 'Confirm'|_ }}
+            </button>
+        </form>
+
+        <div class="text-center">
+            <p class="mt-5 mb-3 text-body-secondary">
+                {{ 'Lost device'|_ }}?
+                <a
+                    href="javascript:;"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".two-factor-collapse">
+                    {{ 'Use a recovery code'|_ }}
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="collapse two-factor-collapse">
+        <form method="post" data-request="onTwoFactorChallenge" data-request-flash>
+            <input type="hidden" name="redirect" value="true" />
+
+            <div class="text-center pb-2">
+                <h1 class="h2 mb-3">{{ 'Enter one of your emergency recovery codes'|_ }}</h1>
+            </div>
+
+            <div class="form-floating my-3">
+                <input
+                    name="recovery_code"
+                    type="text"
+                    class="form-control"
+                    id="inputTwoFactorRecoveryCode"
+                    placeholder="name@example.com"
+                />
+                <label for="inputTwoFactorRecoveryCode">{{ 'Recovery code'|_ }}</label>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100 py-2"
+                data-attach-loading
+                type="submit">
+                {{ 'Confirm'|_ }}
+            </button>
+        </form>
+
+        <div class="text-center">
+            <p class="mt-5 mb-3 text-body-secondary">
+                {{ 'Found device'|_ }}?
+                <a
+                    href="javascript:;"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".two-factor-collapse">
+                    {{ 'Use an authentication code'|_ }}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endif %}

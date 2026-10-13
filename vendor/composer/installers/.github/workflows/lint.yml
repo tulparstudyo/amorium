@@ -4,9 +4,6 @@ on:
   - push
   - pull_request
 
-permissions:
-  contents: read
-
 jobs:
   tests:
     name: "Lint"
@@ -16,8 +13,8 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.2"
-          - "latest"
+          - "5.3"
+          - "8.0"
 
     steps:
       - name: "Checkout"
