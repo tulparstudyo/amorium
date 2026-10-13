@@ -177,6 +177,8 @@ class DemoContent
 
         static::installMedia();
 
+        PageSlugs::sync();
+
         Parameter::set(static::INSTALLED_PARAMETER, now()->toDateTimeString());
 
         Site::resetCache();

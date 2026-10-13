@@ -16,6 +16,7 @@ use AmoriumCms\Amorium\Classes\EntriesExtension;
 use AmoriumCms\Amorium\Classes\EntryCreateGuard;
 use AmoriumCms\Amorium\Classes\EntrySiteSync;
 use AmoriumCms\Amorium\Classes\EntryTranslator;
+use AmoriumCms\Amorium\Classes\PageSlugs;
 use AmoriumCms\Amorium\Classes\PrimaryCopy;
 use AmoriumCms\Amorium\Classes\SectionClassExporter;
 use AmoriumCms\Amorium\Classes\SitesExtension;
@@ -47,6 +48,7 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('amorium.sections-save-base', \AmoriumCms\Amorium\Console\SaveBaseSections::class);
         $this->registerConsoleCommand('amorium.demo-export', \AmoriumCms\Amorium\Console\DemoExport::class);
         $this->registerConsoleCommand('amorium.demo-install', \AmoriumCms\Amorium\Console\DemoInstall::class);
+        $this->registerConsoleCommand('amorium.pages-sync-slugs', \AmoriumCms\Amorium\Console\SyncPageSlugs::class);
     }
 
     public function boot()
@@ -182,6 +184,7 @@ class Plugin extends PluginBase
         EntriesExtension::boot();
         EntryCreateGuard::boot();
         EntrySiteSync::boot();
+        PageSlugs::boot();
         PrimaryCopy::boot();
 
         EntryRecord::extend(function ($model) {
