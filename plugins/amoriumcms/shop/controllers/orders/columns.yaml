@@ -1,0 +1,44 @@
+columns:
+    number:
+        label: Order
+        searchable: true
+
+    customer:
+        label: Customer
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_order_customer.php
+        sortable: false
+
+    site:
+        label: Site
+        relation: site
+        select: name
+        valueTrans: false
+
+    status:
+        label: Status
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_status.php
+
+    payment_status:
+        label: Payment
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_payment.php
+
+    items:
+        label: Products
+        relation: items
+        useRelationCount: true
+        align: right
+        width: 90px
+
+    grand_total:
+        label: Total
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_money.php
+        align: right
+
+    placed_at:
+        label: Date
+        type: datetime
+        width: 160px

@@ -1,0 +1,12 @@
+scopes:
+    status:
+        label: Status
+        type: group
+        optionsMethod: getStatusFilterOptions
+        conditions: status in (:value)
+
+    rating:
+        label: Rating
+        type: group
+        optionsMethod: getRatingFilterOptions
+        conditions: rating in (:value)

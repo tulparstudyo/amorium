@@ -1,0 +1,16 @@
+title: Categories
+list: $/amoriumcms/shop/controllers/categories/columns.yaml
+modelClass: AmoriumCms\Shop\Models\Category
+recordOnClick: "location.hash = '#/:id'"
+noRecordsMessage: No records found.
+recordsPerPage: false
+showSorting: false
+showSetup: true
+
+structure:
+    showTree: true
+    treeExpanded: true
+    showReorder: false
+
+toolbar:
+    buttons: list_toolbar

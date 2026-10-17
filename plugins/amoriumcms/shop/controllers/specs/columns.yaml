@@ -1,0 +1,36 @@
+columns:
+    name:
+        label: Name
+        searchable: true
+        valueTrans: false
+
+    code:
+        label: Code
+        searchable: true
+
+    type:
+        label: Type
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_spec_type.php
+
+    options:
+        label: Options
+        relation: options
+        useRelationCount: true
+        align: right
+        width: 90px
+
+    is_variant:
+        label: Variant
+        type: switch
+        width: 90px
+
+    is_filterable:
+        label: Filter
+        type: switch
+        width: 90px
+
+    sort_order:
+        label: Sort order
+        align: right
+        width: 90px

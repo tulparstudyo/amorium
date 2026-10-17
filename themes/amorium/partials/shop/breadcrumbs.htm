@@ -1,0 +1,15 @@
+<nav class="mb-4 text-sm" aria-label="{{ 'Breadcrumb'|_ }}">
+    <ol class="flex flex-wrap items-center gap-1 text-muted">
+        <li><a href="{{ 'shop/index'|page }}" class="duration-300 hover:text-primary">{{ 'Shop'|_ }}</a></li>
+        {% for crumb in items %}
+            <li aria-hidden="true"><i class="ri-arrow-right-s-line"></i></li>
+            <li>
+                {% if crumb.url %}
+                    <a href="{{ crumb.url }}" class="duration-300 hover:text-primary">{{ crumb.name }}</a>
+                {% else %}
+                    <span class="text-body dark:text-night-body" aria-current="page">{{ crumb.name }}</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+</nav>

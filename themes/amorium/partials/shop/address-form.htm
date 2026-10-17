@@ -1,0 +1,67 @@
+{#
+    Address fields read by shop.js through data-field. Errors are shown in data-shop-error="{prefix}.{field}".
+    Variables: prefix, billing (shows the company fields), withType (address book: type, title and default)
+#}
+{% set inputClass = 'w-full rounded-md border border-line bg-page px-3 py-2 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body' %}
+{% set errorPrefix = prefix ? prefix ~ '.' : '' %}
+{% set fields = [
+    { name: 'first_name', label: 'First name', autocomplete: 'given-name', required: true },
+    { name: 'last_name', label: 'Last name', autocomplete: 'family-name', required: true },
+    { name: 'phone', label: 'Phone', autocomplete: 'tel', type: 'tel', required: true },
+    { name: 'city', label: 'City', autocomplete: 'address-level1', required: true },
+    { name: 'district', label: 'District', autocomplete: 'address-level2' },
+    { name: 'postal_code', label: 'Postal code', autocomplete: 'postal-code' },
+    { name: 'address_line', label: 'Address', autocomplete: 'street-address', wide: true, required: true }
+] %}
+<div class="grid gap-4 sm:grid-cols-2" data-shop-address-fields="{{ prefix }}">
+    {% if withType %}
+        <label class="block">
+            <span class="mb-1 block text-sm font-medium">{{ 'Address type'|_ }}</span>
+            <select data-field="type" class="{{ inputClass }}">
+                <option value="shipping">{{ 'Shipping address'|_ }}</option>
+                <option value="billing">{{ 'Billing address'|_ }}</option>
+            </select>
+        </label>
+        <label class="block">
+            <span class="mb-1 block text-sm font-medium">{{ 'Address title'|_ }}</span>
+            <input type="text" data-field="title" maxlength="255" placeholder="{{ 'Home, Work…'|_ }}" class="{{ inputClass }}" />
+            <span class="mt-1 block text-sm text-danger" data-shop-error="{{ errorPrefix }}title"></span>
+        </label>
+    {% endif %}
+
+    {% for field in fields %}
+        <label class="block {{ field.wide ? 'sm:col-span-2' : '' }}">
+            <span class="mb-1 block text-sm font-medium">{{ field.label|_ }}{% if field.required %} <span class="text-danger">*</span>{% endif %}</span>
+            {% if field.wide %}
+                <textarea data-field="{{ field.name }}" rows="2" autocomplete="{{ field.autocomplete }}" class="{{ inputClass }}"></textarea>
+            {% else %}
+                <input type="{{ field.type ?: 'text' }}" data-field="{{ field.name }}" autocomplete="{{ field.autocomplete }}" class="{{ inputClass }}" />
+            {% endif %}
+            <span class="mt-1 block text-sm text-danger" data-shop-error="{{ errorPrefix }}{{ field.name }}"></span>
+        </label>
+    {% endfor %}
+
+    {% if billing or withType %}
+        <div class="grid gap-4 sm:col-span-2 sm:grid-cols-3 {{ withType ? 'hidden' : '' }}" data-shop-billing-fields>
+            <p class="text-sm text-muted sm:col-span-3">{{ 'Fill in for a corporate invoice.'|_ }}</p>
+            {% for field in [
+                { name: 'company_name', label: 'Company name' },
+                { name: 'tax_number', label: 'Tax number' },
+                { name: 'tax_office', label: 'Tax office' }
+            ] %}
+                <label class="block">
+                    <span class="mb-1 block text-sm font-medium">{{ field.label|_ }}</span>
+                    <input type="text" data-field="{{ field.name }}" class="{{ inputClass }}" />
+                    <span class="mt-1 block text-sm text-danger" data-shop-error="{{ errorPrefix }}{{ field.name }}"></span>
+                </label>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if withType %}
+        <label class="flex items-center gap-2 sm:col-span-2">
+            <input type="checkbox" data-field="is_default" class="accent-primary" />
+            {{ 'Use as my default address'|_ }}
+        </label>
+    {% endif %}
+</div>

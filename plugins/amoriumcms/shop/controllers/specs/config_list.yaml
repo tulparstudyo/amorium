@@ -1,0 +1,15 @@
+title: Specs
+list: $/amoriumcms/shop/controllers/specs/columns.yaml
+modelClass: AmoriumCms\Shop\Models\Spec
+recordOnClick: "location.hash = '#/:id'"
+noRecordsMessage: No records found.
+recordsPerPage: 50
+showSetup: true
+defaultSort:
+    column: sort_order
+    direction: asc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Search

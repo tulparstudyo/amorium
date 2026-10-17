@@ -15,6 +15,9 @@
 
         <div class="nav-icons flex items-center lg_992:order-2 ms-auto">
             {% partial 'site/site-picker' %}
+            {% if shopConfig %}
+                {% partial 'shop/header-cart' %}
+            {% endif %}
             {% set buttonClass = 'rounded-md border border-primary bg-primary px-5 py-2 text-center align-middle text-base font-normal tracking-wide text-white duration-500 hover:border-primary-dark hover:bg-primary-dark' %}
             {% if user %}
                 <div class="relative ms-3 hidden lg_992:block" data-dropdown>
@@ -32,6 +35,9 @@
                                 <i class="ri-user-settings-line" aria-hidden="true"></i> {{ 'My Profile'|_ }}
                             </a>
                         </li>
+                        {% if shopConfig %}
+                            {% partial 'shop/account-links' %}
+                        {% endif %}
                         <li>
                             <button type="button" data-request="onLogout" data-request-data="redirect: '{{ 'index'|page }}'" class="flex w-full items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap text-body duration-300 hover:bg-surface hover:text-primary dark:text-night-muted dark:hover:bg-night-surface">
                                 <i class="ri-logout-box-r-line" aria-hidden="true"></i> {{ 'Sign out'|_ }}

@@ -1,0 +1,19 @@
+##
+title = "Order"
+url = "/shop/order/:number"
+layout = "default"
+==
+{% if not shopConfig %}
+    {% do abort(404) %}
+{% endif %}
+
+<section class="relative py-12 md:py-16" data-shop-page="order" data-number="{{ this.param.number }}">
+    <div class="container">
+        {% if user %}
+            {% partial 'shop/account-nav' %}
+        {% endif %}
+        <div data-shop-order>
+            {% partial 'shop/loading' %}
+        </div>
+    </div>
+</section>

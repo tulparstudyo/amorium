@@ -1,0 +1,19 @@
+scopes:
+    brand:
+        label: Brand
+        type: group
+        optionsMethod: getBrandFilterOptions
+        conditions: amoriumcms_shop_product_groups.brand_id in (:value)
+
+    category:
+        label: Category
+        type: group
+        optionsMethod: getCategoryFilterOptions
+        conditions: amoriumcms_shop_product_groups.id in (select group_id from amoriumcms_shop_category_group where category_id in (:value))
+
+    is_active:
+        label: Active
+        type: switch
+        conditions:
+            - amoriumcms_shop_product_groups.is_active <> true
+            - amoriumcms_shop_product_groups.is_active = true

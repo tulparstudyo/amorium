@@ -1,0 +1,112 @@
+##
+title = "Checkout"
+url = "/shop/checkout"
+layout = "default"
+==
+{% if not shopConfig %}
+    {% do abort(404) %}
+{% endif %}
+
+{% set cardClass = 'rounded-md bg-surface p-6 shadow dark:bg-night-surface' %}
+{% set headingClass = 'mb-4 text-xl font-medium' %}
+{% set inputClass = 'w-full rounded-md border border-line bg-page px-3 py-2 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body' %}
+
+<section class="relative py-12 md:py-16" data-shop-page="checkout">
+    <div class="container">
+        <h1 class="mb-8 text-3xl font-medium">{{ 'Checkout'|_ }}</h1>
+
+        <div data-shop-checkout-loading>
+            {% partial 'shop/loading' %}
+        </div>
+
+        <div class="hidden rounded-md border border-dashed border-line p-12 text-center dark:border-night-line" data-shop-checkout-empty>
+            <i class="ri-shopping-bag-3-line text-5xl text-muted" aria-hidden="true"></i>
+            <p class="mt-4 text-lg">{{ 'Your cart is empty.'|_ }}</p>
+            <a href="{{ 'shop/index'|page }}" class="btn-primary mt-6">{{ 'Continue shopping'|_ }}</a>
+        </div>
+
+        <form class="hidden gap-8 lg_992:grid-cols-3" data-shop-checkout novalidate>
+            <div class="space-y-6 lg_992:col-span-2">
+                <div class="{{ cardClass }}">
+                    <h2 class="{{ headingClass }}">{{ 'Contact'|_ }}</h2>
+                    {% if user %}
+                        <p><i class="ri-mail-line text-muted" aria-hidden="true"></i> {{ user.email }}</p>
+                    {% else %}
+                        <label class="block">
+                            <span class="mb-1 block text-sm font-medium">{{ 'Email address'|_ }} <span class="text-danger">*</span></span>
+                            <input type="email" data-field="email" autocomplete="email" class="{{ inputClass }}" />
+                            <span class="mt-1 block text-sm text-danger" data-shop-error="email"></span>
+                        </label>
+                        <p class="mt-3 text-sm text-muted">
+                            {{ 'Already have an account?'|_ }}
+                            <a href="{{ 'account/login'|page }}" class="text-primary">{{ 'Sign in'|_ }}</a>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="{{ cardClass }}">
+                    <h2 class="{{ headingClass }}">{{ 'Shipping address'|_ }}</h2>
+                    {% if user %}
+                        <div class="grid gap-3 sm:grid-cols-2" data-shop-address-choices="shipping"></div>
+                        <p class="mt-1 text-sm text-danger" data-shop-error="shipping_address_id"></p>
+                    {% else %}
+                        {% partial 'shop/address-form' prefix='shipping_address' %}
+                    {% endif %}
+                    <label class="mt-5 flex items-center gap-2">
+                        <input type="checkbox" data-shop-billing-same checked class="accent-primary" />
+                        {{ 'My billing address is the same as my shipping address'|_ }}
+                    </label>
+                </div>
+
+                <div class="{{ cardClass }} hidden" data-shop-billing-section>
+                    <h2 class="{{ headingClass }}">{{ 'Billing address'|_ }}</h2>
+                    {% if user %}
+                        <div class="grid gap-3 sm:grid-cols-2" data-shop-address-choices="billing"></div>
+                        <p class="mt-1 text-sm text-danger" data-shop-error="billing_address_id"></p>
+                    {% else %}
+                        {% partial 'shop/address-form' prefix='billing_address' billing=true %}
+                    {% endif %}
+                </div>
+
+                {% if user %}
+                    <details class="{{ cardClass }}" data-shop-new-address>
+                        <summary class="cursor-pointer font-medium text-primary"><i class="ri-add-line" aria-hidden="true"></i> {{ 'Add a new address'|_ }}</summary>
+                        <div class="mt-5" data-shop-address-form>
+                            {% partial 'shop/address-form' withType=true %}
+                            <button type="button" class="btn-primary mt-5" data-shop-save-address>{{ 'Save address'|_ }}</button>
+                        </div>
+                    </details>
+                {% endif %}
+
+                <div class="{{ cardClass }}">
+                    <h2 class="{{ headingClass }}">{{ 'Shipping method'|_ }}</h2>
+                    <div class="space-y-3" data-shop-shipping-methods></div>
+                    <p class="mt-1 text-sm text-danger" data-shop-error="shipping_method_id"></p>
+                </div>
+
+                <div class="{{ cardClass }}">
+                    <h2 class="{{ headingClass }}">{{ 'Payment method'|_ }}</h2>
+                    <div class="space-y-3" data-shop-payment-methods></div>
+                    <p class="mt-1 text-sm text-danger" data-shop-error="payment_method"></p>
+                </div>
+
+                <div class="{{ cardClass }}">
+                    <label class="block">
+                        <span class="{{ headingClass }} block">{{ 'Order note'|_ }}</span>
+                        <textarea data-field="customer_note" rows="3" maxlength="1000" class="{{ inputClass }}" placeholder="{{ 'Anything we should know about your order?'|_ }}"></textarea>
+                    </label>
+                </div>
+            </div>
+
+            <aside>
+                <div class="{{ cardClass }} lg_992:sticky lg_992:top-28">
+                    <h2 class="{{ headingClass }}">{{ 'Order summary'|_ }}</h2>
+                    <div data-shop-summary></div>
+                    <p class="mt-4 text-sm text-danger" data-shop-place-error role="alert"></p>
+                    <button type="submit" class="btn-primary mt-4 w-full disabled:cursor-wait disabled:opacity-60" data-shop-place>{{ 'Place order'|_ }}</button>
+                    <a href="{{ 'shop/cart'|page }}" class="mt-4 block text-center text-sm text-muted hover:text-primary">{{ 'Back to cart'|_ }}</a>
+                </div>
+            </aside>
+        </form>
+    </div>
+</section>

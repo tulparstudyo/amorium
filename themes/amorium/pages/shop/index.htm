@@ -1,0 +1,18 @@
+##
+title = "Shop"
+url = "/shop"
+layout = "default"
+
+[shopCatalog]
+mode = "all"
+perPage = 24
+==
+{% if not shopCatalog %}
+    {% do abort(404) %}
+{% endif %}
+
+{% set title = params.q|default('') ? 'Search results for ":query"'|_({ query: params.q }) : 'All products'|_ %}
+{% put metaTitle %}{{ title }}{% endput %}
+{% put metaDescription %}{{ 'Browse all products.'|_ }}{% endput %}
+
+{% partial 'shop/listing' title=title showBrands=true showSearch=true %}

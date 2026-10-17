@@ -1,0 +1,23 @@
+##
+title = "Category"
+url = "/shop/category/:slug"
+layout = "default"
+
+[shopCatalog]
+mode = "category"
+slug = "{{ :slug }}"
+perPage = 24
+==
+{% if not shopCatalog %}
+    {% do abort(404) %}
+{% endif %}
+
+{% put metaTitle %}{{ category.meta_title ?: category.name }}{% endput %}
+{% put metaDescription %}{{ category.meta_description ?: category.description|striptags|slice(0, 160) }}{% endput %}
+
+{% set crumbs = [] %}
+{% for crumb in category.breadcrumbs %}
+    {% set crumbs = crumbs|merge([{ name: crumb.name, url: loop.last ? null : 'shop/category'|page({ slug: crumb.slug }) }]) %}
+{% endfor %}
+
+{% partial 'shop/listing' title=category.name description=category.description crumbs=crumbs subcategories=category.children showBrands=true %}

@@ -1,0 +1,23 @@
+columns:
+    name:
+        label: Name
+        valueTrans: false
+
+    code:
+        label: Code
+
+    rates:
+        label: Rates (VAT included)
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_shipping_rates.php
+        sortable: false
+
+    is_active:
+        label: Active
+        type: switch
+        width: 80px
+
+    sort_order:
+        label: Sort order
+        align: right
+        width: 90px

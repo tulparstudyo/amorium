@@ -193,7 +193,17 @@
 </div>
 
         {% if items %}
-            <div class="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-1 gap-6 mt-8">
+            {% set columns = data.columns|default(2) %}
+            {% if columns == 3 %}
+                {% set columnClass = 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' %}
+            {% elseif columns == 4 %}
+                {% set columnClass = 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' %}
+            {% elseif columns == 1 %}
+                {% set columnClass = 'grid-cols-1' %}
+            {% else %}
+                {% set columnClass = 'grid-cols-1 lg:grid-cols-2' %}
+            {% endif %}
+            <div class="grid {{ columnClass }} gap-6 mt-8">
                 {% for item in items %}
                     {% set image = item.image ? item.image|media : '' %}
                     {% set url = item.link ? item.link|link : '' %}

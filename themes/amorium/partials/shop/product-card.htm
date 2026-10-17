@@ -1,0 +1,34 @@
+{% set url = 'shop/product'|page({ slug: product.slug }) %}
+<article class="group flex flex-col overflow-hidden rounded-md bg-surface shadow duration-300 hover:shadow-lg dark:bg-night-surface">
+    <a href="{{ url }}" class="relative block overflow-hidden bg-page dark:bg-night-page" style="aspect-ratio: 2 / 3" tabindex="-1" aria-hidden="true">
+        {% if product.image %}
+            <img src="{{ product.image.thumb }}" alt="" loading="lazy" class="size-full object-contain" />
+        {% else %}
+            <span class="flex size-full items-center justify-center text-5xl text-muted"><i class="ri-image-line"></i></span>
+        {% endif %}
+        {% if product.compare_at_price and product.compare_at_price > product.price %}
+            <span class="absolute start-3 top-3 rounded-md bg-danger px-2 py-0.5 text-xs font-medium text-white">-{{ ((1 - product.price / product.compare_at_price) * 100)|round }}%</span>
+        {% endif %}
+    </a>
+    <div class="flex flex-1 flex-col p-4">
+        {% if product.brand or product.color %}
+            <p class="mb-1 flex items-center gap-2 text-sm text-muted">
+                {% if product.color and product.color.hex %}
+                    <span class="size-3 rounded-full border border-line" style="background-color: {{ product.color.hex }}"></span>
+                {% endif %}
+                {% if product.color %}{{ product.color.name }}{% endif %}
+                {% if product.brand and product.color %} · {% endif %}
+                {% if product.brand %}{{ product.brand.name }}{% endif %}
+            </p>
+        {% endif %}
+        <h3 class="mb-3 line-clamp-2 text-base font-medium">
+            <a href="{{ url }}" class="duration-300 hover:text-primary">{{ product.name }}</a>
+        </h3>
+        <div class="mt-auto">
+            {% partial 'shop/price' price=product.price compare=product.compare_at_price currency=product.currency %}
+        </div>
+        {% if product.variant_count > 1 %}
+            <p class="mt-1 text-xs text-muted">{{ ':count options'|_({ count: product.variant_count }) }}</p>
+        {% endif %}
+    </div>
+</article>

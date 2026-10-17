@@ -1,0 +1,11 @@
+{% set depth = depth|default(0) %}
+<ul class="space-y-1 {{ depth ? 'ms-1 mt-1 border-s border-line ps-3 dark:border-night-line' : '' }}">
+    {% for node in nodes %}
+        <li>
+            <a href="{{ 'shop/category'|page({ slug: node.slug }) }}" class="block py-0.5 duration-300 {{ node.slug == current ? 'font-medium text-primary' : 'text-body hover:text-primary dark:text-night-body' }}">{{ node.name }}</a>
+            {% if node.children and depth < 2 %}
+                {% partial 'shop/category-tree' nodes=node.children current=current depth=depth + 1 %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

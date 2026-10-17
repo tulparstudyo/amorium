@@ -133,6 +133,7 @@ return array(
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
     'NotFoundException' => $vendorDir . '/october/rain/globals/NotFoundException.php',
     'Notification' => $vendorDir . '/october/rain/globals/Notification.php',
+    'Omnipay\\Omnipay' => $vendorDir . '/omnipay/common/src/Omnipay.php',
     'Override' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/Override.php',
     'PHPUnit\\Exception' => $vendorDir . '/phpunit/phpunit/src/Exception.php',
     'PHPUnit\\Framework\\ActualValueIsNotAnObjectException' => $vendorDir . '/phpunit/phpunit/src/Framework/Exception/ActualValueIsNotAnObjectException.php',

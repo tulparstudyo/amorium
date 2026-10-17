@@ -1,0 +1,32 @@
+columns:
+    full_name:
+        label: Customer
+        select: concat_ws(' ', @first_name, @last_name)
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_customer.php
+        searchable: true
+
+    email:
+        label: E-mail
+        searchable: true
+
+    orders_count:
+        label: Orders
+        align: right
+        width: 90px
+
+    orders_total:
+        label: Order total
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_money.php
+        align: right
+
+    created_at:
+        label: Registered
+        type: date
+        width: 130px
+
+    last_seen:
+        label: Last seen
+        type: timetense
+        width: 150px

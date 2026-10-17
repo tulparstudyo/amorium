@@ -1,0 +1,16 @@
+columns:
+    name:
+        label: Name
+        valueTrans: false
+
+    groups:
+        label: Products
+        relation: groups
+        useRelationCount: true
+        align: right
+        width: 100px
+
+    is_active:
+        label: Active
+        type: switch
+        width: 80px

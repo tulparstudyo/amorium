@@ -32,6 +32,7 @@
     "Closed": "Kapalı",
     "Closes": "Kapanış",
     "Completed": "Tamamlandı",
+    "Columns": "Sütunlar",
     "Contact": "İletişim",
     "Content": "İçerik",
     "Copy Content from Primary Site": "Ana Siteden İçerik Kopyala",
@@ -107,6 +108,7 @@
     "None of the selected records can be translated.": "Seçili kayıtların hiçbiri çevrilemiyor.",
     "Nothing was translated.": "Tercüme edilecek bir şey bulunamadı.",
     "Number": "Sayı",
+    "Number of projects in a row on large screens.": "Geniş ekranda bir satırdaki proje sayısı.",
     "One option per line. Leave empty on a checkbox to show a single checkbox, for example to accept terms.": "Her satıra bir seçenek yazın. Onay kutusunda boş bırakılırsa tek bir onay kutusu gösterilir (örneğin koşulları kabul etmek için).",
     "Opening Hours": "Çalışma Saatleri",
     "Opens": "Açılış",
@@ -230,5 +232,13 @@
     "Yes": "Evet",
     "Yes replaces the content of the existing records with the content of the primary site, including translations.": "Evet derseniz var olan kayıtların içeriği, çeviriler dahil, ana sitenin içeriğiyle değiştirilir.",
     "Yes translates every field again, including the ones edited by hand. No translates only empty, untranslated or outdated fields.": "Evet derseniz elle düzenlenenler dahil tüm alanlar yeniden tercüme edilir. Hayır derseniz yalnızca boş, tercüme edilmemiş veya güncelliğini yitirmiş alanlar tercüme edilir.",
-    "Yes, overwrite": "Evet, üzerine yaz"
+    "Yes, overwrite": "Evet, üzerine yaz",
+    "Send Test Email": "Test E-postası Gönder",
+    "Sending test email...": "Test e-postası gönderiliyor...",
+    "Your account has no email address to send the test email to.": "Hesabınızda test e-postasının gönderileceği bir e-posta adresi yok.",
+    "This is a test email sent from the mail settings page. If you received it, the mail settings are working.": "Bu, e-posta ayarları sayfasından gönderilen bir test e-postasıdır. Bu e-postayı aldıysanız e-posta ayarları çalışıyor demektir.",
+    "Test Email": "Test E-postası",
+    "The test email could not be sent: :error": "Test e-postası gönderilemedi: :error",
+    "The test email was written to the log file because the send mode is Log File.": "Gönderim yöntemi Log Dosyası olduğu için test e-postası log dosyasına yazıldı.",
+    "Test email sent to :email": "Test e-postası :email adresine gönderildi"
 }

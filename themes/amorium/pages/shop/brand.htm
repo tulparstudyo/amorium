@@ -1,0 +1,20 @@
+##
+title = "Brand"
+url = "/shop/brand/:slug"
+layout = "default"
+
+[shopCatalog]
+mode = "brand"
+slug = "{{ :slug }}"
+perPage = 24
+==
+{% if not shopCatalog %}
+    {% do abort(404) %}
+{% endif %}
+
+{% put metaTitle %}{{ brand.meta_title ?: brand.name }}{% endput %}
+{% put metaDescription %}{{ brand.meta_description ?: brand.description|striptags|slice(0, 160) }}{% endput %}
+
+{% set crumbs = [{ name: 'Brands'|_, url: 'shop/brands'|page }, { name: brand.name }] %}
+
+{% partial 'shop/listing' title=brand.name description=brand.description crumbs=crumbs showBrands=false %}

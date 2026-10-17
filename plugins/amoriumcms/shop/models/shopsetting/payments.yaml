@@ -1,0 +1,103 @@
+tabs:
+    fields:
+        bank_transfer_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Bank Transfer
+        bank_transfer_name:
+            label: Name on this site
+            comment: Leave empty to use Bank Transfer.
+            tab: Bank Transfer
+            span: left
+        bank_transfer_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Bank Transfer
+            span: right
+        bank_transfer_days:
+            label: Cancel Unpaid Orders After (days)
+            comment: Applies while the order is waiting for payment.
+            type: number
+            tab: Bank Transfer
+            span: left
+        bank_accounts:
+            label: Bank Accounts
+            comment: The method stays hidden until an account is added.
+            type: repeater
+            prompt: Add Bank Account
+            tab: Bank Transfer
+            form:
+                fields:
+                    bank_name:
+                        label: Bank
+                        span: left
+                    account_holder:
+                        label: Account Holder
+                        span: right
+                    iban:
+                        label: IBAN
+
+        cod_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Cash on Delivery
+        cod_name:
+            label: Name on this site
+            comment: Leave empty to use Cash on Delivery.
+            tab: Cash on Delivery
+            span: left
+        cod_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Cash on Delivery
+            span: right
+        cod_fee:
+            label: Cash on Delivery Fee
+            comment: VAT included.
+            type: number
+            tab: Cash on Delivery
+            span: left
+
+        _stripe_section:
+            label: Stripe
+            type: section
+            comment: Card payments open on Stripe. Add another provider as a new section in this tab.
+            tab: Credit Card
+        stripe_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+        stripe_name:
+            label: Name on this site
+            comment: Leave empty to use Card.
+            tab: Credit Card
+            span: left
+        stripe_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        stripe_secret_key:
+            label: Stripe Secret Key
+            comment: Starts with sk_. The key stays on the server. The method stays hidden until this key is saved.
+            type: sensitive
+            tab: Credit Card
+        stripe_webhook_secret:
+            label: Stripe Webhook Secret
+            type: sensitive
+            tab: Credit Card

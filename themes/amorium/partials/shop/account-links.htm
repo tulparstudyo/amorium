@@ -1,0 +1,13 @@
+{% set links = [
+    { page: 'shop/account/orders', icon: 'ri-shopping-bag-3-line', label: 'My Orders' },
+    { page: 'shop/account/addresses', icon: 'ri-map-pin-line', label: 'My Addresses' },
+    { page: 'shop/account/favorites', icon: 'ri-heart-line', label: 'My Favorites' },
+    { page: 'shop/account/reviews', icon: 'ri-star-line', label: 'My Reviews' }
+] %}
+{% for link in links %}
+    <li>
+        <a href="{{ link.page|page }}" class="flex items-center gap-2 rounded-md px-3 py-2 whitespace-nowrap text-body duration-300 hover:bg-surface hover:text-primary dark:text-night-muted dark:hover:bg-night-surface">
+            <i class="{{ link.icon }}" aria-hidden="true"></i> {{ link.label|_ }}
+        </a>
+    </li>
+{% endfor %}

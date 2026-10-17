@@ -1,0 +1,84 @@
+{#
+    The product listing shared by the shop, category and brand pages.
+    Variables: title, description, crumbs, subcategories, showBrands, showSearch
+#}
+{% set sorts = { newest: 'Newest', price_asc: 'Price: low to high', price_desc: 'Price: high to low', name: 'Name: A to Z' } %}
+<section class="relative py-2 ">
+    <div class="container">
+        {% partial 'shop/breadcrumbs' items=crumbs|default([]) %}
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-medium">{{ title }}</h1>
+            {% if description %}
+                <p class="mt-3 max-w-3xl text-muted">{{ description|nl2br }}</p>
+            {% endif %}
+            {% if subcategories %}
+                <ul class="mt-5 flex flex-wrap gap-2">
+                    {% for child in subcategories %}
+                        <li><a href="{{ 'shop/category'|page({ slug: child.slug }) }}" class="inline-block rounded-full border border-line px-4 py-1.5 text-sm duration-300 hover:border-primary hover:text-primary dark:border-night-line">{{ child.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="grid items-start gap-8 lg_992:grid-cols-[200px_minmax(0,1fr)]">
+            <aside class="lg_992:sticky lg_992:top-24 lg_992:w-[200px] lg_992:min-w-[200px]">
+                <details class="group rounded-md bg-surface p-4 dark:bg-night-surface lg_992:hidden">
+                    <summary class="flex cursor-pointer items-center justify-between font-medium">
+                        <span><i class="ri-filter-3-line" aria-hidden="true"></i> {{ 'Filters'|_ }}</span>
+                        <i class="ri-arrow-down-s-line duration-300 group-open:rotate-180" aria-hidden="true"></i>
+                    </summary>
+                    <div class="mt-6">
+                        {% partial 'shop/filters' showBrands=showBrands %}
+                    </div>
+                </details>
+                <div class="hidden lg_992:block">
+                    {% partial 'shop/filters' showBrands=showBrands %}
+                </div>
+            </aside>
+
+            <div class="min-w-0">
+                <div class="mb-6 flex flex-wrap items-center gap-3">
+                    {% if showSearch %}
+                        <form method="get" action="{{ shopCatalog.url }}" class="relative min-w-56 flex-1" role="search">
+                            {% for name, value in shopCatalog.hiddenFields(['q']) %}
+                                <input type="hidden" name="{{ name }}" value="{{ value }}" />
+                            {% endfor %}
+                            <input type="search" name="q" value="{{ params.q|default('') }}" placeholder="{{ 'Search products'|_ }}" class="w-full rounded-md border border-line bg-page py-2 ps-10 pe-3 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body" aria-label="{{ 'Search products'|_ }}" />
+                            <i class="ri-search-line absolute start-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true"></i>
+                        </form>
+                    {% endif %}
+
+                    <p class="text-muted {{ showSearch ? '' : 'flex-1' }}">{{ ':count products'|_({ count: pagination.total }) }}</p>
+
+                    <label class="flex items-center gap-2">
+                        <span class="text-sm text-muted">{{ 'Sort by'|_ }}</span>
+                        <select class="rounded-md border border-line bg-page px-3 py-2 text-body outline-none focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body" onchange="location.href = this.value">
+                            {% for value, label in sorts %}
+                                <option value="{{ shopCatalog.url({ sort: value == 'newest' ? null : value }) }}" {{ params.sort == value ? 'selected' }}>{{ label|_ }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+
+                {% if products %}
+                    <div class="grid grid-cols-2 gap-4 md:gap-6 lg_992:grid-cols-4">
+                        {% for product in products %}
+                            {% partial 'shop/product-card' product=product %}
+                        {% endfor %}
+                    </div>
+
+                    {% partial 'shop/pagination' %}
+                {% else %}
+                    <div class="rounded-md border border-dashed border-line p-12 text-center dark:border-night-line">
+                        <i class="ri-search-eye-line text-5xl text-muted" aria-hidden="true"></i>
+                        <p class="mt-4 text-lg">{{ 'No products found.'|_ }}</p>
+                        {% if shopCatalog.hasFilters %}
+                            <a href="{{ shopCatalog.clearUrl }}" class="btn-primary mt-6">{{ 'Clear filters'|_ }}</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,93 @@
+{% set inputClass = 'w-full rounded-md border border-line bg-page px-3 py-1.5 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body' %}
+{% set headingClass = 'mb-3 text-base font-medium' %}
+{% set optionClass = 'flex items-center gap-2 py-1 duration-300 hover:text-primary' %}
+
+<div class="space-y-8">
+    {% if shopCatalog.hasFilters %}
+        <a href="{{ shopCatalog.clearUrl }}" class="inline-flex items-center gap-1 text-sm text-danger"><i class="ri-close-line"></i> {{ 'Clear filters'|_ }}</a>
+    {% endif %}
+
+    {% set tree = shopCatalog.categories %}
+    {% if tree %}
+            <h2 class="{{ headingClass }}">{{ 'Categories'|_ }}</h2>
+        <div class="filter-box filter-box-categories">
+            {% partial 'shop/category-tree' nodes=tree current=category.slug|default('') %}
+        </div>
+    {% endif %}
+
+    {% if showBrands and filters.brands %}
+            <h2 class="{{ headingClass }}">{{ 'Brands'|_ }}</h2>
+        <div class="filter-box filter-box-brands">
+            <ul>
+                {% for item in filters.brands %}
+                    {% set active = params.brand|default('') == item.slug %}
+                    <li>
+                        <a href="{{ shopCatalog.url({ brand: active ? null : item.slug }) }}" class="{{ optionClass }} {{ active ? 'text-primary' : '' }}" rel="nofollow">
+                            <i class="{{ active ? 'ri-checkbox-circle-fill' : 'ri-checkbox-blank-circle-line' }}" aria-hidden="true"></i>
+                            <span class="flex-1">{{ item.name }}</span>
+                            <span class="text-xs text-muted">{{ item.count }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if filters.price.min is not null and filters.price.max > filters.price.min %}
+        <form method="get" action="{{ shopCatalog.url }}">
+            <h2 class="{{ headingClass }}">{{ 'Price'|_ }}</h2>
+            {% for name, value in shopCatalog.hiddenFields(['price_min', 'price_max']) %}
+                <input type="hidden" name="{{ name }}" value="{{ value }}" />
+            {% endfor %}
+            <div class="flex items-center gap-2">
+                <input type="number" name="price_min" min="0" step="any" value="{{ params.price_min|default('') }}" placeholder="{{ filters.price.min|round(0, 'floor') }}" class="{{ inputClass }}" aria-label="{{ 'Minimum price'|_ }}" />
+                <span class="text-muted">–</span>
+                <input type="number" name="price_max" min="0" step="any" value="{{ params.price_max|default('') }}" placeholder="{{ filters.price.max|round(0, 'ceil') }}" class="{{ inputClass }}" aria-label="{{ 'Maximum price'|_ }}" />
+                <button type="submit" class="shrink-0 rounded-md border border-line px-3 py-1.5 duration-300 hover:border-primary hover:text-primary dark:border-night-line" aria-label="{{ 'Apply'|_ }}"><i class="ri-arrow-right-line"></i></button>
+            </div>
+        </form>
+    {% endif %}
+
+    {% for spec in filters.specs %}
+            <h2 class="{{ headingClass }}">{{ spec.name }}{% if spec.unit %} <span class="text-sm font-normal text-muted">({{ spec.unit }})</span>{% endif %}</h2>
+        <div class="filter-box filter-box-{{ spec.code }}">
+
+            {% if spec.type == 'select' %}
+                <ul>
+                    {% for option in spec.options %}
+                        {% set active = shopCatalog.isFiltered(spec.code, option.code) %}
+                        <li>
+                            <a href="{{ shopCatalog.filterUrl(spec.code, option.code) }}" class="{{ optionClass }} {{ active ? 'text-primary' : '' }}" rel="nofollow">
+                                {% if option.color_hex %}
+                                    <span class="size-4 shrink-0 rounded-full border {{ active ? 'border-primary ring-2 ring-primary/30' : 'border-line dark:border-night-line' }}" style="background-color: {{ option.color_hex }}"></span>
+                                {% else %}
+                                    <i class="{{ active ? 'ri-checkbox-fill' : 'ri-checkbox-blank-line' }}" aria-hidden="true"></i>
+                                {% endif %}
+                                <span class="flex-1">{{ option.label }}</span>
+                                <span class="text-xs text-muted">{{ option.count }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% elseif spec.type == 'number' %}
+                {% set range = params.filter[spec.code]|default({}) %}
+                <form method="get" action="{{ shopCatalog.url }}" class="flex items-center gap-2">
+                    {% for name, value in shopCatalog.hiddenFields(['filter[' ~ spec.code ~ ']']) %}
+                        <input type="hidden" name="{{ name }}" value="{{ value }}" />
+                    {% endfor %}
+                    <input type="number" name="filter[{{ spec.code }}][min]" step="any" value="{{ range.min|default('') }}" placeholder="{{ spec.min }}" class="{{ inputClass }}" aria-label="{{ 'Minimum'|_ }}" />
+                    <span class="text-muted">–</span>
+                    <input type="number" name="filter[{{ spec.code }}][max]" step="any" value="{{ range.max|default('') }}" placeholder="{{ spec.max }}" class="{{ inputClass }}" aria-label="{{ 'Maximum'|_ }}" />
+                    <button type="submit" class="shrink-0 rounded-md border border-line px-3 py-1.5 duration-300 hover:border-primary hover:text-primary dark:border-night-line" aria-label="{{ 'Apply'|_ }}"><i class="ri-arrow-right-line"></i></button>
+                </form>
+            {% elseif spec.type == 'boolean' %}
+                {% set active = shopCatalog.isFiltered(spec.code, '1') %}
+                <a href="{{ shopCatalog.filterUrl(spec.code, '1') }}" class="{{ optionClass }} {{ active ? 'text-primary' : '' }}" rel="nofollow">
+                    <i class="{{ active ? 'ri-checkbox-fill' : 'ri-checkbox-blank-line' }}" aria-hidden="true"></i>
+                    <span class="flex-1">{{ 'Yes'|_ }}</span>
+                    <span class="text-xs text-muted">{{ spec.count }}</span>
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

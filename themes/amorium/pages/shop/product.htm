@@ -1,0 +1,267 @@
+##
+title = "Product"
+url = "/shop/product/:slug"
+layout = "default"
+
+[shopProduct]
+slug = "{{ :slug }}"
+reviewsPerPage = 5
+==
+{% if not shopProduct %}
+    {% do abort(404) %}
+{% endif %}
+
+{% set variant = product.variants|first %}
+{% set selected = variant.options %}
+{% set prices = product.variants|map(v => v.price) %}
+{% set rating = reviews.meta.rating %}
+{% set selectedIds = [] %}
+{% for axis in product.axes %}
+    {% for option in axis.options %}
+        {% if selected[axis.code]|default('') == option.code %}
+            {% set selectedIds = selectedIds|merge([option.id]) %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+{% set mainImage = (product.images|filter(image => image.option_id in selectedIds)|first) ?: (product.images|filter(image => not image.option_id)|first) ?: (product.images|first) %}
+
+{% put metaTitle %}{{ product.meta_title ?: product.name }}{% endput %}
+{% put metaDescription %}{{ product.meta_description ?: product.description|striptags|slice(0, 160) }}{% endput %}
+
+{% set crumbs = [] %}
+{% for crumb in product.breadcrumbs %}
+    {% set crumbs = crumbs|merge([{ name: crumb.name, url: 'shop/category'|page({ slug: crumb.slug }) }]) %}
+{% endfor %}
+{% set crumbs = crumbs|merge([{ name: product.name }]) %}
+
+<section class="relative py-2 " data-shop-page="product">
+    <script type="application/json" data-shop-product>{{ product|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+
+    <div class="container">
+        {% partial 'shop/breadcrumbs' items=crumbs %}
+
+        <div class="grid gap-10 lg_992:grid-cols-2">
+            <div>
+                <div class="aspect-square overflow-hidden rounded-md bg-surface dark:bg-night-surface">
+                    {% if mainImage %}
+                        <img src="{{ mainImage.url }}" alt="{{ product.name }}" class="size-full object-contain" data-shop-main-image />
+                    {% else %}
+                        <span class="flex size-full items-center justify-center text-7xl text-muted"><i class="ri-image-line"></i></span>
+                    {% endif %}
+                </div>
+                {% if product.images|length > 1 %}
+                    <ul class="mt-4 grid grid-cols-5 gap-2">
+                        {% for image in product.images %}
+                            <li>
+                                <button type="button" class="block aspect-square w-full overflow-hidden rounded-md border-2 duration-300 {{ image.id == mainImage.id ? 'border-primary' : 'border-transparent hover:border-line' }}" data-shop-thumb="{{ image.url }}" data-shop-image-id="{{ image.id }}" data-shop-image-option="{{ image.option_id }}" aria-label="{{ 'Image :number'|_({ number: loop.index }) }}">
+                                    <img src="{{ image.thumb }}" alt="" loading="lazy" class="size-full object-cover" />
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div>
+                {% if product.brand %}
+                    <a href="{{ 'shop/brand'|page({ slug: product.brand.slug }) }}" class="text-sm font-medium tracking-wide text-primary uppercase">{{ product.brand.name }}</a>
+                {% endif %}
+                <h1 class="mt-1 text-3xl font-medium">{{ product.name }}</h1>
+
+                {% if rating.count %}
+                    <a href="#reviews" class="mt-2 inline-flex items-center gap-2 text-sm text-muted hover:text-primary">
+                        {% partial 'shop/stars' rating=rating.average %}
+                        <span>{{ rating.average|number_format(1) }} · {{ ':count reviews'|_({ count: rating.count }) }}</span>
+                    </a>
+                {% endif %}
+
+                <div class="mt-6 flex items-baseline gap-3">
+                    <span class="text-3xl font-medium text-heading dark:text-night-heading" data-shop-price>{{ shopConfig.money(variant.price, product.currency) }}</span>
+                    <del class="text-lg text-muted {{ variant.compare_at_price > variant.price ? '' : 'hidden' }}" data-shop-compare>{{ shopConfig.money(variant.compare_at_price, product.currency) }}</del>
+                </div>
+                <p class="mt-1 text-sm text-muted">{{ 'VAT included'|_ }}</p>
+
+                {% if product.colors %}
+                    <fieldset class="mt-6">
+                        <legend class="mb-2 font-medium">{{ 'Color'|_ }}: <span class="font-normal text-muted">{{ product.color.name }}</span></legend>
+                        <div class="flex flex-wrap gap-2">
+                            {% for color in product.colors %}
+                                {% set current = color.slug == product.slug %}
+                                {% if color.hex %}
+                                    <a href="{{ 'shop/product'|page({ slug: color.slug }) }}" class="size-10 rounded-full border-2 duration-300 {{ current ? 'border-primary ring-2 ring-primary/30' : 'border-line dark:border-night-line' }}" style="background-color: {{ color.hex }}" title="{{ color.name }}" aria-label="{{ color.name }}" {% if current %}aria-current="true"{% endif %}></a>
+                                {% else %}
+                                    <a href="{{ 'shop/product'|page({ slug: color.slug }) }}" class="min-w-12 rounded-md border px-4 py-2 duration-300 {{ current ? 'border-primary text-primary' : 'border-line hover:border-primary dark:border-night-line' }}" {% if current %}aria-current="true"{% endif %}>{{ color.name }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                {% endif %}
+
+                {% for axis in product.axes %}
+                    <fieldset class="mt-6">
+                        <legend class="mb-2 font-medium">
+                            {{ axis.name }}: <span class="font-normal text-muted" data-shop-axis-label="{{ axis.code }}">{{ (axis.options|filter(o => o.code == selected[axis.code]|default(''))|first).label|default('') }}</span>
+                        </legend>
+                        <div class="flex flex-wrap gap-2">
+                            {% for option in axis.options %}
+                                {% set active = selected[axis.code]|default('') == option.code %}
+                                {% if option.color_hex %}
+                                    <button type="button" class="size-10 rounded-full border-2 duration-300 {{ active ? 'border-primary ring-2 ring-primary/30' : 'border-line dark:border-night-line' }} disabled:cursor-not-allowed disabled:opacity-30" style="background-color: {{ option.color_hex }}" data-shop-axis="{{ axis.code }}" data-shop-option="{{ option.code }}" aria-pressed="{{ active ? 'true' : 'false' }}" title="{{ option.label }}" aria-label="{{ option.label }}"></button>
+                                {% else %}
+                                    <button type="button" class="min-w-12 rounded-md border px-4 py-2 duration-300 {{ active ? 'border-primary text-primary' : 'border-line hover:border-primary dark:border-night-line' }} disabled:cursor-not-allowed disabled:line-through disabled:opacity-40" data-shop-axis="{{ axis.code }}" data-shop-option="{{ option.code }}" aria-pressed="{{ active ? 'true' : 'false' }}">{{ option.label }}</button>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                {% endfor %}
+
+                <p class="mt-6 text-sm" data-shop-stock aria-live="polite"></p>
+
+                <div class="mt-3 flex flex-wrap items-stretch gap-3">
+                    <div class="flex items-center rounded-md border border-line dark:border-night-line">
+                        <button type="button" class="px-3 py-2 text-lg" data-shop-qty-step="-1" aria-label="{{ 'Decrease quantity'|_ }}"><i class="ri-subtract-line"></i></button>
+                        <input type="number" min="1" max="999" value="1" class="w-14 bg-transparent text-center outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" data-shop-qty aria-label="{{ 'Quantity'|_ }}" />
+                        <button type="button" class="px-3 py-2 text-lg" data-shop-qty-step="1" aria-label="{{ 'Increase quantity'|_ }}"><i class="ri-add-line"></i></button>
+                    </div>
+                    <button type="button" class="btn-primary inline-flex flex-1 items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50" data-shop-add>
+                        <i class="ri-shopping-bag-3-line" aria-hidden="true"></i> {{ 'Add to cart'|_ }}
+                    </button>
+                    {% if user %}
+                        <button type="button" class="inline-flex size-11 items-center justify-center rounded-md border border-line text-xl duration-300 hover:border-primary hover:text-primary dark:border-night-line" data-shop-favorite aria-pressed="false" aria-label="{{ 'Add to favorites'|_ }}"><i class="ri-heart-line"></i></button>
+                    {% else %}
+                        <a href="{{ 'account/login'|page }}" class="inline-flex size-11 items-center justify-center rounded-md border border-line text-xl duration-300 hover:border-primary hover:text-primary dark:border-night-line" aria-label="{{ 'Sign in to add favorites'|_ }}"><i class="ri-heart-line"></i></a>
+                    {% endif %}
+                </div>
+
+                <dl class="mt-6 space-y-1 text-sm text-muted">
+                    <div class="flex gap-2"><dt>{{ 'Product code'|_ }}:</dt><dd>{{ product.code }}</dd></div>
+                    <div class="flex gap-2"><dt>{{ 'Barcode'|_ }}:</dt><dd data-shop-barcode>{{ variant.barcode }}</dd></div>
+                </dl>
+
+                {% if product.categories %}
+                    <p class="mt-4 flex flex-wrap gap-2 text-sm">
+                        {% for item in product.categories %}
+                            <a href="{{ 'shop/category'|page({ slug: item.slug }) }}" class="rounded-full bg-surface px-3 py-1 duration-300 hover:text-primary dark:bg-night-surface">{{ item.name }}</a>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-16 grid gap-10 lg_992:grid-cols-3">
+            <div class="lg_992:col-span-2">
+                {% if product.description %}
+                    <h2 class="mb-4 text-2xl font-medium">{{ 'Description'|_ }}</h2>
+                    <div class="text-body dark:text-night-body">{{ product.description|nl2br }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <h2 class="mb-4 text-2xl font-medium">{{ 'Specifications'|_ }}</h2>
+                <table class="w-full text-sm">
+                    <tbody data-shop-variant-specs>
+                        {% for row in variant.specs %}
+                            <tr class="border-b border-line dark:border-night-line"><th class="py-2 pe-4 text-start font-normal text-muted">{{ row.name }}</th><td class="py-2">{{ row.display }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                    <tbody>
+                        {% for row in product.specs %}
+                            <tr class="border-b border-line dark:border-night-line"><th class="py-2 pe-4 text-start font-normal text-muted">{{ row.name }}</th><td class="py-2">{{ row.display }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="reviews" class="mt-16 scroll-mt-28">
+            <h2 class="mb-6 text-2xl font-medium">{{ 'Reviews'|_ }}</h2>
+
+            <div class="grid gap-10 lg_992:grid-cols-3">
+                <div>
+                    {% if rating.count %}
+                        <div class="flex items-center gap-4">
+                            <span class="text-5xl font-medium">{{ rating.average|number_format(1) }}</span>
+                            <div>
+                                {% partial 'shop/stars' rating=rating.average class='text-xl' %}
+                                <p class="text-sm text-muted">{{ ':count reviews'|_({ count: rating.count }) }}</p>
+                            </div>
+                        </div>
+                        <ul class="mt-6 space-y-2">
+                            {% for star, total in rating.distribution %}
+                                <li class="flex items-center gap-3 text-sm">
+                                    <span class="w-8 text-muted">{{ star }} <i class="ri-star-fill text-amber-400"></i></span>
+                                    <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface dark:bg-night-surface"><span class="block h-full rounded-full bg-amber-400" style="width: {{ (total / rating.count * 100)|round }}%"></span></span>
+                                    <span class="w-8 text-end text-muted">{{ total }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">{{ 'There are no reviews yet.'|_ }}</p>
+                    {% endif %}
+
+                    <div class="mt-8 rounded-md bg-surface p-6 dark:bg-night-surface">
+                        {% if user %}
+                            <form data-shop-review-form>
+                                <h3 class="mb-4 text-lg font-medium">{{ 'Write a review'|_ }}</h3>
+                                <fieldset class="mb-4">
+                                    <legend class="mb-2 text-sm font-medium">{{ 'Your rating'|_ }}</legend>
+                                    <div class="flex flex-row-reverse justify-end gap-1 text-2xl">
+                                        {% for i in 5..1 %}
+                                            <input type="radio" name="rating" value="{{ i }}" id="shop-rating-{{ i }}" class="peer sr-only" {{ i == 5 ? 'checked' }} />
+                                            <label for="shop-rating-{{ i }}" class="cursor-pointer text-line peer-checked:text-amber-400 hover:text-amber-400 dark:text-night-line" title="{{ ':rating out of 5'|_({ rating: i }) }}"><i class="ri-star-fill"></i></label>
+                                        {% endfor %}
+                                    </div>
+                                    <p class="mt-1 text-sm text-danger" data-shop-error="rating"></p>
+                                </fieldset>
+                                <label class="mb-4 block">
+                                    <span class="mb-1 block text-sm font-medium">{{ 'Title'|_ }}</span>
+                                    <input type="text" name="title" maxlength="255" class="w-full rounded-md border border-line bg-page px-3 py-2 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body" />
+                                    <span class="mt-1 block text-sm text-danger" data-shop-error="title"></span>
+                                </label>
+                                <label class="mb-4 block">
+                                    <span class="mb-1 block text-sm font-medium">{{ 'Your review'|_ }}</span>
+                                    <textarea name="body" rows="4" maxlength="5000" class="w-full rounded-md border border-line bg-page px-3 py-2 text-body outline-none duration-300 focus:border-primary dark:border-night-line dark:bg-night-page dark:text-night-body"></textarea>
+                                    <span class="mt-1 block text-sm text-danger" data-shop-error="body"></span>
+                                </label>
+                                <button type="submit" class="btn-primary w-full">{{ 'Send review'|_ }}</button>
+                            </form>
+                        {% else %}
+                            <p class="mb-4">{{ 'Sign in to write a review.'|_ }}</p>
+                            <a href="{{ 'account/login'|page }}" class="btn-primary">{{ 'Sign in'|_ }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="lg_992:col-span-2">
+                    <div data-shop-review-list>
+                        {% for review in reviews.data %}
+                            {% partial 'shop/review' review=review %}
+                        {% endfor %}
+                    </div>
+                    {% if reviews.meta.last_page > 1 %}
+                        <button type="button" class="mt-6 rounded-md border border-line px-5 py-2 duration-300 hover:border-primary hover:text-primary dark:border-night-line" data-shop-review-more data-page="1" data-last-page="{{ reviews.meta.last_page }}">{{ 'Show more reviews'|_ }}</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% set jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    sku: product.code,
+    description: product.meta_description ?: product.description|striptags|slice(0, 500),
+    image: product.images|map(image => image.url)
+} %}
+{% if prices|length %}
+    {% set jsonLd = jsonLd|merge({ offers: { '@type': 'AggregateOffer', priceCurrency: product.currency, lowPrice: min(prices), highPrice: max(prices), offerCount: prices|length } }) %}
+{% endif %}
+{% if product.brand %}
+    {% set jsonLd = jsonLd|merge({ brand: { '@type': 'Brand', name: product.brand.name } }) %}
+{% endif %}
+{% if rating.count %}
+    {% set jsonLd = jsonLd|merge({ aggregateRating: { '@type': 'AggregateRating', ratingValue: rating.average, reviewCount: rating.count } }) %}
+{% endif %}
+<script type="application/ld+json">{{ jsonLd|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES'))|raw }}</script>

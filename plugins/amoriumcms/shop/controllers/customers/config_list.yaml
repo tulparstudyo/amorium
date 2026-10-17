@@ -1,0 +1,15 @@
+title: Customers
+list: $/amoriumcms/shop/controllers/customers/columns.yaml
+modelClass: RainLab\User\Models\User
+recordOnClick: "location.hash = '#/:id'"
+noRecordsMessage: No records found.
+recordsPerPage: 20
+showSetup: true
+defaultSort:
+    column: created_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Name or e-mail

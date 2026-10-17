@@ -1,0 +1,51 @@
+subject = "{{ 'Your order :number has been received'|_({ number: order.number }) }}"
+==
+{{ 'Your order :number has been received'|_({ number: order.number }) }}
+
+{% for item in order.items %}
+- {{ item.name }}{% for spec, value in item.variant %} / {{ value }}{% endfor %} x {{ item.quantity }}: {{ item.line_total|number_format(2) }} {{ order.currency }}
+{% endfor %}
+
+{{ 'Total'|_ }}: {{ order.totals.grand_total|number_format(2) }} {{ order.currency }}
+==
+<h1>{{ 'Thank you for your order'|_ }}</h1>
+<p>{{ 'Your order :number has been received'|_({ number: order.number }) }}</p>
+
+<table width="100%" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+    {% for item in order.items %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td>
+                {{ item.name }}
+                {% for spec, value in item.variant %}<br><small>{{ spec }}: {{ value }}</small>{% endfor %}
+            </td>
+            <td align="right">{{ item.quantity }}</td>
+            <td align="right">{{ item.line_total|number_format(2) }} {{ order.currency }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="2" align="right">{{ 'Shipping'|_ }}</td>
+        <td align="right">{{ order.totals.shipping_total|number_format(2) }} {{ order.currency }}</td>
+    </tr>
+    {% if order.totals.payment_fee > 0 %}
+        <tr>
+            <td colspan="2" align="right">{{ 'Payment Fee'|_ }}</td>
+            <td align="right">{{ order.totals.payment_fee|number_format(2) }} {{ order.currency }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td colspan="2" align="right"><strong>{{ 'Total'|_ }}</strong></td>
+        <td align="right"><strong>{{ order.totals.grand_total|number_format(2) }} {{ order.currency }}</strong></td>
+    </tr>
+</table>
+
+{% if order.payment_instructions.type == 'bank_transfer' %}
+    <h2>{{ 'Bank Transfer Details'|_ }}</h2>
+    <p>{{ 'Please write :reference in the description of the transfer.'|_({ reference: order.payment_instructions.reference }) }}</p>
+    {% for account in order.payment_instructions.accounts %}
+        <p>
+            <strong>{{ account.bank_name }}</strong><br>
+            {{ account.account_holder }}<br>
+            {{ account.iban }}
+        </p>
+    {% endfor %}
+{% endif %}

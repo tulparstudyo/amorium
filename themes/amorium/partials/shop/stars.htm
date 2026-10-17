@@ -1,0 +1,5 @@
+<span class="inline-flex items-center text-amber-400 {{ class|default('') }}" aria-label="{{ ':rating out of 5'|_({ rating: rating }) }}" role="img">
+    {% for i in 1..5 %}
+        <i class="{{ rating >= i ? 'ri-star-fill' : (rating >= i - 0.5 ? 'ri-star-half-line' : 'ri-star-line') }}" aria-hidden="true"></i>
+    {% endfor %}
+</span>

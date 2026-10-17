@@ -1,0 +1,58 @@
+{# Settings and texts of assets/js/shop.js. The API token is only printed for a signed-in customer. #}
+{% set shopMessages = [
+    ':quantity × :price', ':rating out of 5',
+    'Add to cart', 'Add to favorites', 'Amount to pay: :amount', 'Approved',
+    'Bank transfer details', 'Billing address',
+    'Cancel', 'Cancel order', 'Cancel this order?', 'Cancelled', 'Clear cart', 'Completed', 'Continue shopping',
+    'Could not connect. Please check your connection.', 'Customer',
+    'Date', 'Decrease quantity', 'Default', 'Delete', 'Delete this address?', 'Delete this review?', 'Delivered',
+    'Edit', 'Edit address', 'Edited reviews are published again after approval.',
+    'Failed', 'Free', 'Free over :amount',
+    'In stock', 'Incomplete', 'Included VAT', 'Increase quantity',
+    'Loading…',
+    'New address', 'Next', 'No payment method is available.', 'No shipping method is available.',
+    'Only a few left', 'Order', 'Order :number', 'Order history', 'Order note', 'Order summary',
+    'Orders that are not paid within :days days are cancelled.', 'Out of stock',
+    'Page :page of :last', 'Paid', 'Pay now', 'Payment fee', 'Payment method', 'Pending', 'Pending payment',
+    'Please remove the products that are no longer available.', 'Please write :reference in the description of the transfer.',
+    'Previous', 'Proceed to checkout', 'Processing', 'Products',
+    'Quantity',
+    'Refunded', 'Rejected', 'Remove', 'Remove all products from your cart?', 'Remove from favorites',
+    'Save', 'Shipped', 'Shipping', 'Shipping address', 'Shipping method', 'Sign in',
+    'Some products are not available in the requested quantity.', 'Something went wrong. Please try again later.',
+    'Start shopping', 'Status', 'Subtotal',
+    'Tax number: :number', 'Thank you for your order', 'Thank you! Your review will be published after it is approved.',
+    'The address has been deleted.', 'The address has been saved.', 'The bank account details are shown after you place the order.',
+    'The card payment is not complete yet.',
+    'The order was not found.', 'The product has been added to your cart.', 'The product has been added to your favorites.',
+    'The product has been removed from your favorites.', 'The review has been deleted.',
+    'This combination is not available.', 'This product is no longer available.', 'Title', 'Total',
+    'VAT included. Shipping is calculated at checkout.', 'Verified purchase',
+    'You have no favorites yet.', 'You have no orders yet.', 'You have no saved addresses yet.',
+    'You have no saved addresses yet. Add one below.', 'You have not written any reviews yet.',
+    'Your cart is empty.', 'Your order :number has been received. We have sent the details to :email.',
+    'Your order has been cancelled.', 'Your rating', 'Your review',
+    'Your review has been updated and will be published after approval.'
+] %}
+{% set translated = {} %}
+{% for message in shopMessages %}
+    {% set translated = translated|merge({ (message): message|_ }) %}
+{% endfor %}
+<script>
+    window.shopConfig = {{ {
+        api: shopConfig.apiBase,
+        token: shopConfig.token,
+        currency: shopConfig.currency,
+        locale: this.site.hard_locale,
+        site: this.site.code,
+        urls: {
+            shop: 'shop/index'|page,
+            cart: 'shop/cart'|page,
+            checkout: 'shop/checkout'|page,
+            login: 'account/login'|page,
+            product: 'shop/product'|page({ slug: '__slug__' }),
+            order: 'shop/order'|page({ number: '__number__' })
+        },
+        messages: translated
+    }|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES'))|raw }};
+</script>

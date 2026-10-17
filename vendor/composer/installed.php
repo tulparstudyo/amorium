@@ -3,7 +3,7 @@
         'name' => 'october/october',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'f4abc568b8a2eb9ff2b510eda247ee6ccadab08d',
+        'reference' => 'b6c2a174ff6af95b738a08bf83e0db21638993df',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -34,6 +34,15 @@
             'reference' => 'bf72f821b9952722ea9f9c3912f85946e1af9e3d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../carbonphp/carbon-doctrine-types',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'clue/stream-filter' => array(
+            'pretty_version' => 'v1.7.0',
+            'version' => '1.7.0.0',
+            'reference' => '049509fef80032cb3f051595029ab75b49a3c2f7',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../clue/stream-filter',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -631,6 +640,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'league/omnipay' => array(
+            'pretty_version' => 'v3.2.1',
+            'version' => '3.2.1.0',
+            'reference' => '38f66a0cc043ed51d6edf7956d6439a2f263501f',
+            'type' => 'metapackage',
+            'install_path' => null,
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'league/uri' => array(
             'pretty_version' => '7.8.1',
             'version' => '7.8.1.0',
@@ -682,6 +700,15 @@
             'reference' => 'ab39168b7556f44c11c80be1222b44b239f5c2e4',
             'type' => 'library',
             'install_path' => __DIR__ . '/../mobiledetect/mobiledetectlib',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'moneyphp/money' => array(
+            'pretty_version' => 'v4.9.0',
+            'version' => '4.9.0.0',
+            'reference' => 'd49ee625c6ba79b9d7a228ce153b02fc1032152b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../moneyphp/money',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -757,7 +784,7 @@
         'october/october' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'f4abc568b8a2eb9ff2b510eda247ee6ccadab08d',
+            'reference' => 'b6c2a174ff6af95b738a08bf83e0db21638993df',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -769,6 +796,24 @@
             'reference' => '396fd852afb6c9eaca5cb1d7f36a4be2a90313b6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../october/rain',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'omnipay/common' => array(
+            'pretty_version' => 'v3.5.1',
+            'version' => '3.5.1.0',
+            'reference' => 'cd58a4e7b359b0c5b9748542d422b5cc0d4a692f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../omnipay/common',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'omnipay/stripe' => array(
+            'pretty_version' => 'v3.2.0',
+            'version' => '3.2.0.0',
+            'reference' => '20812498efedc1079baae5fea96567fefd669105',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../omnipay/stripe',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -798,6 +843,71 @@
             'install_path' => __DIR__ . '/../phar-io/version',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'php-http/async-client-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '*',
+                1 => '1.0',
+            ),
+        ),
+        'php-http/client-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '*',
+                1 => '1.0',
+            ),
+        ),
+        'php-http/discovery' => array(
+            'pretty_version' => '1.20.0',
+            'version' => '1.20.0.0',
+            'reference' => '82fe4c73ef3363caed49ff8dd1539ba06044910d',
+            'type' => 'composer-plugin',
+            'install_path' => __DIR__ . '/../php-http/discovery',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'php-http/guzzle7-adapter' => array(
+            'pretty_version' => '1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => '03a415fde709c2f25539790fecf4d9a31bc3d0eb',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/guzzle7-adapter',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'php-http/httplug' => array(
+            'pretty_version' => '2.4.1',
+            'version' => '2.4.1.0',
+            'reference' => '5cad731844891a4c282f3f3e1b582c46839d22f4',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/httplug',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'php-http/message' => array(
+            'pretty_version' => '1.16.2',
+            'version' => '1.16.2.0',
+            'reference' => '06dd5e8562f84e641bf929bfe699ee0f5ce8080a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/message',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'php-http/message-factory-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.0',
+            ),
+        ),
+        'php-http/promise' => array(
+            'pretty_version' => '1.3.1',
+            'version' => '1.3.1.0',
+            'reference' => 'fc85b1fba37c169a69a07ef0d5a8075770cc1f83',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/promise',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'phpoption/phpoption' => array(
             'pretty_version' => '1.10.0',
@@ -937,7 +1047,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
@@ -952,7 +1063,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-message' => array(
@@ -967,7 +1079,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/log' => array(

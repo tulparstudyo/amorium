@@ -1,0 +1,18 @@
+title: Reviews
+list: $/amoriumcms/shop/controllers/reviews/columns.yaml
+modelClass: AmoriumCms\Shop\Models\Review
+recordOnClick: "location.hash = '#/:id'"
+noRecordsMessage: No records found.
+recordsPerPage: 20
+showSetup: true
+defaultSort:
+    column: created_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Search
+        scope: searchAdmin
+
+filter: $/amoriumcms/shop/controllers/reviews/config_filter.yaml

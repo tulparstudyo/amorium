@@ -1,0 +1,37 @@
+columns:
+    rating:
+        label: Rating
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_rating.php
+        width: 110px
+
+    title:
+        label: Review
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_review.php
+        searchable: true
+
+    product_name:
+        label: Product
+        valueTrans: false
+
+    user:
+        label: Customer
+        relation: user
+        select: concat_ws(' ', first_name, last_name)
+        valueTrans: false
+
+    status:
+        label: Status
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_status.php
+        width: 120px
+
+    locale:
+        label: Language
+        width: 90px
+
+    created_at:
+        label: Date
+        type: datetime
+        width: 160px

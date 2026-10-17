@@ -11,15 +11,18 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
-        '606a39d89246991a373564698c2d8383' => __DIR__ . '/..' . '/symfony/polyfill-php85/bootstrap.php',
-        '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
-        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '606a39d89246991a373564698c2d8383' => __DIR__ . '/..' . '/symfony/polyfill-php85/bootstrap.php',
+        '9c67151ae59aff4788964ce8eb2a0f43' => __DIR__ . '/..' . '/clue/stream-filter/src/functions_include.php',
+        '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '8cff32064859f4559445b89279f3199c' => __DIR__ . '/..' . '/php-http/message/src/filters.php',
+        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
         '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
@@ -32,7 +35,6 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'ffecb95d45175fd40f75be8a23b34f90' => __DIR__ . '/..' . '/twig/twig/src/Resources/debug.php',
         'c7baa00073ee9c61edf148c51917cfb4' => __DIR__ . '/..' . '/twig/twig/src/Resources/escaper.php',
         'f844ccf1d25df8663951193c3fc307c8' => __DIR__ . '/..' . '/twig/twig/src/Resources/string_loader.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
@@ -132,6 +134,8 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         ),
         'O' =>
         array (
+            'Omnipay\\Stripe\\' => 15,
+            'Omnipay\\Common\\' => 15,
             'October\\Rain\\' => 13,
             'October\\Contracts\\' => 18,
         ),
@@ -142,6 +146,7 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'M' =>
         array (
             'Monolog\\' => 8,
+            'Money\\' => 6,
             'Masterminds\\' => 12,
             'MabeEnum\\' => 9,
         ),
@@ -170,6 +175,14 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
             'Intervention\\Gif\\' => 17,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\' => 11,
+        ),
+        'H' =>
+        array (
+            'Http\\Promise\\' => 13,
+            'Http\\Message\\' => 13,
+            'Http\\Discovery\\' => 15,
+            'Http\\Client\\' => 12,
+            'Http\\Adapter\\Guzzle7\\' => 21,
         ),
         'G' =>
         array (
@@ -214,6 +227,7 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
             'Composer\\ClassMapGenerator\\' => 27,
             'Composer\\CaBundle\\' => 18,
             'Composer\\' => 9,
+            'Clue\\StreamFilter\\' => 18,
             'Carbon\\Doctrine\\' => 16,
             'Carbon\\' => 7,
         ),
@@ -466,6 +480,14 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         array (
             0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),
+        'Omnipay\\Stripe\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/omnipay/stripe/src',
+        ),
+        'Omnipay\\Common\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/omnipay/common/src/Common',
+        ),
         'October\\Rain\\' =>
         array (
             0 => __DIR__ . '/..' . '/october/rain/src',
@@ -482,6 +504,10 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'Monolog\\' =>
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Money\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/moneyphp/money/src',
         ),
         'Masterminds\\' =>
         array (
@@ -562,6 +588,26 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'Illuminate\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
+        ),
+        'Http\\Promise\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-http/promise/src',
+        ),
+        'Http\\Message\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-http/message/src',
+        ),
+        'Http\\Discovery\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-http/discovery/src',
+        ),
+        'Http\\Client\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-http/httplug/src',
+        ),
+        'Http\\Adapter\\Guzzle7\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-http/guzzle7-adapter/src',
         ),
         'GuzzleHttp\\UriTemplate\\' =>
         array (
@@ -678,6 +724,10 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'Composer\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/composer/src/Composer',
+        ),
+        'Clue\\StreamFilter\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
         'Carbon\\Doctrine\\' =>
         array (
@@ -835,6 +885,7 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'NotFoundException' => __DIR__ . '/..' . '/october/rain/globals/NotFoundException.php',
         'Notification' => __DIR__ . '/..' . '/october/rain/globals/Notification.php',
+        'Omnipay\\Omnipay' => __DIR__ . '/..' . '/omnipay/common/src/Omnipay.php',
         'Override' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/Override.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\ActualValueIsNotAnObjectException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ActualValueIsNotAnObjectException.php',

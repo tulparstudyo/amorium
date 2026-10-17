@@ -1,0 +1,19 @@
+{% set links = [
+    { page: 'account/profile', icon: 'ri-user-settings-line', label: 'My Profile' },
+    { page: 'shop/account/orders', icon: 'ri-shopping-bag-3-line', label: 'My Orders' },
+    { page: 'shop/account/addresses', icon: 'ri-map-pin-line', label: 'My Addresses' },
+    { page: 'shop/account/favorites', icon: 'ri-heart-line', label: 'My Favorites' },
+    { page: 'shop/account/reviews', icon: 'ri-star-line', label: 'My Reviews' }
+] %}
+<nav class="mb-8 overflow-x-auto" aria-label="{{ 'Account'|_ }}">
+    <ul class="flex min-w-max gap-1 border-b border-line dark:border-night-line">
+        {% for link in links %}
+            {% set active = this.page.id == link.page|replace({ '/': '-' }) %}
+            <li>
+                <a href="{{ link.page|page }}" class="-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-3 duration-300 {{ active ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-primary' }}" {% if active %}aria-current="page"{% endif %}>
+                    <i class="{{ link.icon }}" aria-hidden="true"></i> {{ link.label|_ }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

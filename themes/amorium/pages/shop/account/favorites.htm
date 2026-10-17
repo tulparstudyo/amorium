@@ -1,0 +1,22 @@
+##
+title = "My Favorites"
+url = "/shop/account/favorites"
+layout = "default"
+
+[session]
+security = "user"
+redirect = "account/login"
+==
+{% if not shopConfig %}
+    {% do abort(404) %}
+{% endif %}
+
+<section class="relative py-12 md:py-16" data-shop-page="favorites">
+    <div class="container">
+        {% partial 'shop/account-nav' %}
+        <h1 class="mb-6 text-2xl font-medium">{{ 'My Favorites'|_ }}</h1>
+        <div data-shop-favorites>
+            {% partial 'shop/loading' %}
+        </div>
+    </div>
+</section>

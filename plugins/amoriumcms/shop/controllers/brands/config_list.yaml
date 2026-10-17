@@ -1,0 +1,15 @@
+title: Brands
+list: $/amoriumcms/shop/controllers/brands/columns.yaml
+modelClass: AmoriumCms\Shop\Models\Brand
+recordOnClick: "location.hash = '#/:id'"
+noRecordsMessage: No records found.
+recordsPerPage: 50
+showSetup: true
+defaultSort:
+    column: sort_order
+    direction: asc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Search

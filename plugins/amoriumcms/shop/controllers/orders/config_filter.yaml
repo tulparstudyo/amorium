@@ -1,0 +1,28 @@
+scopes:
+    status:
+        label: Status
+        type: group
+        optionsMethod: getStatusFilterOptions
+        conditions: status in (:value)
+
+    payment_status:
+        label: Payment
+        type: group
+        optionsMethod: getPaymentStatusFilterOptions
+        conditions: payment_status in (:value)
+
+    payment_method:
+        label: Payment method
+        type: group
+        optionsMethod: getPaymentMethodFilterOptions
+        conditions: payment_method in (:value)
+
+    site:
+        label: Site
+        type: group
+        optionsMethod: getSiteFilterOptions
+        conditions: site_id in (:value)
+
+    placed_at:
+        label: Date
+        type: date

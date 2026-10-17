@@ -1,0 +1,33 @@
+columns:
+    logo:
+        label: Logo
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_logo.php
+        sortable: false
+        width: 70px
+
+    name:
+        label: Name
+        searchable: true
+        valueTrans: false
+
+    code:
+        label: Code
+        searchable: true
+
+    groups:
+        label: Products
+        relation: groups
+        useRelationCount: true
+        align: right
+        width: 100px
+
+    is_active:
+        label: Active
+        type: switch
+        width: 80px
+
+    sort_order:
+        label: Sort order
+        align: right
+        width: 90px

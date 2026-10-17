@@ -1,0 +1,45 @@
+columns:
+    thumb:
+        label: Image
+        type: partial
+        path: $/amoriumcms/shop/views/admin/columns/_product_image.php
+        sortable: false
+        width: 70px
+
+    name:
+        label: Name
+        searchable: true
+        valueTrans: false
+
+    code:
+        label: Common code
+        searchable: true
+
+    brand_name:
+        label: Brand
+        valueTrans: false
+
+    color_name:
+        label: Color
+        valueTrans: false
+
+    category_name:
+        label: Primary category
+        valueTrans: false
+
+    products:
+        label: Barcodes
+        relation: products
+        useRelationCount: true
+        align: right
+        width: 100px
+
+    is_active:
+        label: Active
+        type: switch
+        width: 80px
+
+    updated_at:
+        label: Updated
+        type: timetense
+        width: 150px

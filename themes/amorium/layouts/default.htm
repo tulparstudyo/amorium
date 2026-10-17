@@ -11,6 +11,8 @@ slug = "main-menu"
 
 [navigation footerNavigation]
 slug = "footer-menu"
+
+[shopConfig]
 ==
 <?php
 function onStart()
@@ -119,6 +121,10 @@ function onStart()
         {% framework extras %}
         <script src="{{ 'assets/vendor/flowbite/flowbite.min.js'|theme }}"></script>
         <script src="{{ 'assets/js/app.js'|themeAsset }}"></script>
+        {% if shopConfig %}
+            {% partial 'shop/config' %}
+            <script src="{{ 'assets/js/shop.js'|themeAsset }}"></script>
+        {% endif %}
         {% scripts %}
     </body>
 </html>

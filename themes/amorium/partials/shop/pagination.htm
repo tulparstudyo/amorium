@@ -1,0 +1,30 @@
+{% set current = pagination.page %}
+{% set last = pagination.last_page %}
+{% set linkClass = 'inline-flex size-10 items-center justify-center rounded-md border border-line text-muted duration-500 hover:border-primary hover:bg-primary hover:text-white dark:border-night-line' %}
+{% if last > 1 %}
+    <nav class="mt-12 flex justify-center" aria-label="{{ 'Pagination'|_ }}">
+        <ul class="inline-flex flex-wrap items-center gap-1">
+            {% if current > 1 %}
+                <li><a href="{{ shopCatalog.url({ page: current - 1 }) }}" class="{{ linkClass }}" aria-label="{{ 'Previous'|_ }}"><i class="ri-arrow-left-s-line"></i></a></li>
+            {% endif %}
+
+            {% for number in 1..last %}
+                {% if number == 1 or number == last or (number >= current - 2 and number <= current + 2) %}
+                    <li>
+                        {% if number == current %}
+                            <span class="inline-flex size-10 items-center justify-center rounded-md border border-primary bg-primary text-white" aria-current="page">{{ number }}</span>
+                        {% else %}
+                            <a href="{{ shopCatalog.url({ page: number }) }}" class="{{ linkClass }}">{{ number }}</a>
+                        {% endif %}
+                    </li>
+                {% elseif number == current - 3 or number == current + 3 %}
+                    <li class="px-1 text-muted" aria-hidden="true">…</li>
+                {% endif %}
+            {% endfor %}
+
+            {% if current < last %}
+                <li><a href="{{ shopCatalog.url({ page: current + 1 }) }}" class="{{ linkClass }}" aria-label="{{ 'Next'|_ }}"><i class="ri-arrow-right-s-line"></i></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

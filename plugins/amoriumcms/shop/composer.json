@@ -1,0 +1,10 @@
+{
+    "name": "amoriumcms/shop-plugin",
+    "type": "october-plugin",
+    "description": "REST API based e-commerce: customers, products and orders",
+    "require": {
+        "composer/installers": "~1.0",
+        "league/omnipay": "^3.2",
+        "omnipay/stripe": "^3.2"
+    }
+}

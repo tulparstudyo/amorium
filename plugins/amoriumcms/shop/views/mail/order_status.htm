@@ -1,0 +1,12 @@
+subject = "{{ 'Your order :number is :status'|_({ number: order.number, status: order.status_label }) }}"
+==
+{{ 'Your order :number is :status'|_({ number: order.number, status: order.status_label }) }}
+{% if order.note %}
+
+{{ order.note }}
+{% endif %}
+==
+<h1>{{ 'Your order :number is :status'|_({ number: order.number, status: order.status_label }) }}</h1>
+{% if order.note %}
+    <p>{{ order.note|nl2br }}</p>
+{% endif %}

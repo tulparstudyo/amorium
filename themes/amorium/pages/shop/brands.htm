@@ -1,0 +1,37 @@
+##
+title = "Brands"
+url = "/shop/brands"
+layout = "default"
+==
+{% if not shopConfig %}
+    {% do abort(404) %}
+{% endif %}
+
+{% put metaDescription %}{{ 'All brands in our shop.'|_ }}{% endput %}
+
+<section class="relative py-12 md:py-16">
+    <div class="container">
+        {% partial 'shop/breadcrumbs' items=[{ name: 'Brands'|_ }] %}
+        <h1 class="mb-8 text-3xl font-medium">{{ 'Brands'|_ }}</h1>
+
+        {% set brands = shopConfig.brands %}
+        {% if brands %}
+            <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg_992:grid-cols-6">
+                {% for brand in brands %}
+                    <li>
+                        <a href="{{ 'shop/brand'|page({ slug: brand.slug }) }}" class="flex h-full flex-col items-center justify-center gap-3 rounded-md bg-surface p-5 text-center shadow duration-300 hover:shadow-lg dark:bg-night-surface">
+                            {% if brand.logo %}
+                                <img src="{{ brand.logo }}" alt="" loading="lazy" class="h-14 w-auto max-w-full object-contain" />
+                            {% else %}
+                                <span class="flex size-14 items-center justify-center rounded-full bg-page text-2xl font-medium text-primary dark:bg-night-page">{{ brand.name|slice(0, 1)|upper }}</span>
+                            {% endif %}
+                            <span class="font-medium">{{ brand.name }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">{{ 'No brands yet.'|_ }}</p>
+        {% endif %}
+    </div>
+</section>

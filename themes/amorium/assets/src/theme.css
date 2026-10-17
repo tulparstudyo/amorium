@@ -110,6 +110,10 @@
     @media (width >= 1140px) {
         max-width: 1140px;
     }
+
+    @media (width >= 1400px) {
+        max-width: 1400px;
+    }
 }
 
 @utility btn-primary {
@@ -386,4 +390,10 @@
 .rich-content :where(ol),
 .rich-content :where(blockquote) {
     margin-top: 0.75rem;
+}
+
+.filter-box {
+    max-height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }

@@ -1,0 +1,21 @@
+<article class="border-b border-line py-5 last:border-0 dark:border-night-line">
+    <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        {% partial 'shop/stars' rating=review.rating %}
+        {% if review.title %}
+            <h3 class="text-base font-medium">{{ review.title }}</h3>
+        {% endif %}
+    </div>
+    {% if review.body %}
+        <p class="text-body dark:text-night-body">{{ review.body|nl2br }}</p>
+    {% endif %}
+    <p class="mt-2 flex flex-wrap items-center gap-x-3 text-sm text-muted">
+        <span>{{ review.author ?: 'Customer'|_ }}</span>
+        <span>{{ review.created_at|date('d.m.Y') }}</span>
+        {% for name, value in review.variant %}
+            <span>{{ name }}: {{ value }}</span>
+        {% endfor %}
+        {% if review.is_verified_purchase %}
+            <span class="text-success"><i class="ri-shield-check-line" aria-hidden="true"></i> {{ 'Verified purchase'|_ }}</span>
+        {% endif %}
+    </p>
+</article>

@@ -16,6 +16,7 @@ use AmoriumCms\Amorium\Classes\EntriesExtension;
 use AmoriumCms\Amorium\Classes\EntryCreateGuard;
 use AmoriumCms\Amorium\Classes\EntrySiteSync;
 use AmoriumCms\Amorium\Classes\EntryTranslator;
+use AmoriumCms\Amorium\Classes\MailSettingsTest;
 use AmoriumCms\Amorium\Classes\PageSlugs;
 use AmoriumCms\Amorium\Classes\PrimaryCopy;
 use AmoriumCms\Amorium\Classes\SectionClassExporter;
@@ -62,6 +63,7 @@ class Plugin extends PluginBase
         BulkTranslation::boot();
         ContentReviewer::boot();
         SiteTranslation::boot();
+        MailSettingsTest::boot();
     }
 
     public function registerComponents()

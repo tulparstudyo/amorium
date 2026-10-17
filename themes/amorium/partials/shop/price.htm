@@ -1,0 +1,4 @@
+<span class="font-medium text-heading dark:text-night-heading">{{ shopConfig.money(price, currency) }}</span>
+{% if compare and compare > price %}
+    <del class="ms-2 text-sm text-muted">{{ shopConfig.money(compare, currency) }}</del>
+{% endif %}

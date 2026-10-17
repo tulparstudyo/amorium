@@ -1,0 +1,14 @@
+v1.0.0:
+    - First version with catalog, customers, carts and orders
+    - create_catalog_tables.php
+    - create_customer_tables.php
+    - create_order_tables.php
+v1.0.1:
+    - Queue for product imports
+    - create_import_jobs_table.php
+v1.0.2:
+    - Category for a queued product import
+    - add_import_job_category.php
+v1.0.3:
+    - Color is a product property and the common code can be shared
+    - add_product_colors.php

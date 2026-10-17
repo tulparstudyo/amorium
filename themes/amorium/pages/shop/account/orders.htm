@@ -1,0 +1,22 @@
+##
+title = "My Orders"
+url = "/shop/account/orders"
+layout = "default"
+
+[session]
+security = "user"
+redirect = "account/login"
+==
+{% if not shopConfig %}
+    {% do abort(404) %}
+{% endif %}
+
+<section class="relative py-12 md:py-16" data-shop-page="orders">
+    <div class="container">
+        {% partial 'shop/account-nav' %}
+        <h1 class="mb-6 text-2xl font-medium">{{ 'My Orders'|_ }}</h1>
+        <div data-shop-orders>
+            {% partial 'shop/loading' %}
+        </div>
+    </div>
+</section>

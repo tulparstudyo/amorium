@@ -1,0 +1,42 @@
+.shop-admin { padding: 20px; }
+.shop-admin:empty { padding: 0; }
+.shop-admin .shop-editor { max-width: 960px; }
+.shop-admin .shop-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.shop-admin .shop-toolbar .form-control,
+.shop-admin .shop-toolbar .form-select { width: auto; min-width: 160px; }
+.shop-admin .shop-toolbar .shop-spacer { flex: 1; }
+.shop-admin .shop-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.shop-admin .shop-card { border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 6px; padding: 14px; background: var(--bs-body-bg, #fff); }
+.shop-admin .shop-card .shop-card-label { font-size: 12px; color: var(--bs-secondary-color, #6c757d); text-transform: uppercase; }
+.shop-admin .shop-card .shop-card-value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+.shop-admin .shop-panel { border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 6px; padding: 16px; margin-bottom: 16px; background: var(--bs-body-bg, #fff); }
+.shop-admin .shop-panel h4 { font-size: 15px; margin: 0 0 12px; }
+.shop-admin .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.shop-admin .shop-columns { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+@media (max-width: 1100px) { .shop-admin .shop-columns { grid-template-columns: 1fr; } }
+.shop-admin table.table td, .shop-admin table.table th { vertical-align: middle; }
+.shop-admin tr.shop-clickable { cursor: pointer; }
+:is(.shop-admin, .shop-list) .shop-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; background: #f1f1f1; }
+.shop-admin .shop-images { display: flex; flex-wrap: wrap; gap: 12px; }
+.shop-admin .shop-image { width: 160px; border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 6px; padding: 6px; }
+.shop-admin .shop-image img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; }
+.shop-admin .shop-translations .nav-tabs { margin-bottom: 10px; }
+.shop-admin .shop-pager { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+:is(.shop-admin, .shop-list) .shop-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #e9ecef; color: #333; white-space: nowrap; }
+:is(.shop-admin, .shop-list) .shop-badge-pending_payment, :is(.shop-admin, .shop-list) .shop-badge-pending { background: #fff3cd; color: #7a5a00; }
+:is(.shop-admin, .shop-list) .shop-badge-processing { background: #cfe2ff; color: #084298; }
+:is(.shop-admin, .shop-list) .shop-badge-shipped { background: #e0cffc; color: #3d0a91; }
+:is(.shop-admin, .shop-list) .shop-badge-delivered, :is(.shop-admin, .shop-list) .shop-badge-paid, :is(.shop-admin, .shop-list) .shop-badge-approved,
+:is(.shop-admin, .shop-list) .shop-badge-in_stock, :is(.shop-admin, .shop-list) .shop-badge-completed { background: #d1e7dd; color: #0f5132; }
+:is(.shop-admin, .shop-list) .shop-badge-cancelled, :is(.shop-admin, .shop-list) .shop-badge-rejected, :is(.shop-admin, .shop-list) .shop-badge-out_of_stock,
+:is(.shop-admin, .shop-list) .shop-badge-failed { background: #f8d7da; color: #842029; }
+:is(.shop-admin, .shop-list) .shop-badge-low_stock, :is(.shop-admin, .shop-list) .shop-badge-refunded { background: #ffe5d0; color: #8a3a00; }
+:is(.shop-admin, .shop-list) .shop-badge-incomplete { background: #f1f3f5; color: #6c757d; border: 1px dashed #adb5bd; }
+.shop-admin .shop-bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+.shop-admin .shop-bars div { flex: 1; background: var(--bs-primary, #3498db); min-height: 2px; border-radius: 2px 2px 0 0; opacity: .8; }
+.shop-admin .shop-tree-indent { display: inline-block; width: 20px; }
+.shop-admin .shop-muted { color: var(--bs-secondary-color, #6c757d); }
+.shop-admin .shop-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.shop-admin dl.shop-dl { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; margin: 0; }
+.shop-admin dl.shop-dl dt { font-weight: 500; color: var(--bs-secondary-color, #6c757d); }
+.shop-admin dl.shop-dl dd { margin: 0; }
