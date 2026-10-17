@@ -3390,17 +3390,17 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.10.3",
-            "version_normalized": "2.10.3.0",
+            "version": "2.10.4",
+            "version_normalized": "2.10.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f"
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/6efbd9c472b91db0a3350fcd601c8332c2382e1f",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/40821b7606d8d946bac57dbd2290076c722e3a65",
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65",
                 "shasum": ""
             },
             "require": {
@@ -3434,7 +3434,7 @@
             "suggest": {
                 "symfony/yaml": "v2.3+ required if using the Front Matter extension"
             },
-            "time": "2026-09-21T13:07:34+00:00",
+            "time": "2026-10-17T19:59:50+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -12605,7 +12605,7 @@
             "dist": {
                 "type": "path",
                 "url": "../tulparstudyo/omnipay-paytr",
-                "reference": "43600b50d5d0d7ebf051ea18906b99b14bd764c4"
+                "reference": "99a1da86abae233441a4dc3584a8dab5a1a887c2"
             },
             "require": {
                 "omnipay/common": "^3.0",
@@ -12622,7 +12622,6 @@
                 "MIT"
             ],
             "description": "PayTR iFrame gateway for the Omnipay payment processing library",
-            "homepage": "https://github.com/tulparstudyo/omnipay-paytr",
             "keywords": [
                 "iframe",
                 "omnipay",

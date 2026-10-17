@@ -58,7 +58,23 @@ class CheckoutService
                 fn ($method) => PaymentMethods::present($method),
                 PaymentMethods::available()
             )),
+            'payment_error' => static::paymentError($cart),
         ];
+    }
+
+    /**
+     * paymentError is the message the card provider returned for this cart
+     */
+    protected static function paymentError(Cart $cart): ?string
+    {
+        $payment = Payment::where('status', Payment::STATUS_PENDING)
+            ->whereIn('order_id', Order::where('cart_id', $cart->id)->select('id'))
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $message = trim((string) ($payment->meta['return_error'] ?? ''));
+
+        return $message !== '' ? $message : null;
     }
 
     /**

@@ -126,7 +126,7 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
     /**
      * complete marks the payment paid only after the provider confirms the amount
      */
-    public function complete(Payment $payment, array $query, string $providerToken = ''): bool
+    public function complete(Payment $payment, array $query, string $providerToken = '', ?array $posted = null): bool
     {
         $order = $payment->order;
 
@@ -151,10 +151,15 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
                 'reference' => $payment->reference,
             ]);
 
+            if ($posted !== null) {
+                $this->rememberError($payment, $this->customerMessage($data, $posted));
+            }
+
             return false;
         }
 
         $meta = (array) $payment->meta;
+        unset($meta['return_error']);
         if ($this->definition['flow'] === 'checkout') {
             $meta['payment_intent'] = $data['payment_intent'] ?? null;
         }
@@ -396,8 +401,10 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
                 'error' => $exception->getMessage(),
             ]);
 
-            return [];
+            return ['errorMessage' => ''];
         }
+
+        $data = is_array($response->getData()) ? $response->getData() : [];
 
         if (!$response->isSuccessful()) {
             Log::warning('The gateway payment could not be executed.', [
@@ -406,10 +413,50 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
                 'error' => $response->getMessage(),
             ]);
 
-            return [];
+            $data['errorMessage'] = $data['errorMessage'] ?? $response->getMessage();
+
+            return $data;
         }
 
-        return is_array($response->getData()) ? $response->getData() : [];
+        return $data;
+    }
+
+    /**
+     * customerMessage is the text the provider gave the customer, or a short fallback
+     */
+    protected function customerMessage(array $data, array $posted): string
+    {
+        foreach (['failed_reason_msg', 'fail_message', 'mdErrorMsg', 'errorMessage', 'err_msg'] as $key) {
+            $message = $this->plainMessage($posted[$key] ?? '');
+            if ($message !== '') {
+                return $message;
+            }
+        }
+
+        $message = $this->plainMessage($data['errorMessage'] ?? '');
+
+        return $message !== '' ? $message : (string) __('The card payment could not be completed.');
+    }
+
+    /**
+     * rememberError keeps the provider message until the customer tries again
+     */
+    protected function rememberError(Payment $payment, string $message): void
+    {
+        $meta = (array) $payment->meta;
+        $meta['return_error'] = $message;
+        $payment->meta = $meta;
+        $payment->save();
+    }
+
+    /**
+     * plainMessage is a single line safe to show on the checkout page
+     */
+    protected function plainMessage($value): string
+    {
+        $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags((string) $value)));
+
+        return mb_strlen($text) > 300 ? mb_substr($text, 0, 300) : $text;
     }
 
     /**

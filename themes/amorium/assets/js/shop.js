@@ -810,6 +810,27 @@
             renderAddresses();
             renderMethods();
             renderSummary();
+            const fromReturn = new URLSearchParams(window.location.search).has('payment_error');
+            const message = data.payment_error || (fromReturn ? t('The card payment could not be completed.') : '');
+            if (!message) {
+                return;
+            }
+            const banner = root.querySelector('[data-shop-payment-error]');
+            if (banner) {
+                banner.textContent = message;
+                banner.classList.remove('hidden');
+            }
+            placeError.textContent = message;
+            if (!root.dataset.paymentErrorShown) {
+                root.dataset.paymentErrorShown = '1';
+                banner?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            if (fromReturn) {
+                const params = new URLSearchParams(window.location.search);
+                params.delete('payment_error');
+                const next = params.toString();
+                history.replaceState(null, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
+            }
         };
 
         const fillGuest = () => {

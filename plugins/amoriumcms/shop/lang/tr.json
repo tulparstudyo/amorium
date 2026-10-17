@@ -191,6 +191,7 @@
     "Only select specs have options.": "Yalnızca seçim tipindeki özelliklerin seçenekleri olur.",
     "Payment received.": "Ödeme alındı.",
     "Replaced by a new payment attempt.": "Yeni bir ödeme denemesiyle değiştirildi.",
+    "The card payment could not be completed.": "Kart ödemesi tamamlanamadı.",
     "Please choose a billing address.": "Lütfen bir fatura adresi seçin.",
     "Please choose a shipping address.": "Lütfen bir teslimat adresi seçin.",
     "Please enter a billing address.": "Lütfen bir fatura adresi girin.",

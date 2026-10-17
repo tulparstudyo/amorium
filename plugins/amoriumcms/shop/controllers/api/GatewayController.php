@@ -22,14 +22,15 @@ class GatewayController
     public function returned(string $code): RedirectResponse
     {
         $method = $this->method($code);
-        $reference = $method ? (string) (Request::query($method->referenceQuery()) ?: Request::post($method->referenceQuery())) : '';
+        $posted = request()->request->all();
+        $reference = $method ? (string) (Request::query($method->referenceQuery()) ?: ($posted[$method->referenceQuery()] ?? '')) : '';
         $payment = $method ? $this->payment($method, (string) Request::query('token'), $reference) : null;
 
         if (!$method || !$payment) {
-            return redirect($this->checkoutUrl());
+            return redirect($this->checkoutUrl(['payment_error' => 1]));
         }
 
-        $paid = $method->complete($payment, Request::query(), (string) Request::post('token'));
+        $paid = $method->complete($payment, Request::query(), (string) ($posted['token'] ?? ''), $posted);
 
         if (!$paid) {
             return redirect($this->checkoutUrl());
@@ -93,8 +94,10 @@ class GatewayController
     /**
      * checkoutUrl is where an unfinished payment returns the customer, with the cart still open
      */
-    protected function checkoutUrl(): string
+    protected function checkoutUrl(array $query = []): string
     {
-        return Url::to(Cms::pageUrl('shop/checkout') ?: '/shop/checkout');
+        $url = Url::to(Cms::pageUrl('shop/checkout') ?: '/shop/checkout');
+
+        return $query ? $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($query) : $url;
     }
 }
