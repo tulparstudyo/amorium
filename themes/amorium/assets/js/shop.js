@@ -797,9 +797,49 @@
             root.querySelector('[data-shop-summary]').innerHTML = totalsHtml(state.cart);
         };
 
+        const showPaymentError = (data) => {
+            const params = new URLSearchParams(window.location.search);
+            const generic = t('The card payment could not be completed.');
+            const gateway = [data?.payment_error, params.get('payment_message')]
+                .map((value) => (value || '').trim())
+                .find((value) => value && value !== generic) || '';
+            const failed = params.has('payment_error') || params.has('payment_message') || !!data?.payment_error;
+            const banner = root.querySelector('[data-shop-payment-error]');
+            if (!failed && !gateway) {
+                return;
+            }
+            if (banner) {
+                banner.replaceChildren();
+                const summary = document.createElement('span');
+                summary.textContent = generic;
+                banner.append(summary);
+                if (gateway) {
+                    const detail = document.createElement('span');
+                    detail.className = 'mt-1 block';
+                    detail.textContent = gateway;
+                    banner.append(detail);
+                }
+                banner.classList.remove('hidden');
+            }
+            if (placeError) {
+                placeError.textContent = [generic, gateway].filter(Boolean).join(' ');
+            }
+            if (!root.dataset.paymentErrorShown) {
+                root.dataset.paymentErrorShown = '1';
+                banner?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            if (params.has('payment_error') || params.has('payment_message')) {
+                params.delete('payment_error');
+                params.delete('payment_message');
+                const next = params.toString();
+                history.replaceState(null, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
+            }
+        };
+
         const apply = (data) => {
             state = data;
             rememberCart(data.cart);
+            showPaymentError(data);
             if (!data.cart.items.length) {
                 root.querySelector('[data-shop-checkout-loading]').classList.add('hidden');
                 form.classList.add('hidden');
@@ -810,27 +850,6 @@
             renderAddresses();
             renderMethods();
             renderSummary();
-            const fromReturn = new URLSearchParams(window.location.search).has('payment_error');
-            const message = data.payment_error || (fromReturn ? t('The card payment could not be completed.') : '');
-            if (!message) {
-                return;
-            }
-            const banner = root.querySelector('[data-shop-payment-error]');
-            if (banner) {
-                banner.textContent = message;
-                banner.classList.remove('hidden');
-            }
-            placeError.textContent = message;
-            if (!root.dataset.paymentErrorShown) {
-                root.dataset.paymentErrorShown = '1';
-                banner?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            if (fromReturn) {
-                const params = new URLSearchParams(window.location.search);
-                params.delete('payment_error');
-                const next = params.toString();
-                history.replaceState(null, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
-            }
         };
 
         const fillGuest = () => {
@@ -1020,6 +1039,7 @@
                 form.classList.add('grid');
             }
             catch (error) {
+                showPaymentError(null);
                 root.querySelector('[data-shop-checkout-loading]').classList.add('hidden');
                 root.querySelector('[data-shop-checkout-empty]').classList.remove('hidden');
                 if (error.code !== 'CART_NOT_FOUND') {

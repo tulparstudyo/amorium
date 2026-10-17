@@ -119,6 +119,7 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
         $payment->meta = [
             'checkout_url' => $url,
             'return_token' => $token,
+            'provider_token' => $data['token'] ?? null,
         ];
         $payment->save();
     }
@@ -152,7 +153,10 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
             ]);
 
             if ($posted !== null) {
-                $this->rememberError($payment, $this->customerMessage($data, $posted));
+                $message = static::failureText($posted + $data);
+                if ($message !== '') {
+                    $this->rememberError($payment, $message);
+                }
             }
 
             return false;
@@ -422,20 +426,26 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
     }
 
     /**
-     * customerMessage is the text the provider gave the customer, or a short fallback
+     * failureText is the provider's own explanation, taken from the return or the provider response
      */
-    protected function customerMessage(array $data, array $posted): string
+    public static function failureText(array $fields): string
     {
-        foreach (['failed_reason_msg', 'fail_message', 'mdErrorMsg', 'errorMessage', 'err_msg'] as $key) {
-            $message = $this->plainMessage($posted[$key] ?? '');
-            if ($message !== '') {
+        $keys = ['failed_reason_msg', 'fail_message', 'mderrormsg', 'errormessage', 'err_msg', 'error_message', 'bank_message', 'reason'];
+        $flat = [];
+        foreach ($fields as $key => $value) {
+            if (is_scalar($value)) {
+                $flat[strtolower((string) $key)] = $value;
+            }
+        }
+
+        foreach ($keys as $key) {
+            $message = static::plain($flat[$key] ?? '');
+            if ($message !== '' && !in_array(strtolower($message), ['failed', 'failure', 'error', 'success'], true)) {
                 return $message;
             }
         }
 
-        $message = $this->plainMessage($data['errorMessage'] ?? '');
-
-        return $message !== '' ? $message : (string) __('The card payment could not be completed.');
+        return '';
     }
 
     /**
@@ -452,7 +462,7 @@ class OmnipayMethod implements PaymentMethod, StartsPayment
     /**
      * plainMessage is a single line safe to show on the checkout page
      */
-    protected function plainMessage($value): string
+    protected static function plain($value): string
     {
         $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags((string) $value)));
 

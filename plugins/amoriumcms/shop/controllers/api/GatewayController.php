@@ -22,18 +22,23 @@ class GatewayController
     public function returned(string $code): RedirectResponse
     {
         $method = $this->method($code);
-        $posted = request()->request->all();
-        $reference = $method ? (string) (Request::query($method->referenceQuery()) ?: ($posted[$method->referenceQuery()] ?? '')) : '';
-        $payment = $method ? $this->payment($method, (string) Request::query('token'), $reference) : null;
+        $posted = request()->request->all() ?: (array) $_POST;
+        $referenceName = $method ? $method->referenceQuery() : 'paymentId';
+        $reference = (string) (Request::query($referenceName) ?: ($posted[$referenceName] ?? $posted['merchant_oid'] ?? $posted['conversationId'] ?? ''));
+        $providerToken = (string) ($posted['token'] ?? '');
+        $payment = $method ? $this->payment($method, (string) Request::query('token'), $reference, $providerToken) : null;
+        $gatewayMessage = OmnipayMethod::failureText($posted);
 
         if (!$method || !$payment) {
-            return redirect($this->checkoutUrl(['payment_error' => 1]));
+            return redirect($this->checkoutUrl($this->errorQuery($gatewayMessage)));
         }
 
-        $paid = $method->complete($payment, Request::query(), (string) ($posted['token'] ?? ''), $posted);
+        $paid = $method->complete($payment, Request::query(), $providerToken, $posted);
 
         if (!$paid) {
-            return redirect($this->checkoutUrl());
+            $stored = trim((string) ($payment->fresh()->meta['return_error'] ?? ''));
+
+            return redirect($this->checkoutUrl($this->errorQuery($stored !== '' ? $stored : $gatewayMessage)));
         }
 
         return redirect($method->orderUrl($payment->order, ['placed' => 1]));
@@ -71,16 +76,27 @@ class GatewayController
     /**
      * payment is the provider payment addressed by the return token
      */
-    protected function payment(OmnipayMethod $method, string $token, string $reference): ?Payment
+    protected function payment(OmnipayMethod $method, string $token, string $reference, string $providerToken = ''): ?Payment
     {
-        if ($token === '' || $reference === '') {
+        $payment = $reference !== ''
+            ? Payment::with('order')->where('method', $method->code())->where('reference', $reference)->first()
+            : null;
+
+        if (!$payment && $providerToken !== '') {
+            $payment = Payment::with('order')
+                ->where('method', $method->code())
+                ->where('status', Payment::STATUS_PENDING)
+                ->where('meta->provider_token', $providerToken)
+                ->first();
+        }
+
+        if (!$payment || !$payment->order) {
             return null;
         }
 
-        $payment = Payment::with('order')->where('method', $method->code())->where('reference', $reference)->first();
         $stored = (string) ($payment->meta['return_token'] ?? '');
 
-        if (!$payment || !$payment->order || $stored === '' || !hash_equals($stored, $token)) {
+        if ($token !== '' && ($stored === '' || !hash_equals($stored, $token))) {
             return null;
         }
 
@@ -92,8 +108,18 @@ class GatewayController
     }
 
     /**
-     * checkoutUrl is where an unfinished payment returns the customer, with the cart still open
+     * errorQuery marks the checkout as a failed return and carries the provider text
      */
+    protected function errorQuery(string $message): array
+    {
+        $query = ['payment_error' => 1];
+        if ($message !== '') {
+            $query['payment_message'] = $message;
+        }
+
+        return $query;
+    }
+
     protected function checkoutUrl(array $query = []): string
     {
         $url = Url::to(Cms::pageUrl('shop/checkout') ?: '/shop/checkout');

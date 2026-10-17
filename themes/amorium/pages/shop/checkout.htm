@@ -19,12 +19,13 @@ layout = "default"
             {% partial 'shop/loading' %}
         </div>
 
+        <p class="mb-8 hidden rounded-md border border-danger/40 bg-danger/10 p-4 text-sm text-danger" data-shop-payment-error role="alert"></p>
+
         <div class="hidden rounded-md border border-dashed border-line p-12 text-center dark:border-night-line" data-shop-checkout-empty>
             <i class="ri-shopping-bag-3-line text-5xl text-muted" aria-hidden="true"></i>
             <p class="mt-4 text-lg">{{ 'Your cart is empty.'|_ }}</p>
             <a href="{{ 'shop/index'|page }}" class="btn-primary mt-6">{{ 'Continue shopping'|_ }}</a>
         </div>
-            <p class="hidden rounded-md border border-danger/40 bg-danger/10 p-4 text-sm text-danger lg_992:col-span-3" data-shop-payment-error role="alert"></p>
         <form class="hidden gap-8 lg_992:grid-cols-3" data-shop-checkout novalidate>
 
             <div class="space-y-6 lg_992:col-span-2">

@@ -36,7 +36,9 @@ class CompletePurchaseRequest extends AbstractRequest
                 'value' => $amount,
                 'currency' => $currency,
             ],
-            'errorMessage' => $result['err_msg'] ?? null,
+            'errorMessage' => $result['failed_reason_msg'] ?? $result['err_msg'] ?? null,
+            'failed_reason_msg' => $result['failed_reason_msg'] ?? null,
+            'err_msg' => $result['err_msg'] ?? null,
         ]);
     }
 }
