@@ -24,9 +24,9 @@ layout = "default"
             <p class="mt-4 text-lg">{{ 'Your cart is empty.'|_ }}</p>
             <a href="{{ 'shop/index'|page }}" class="btn-primary mt-6">{{ 'Continue shopping'|_ }}</a>
         </div>
-
-        <form class="hidden gap-8 lg_992:grid-cols-3" data-shop-checkout novalidate>
             <p class="hidden rounded-md border border-danger/40 bg-danger/10 p-4 text-sm text-danger lg_992:col-span-3" data-shop-payment-error role="alert"></p>
+        <form class="hidden gap-8 lg_992:grid-cols-3" data-shop-checkout novalidate>
+
             <div class="space-y-6 lg_992:col-span-2">
                 <div class="{{ cardClass }}">
                     <h2 class="{{ headingClass }}">{{ 'Contact'|_ }}</h2>
