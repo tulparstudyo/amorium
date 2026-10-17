@@ -5,6 +5,7 @@ use Site;
 use AmoriumCms\Shop\Classes\Api\ApiCode;
 use AmoriumCms\Shop\Classes\Api\ApiException;
 use AmoriumCms\Shop\Classes\Payments\PaymentMethods;
+use AmoriumCms\Shop\Models\Cart;
 use AmoriumCms\Shop\Models\Order;
 use AmoriumCms\Shop\Models\Payment;
 use AmoriumCms\Shop\Models\OrderStatusHistory;
@@ -95,6 +96,10 @@ class OrderService
             }
 
             $order->save();
+
+            if ($order->cart_id) {
+                Cart::where('id', $order->cart_id)->whereNull('order_id')->update(['order_id' => $order->id]);
+            }
 
             return $order;
         });

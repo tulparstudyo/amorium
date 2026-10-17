@@ -5,41 +5,63 @@ tabs:
             comment: Three letter currency code of this site, such as TRY or USD.
             tab: General
             span: left
+            attributes:
+                maxlength: 3
         order_number_prefix:
             label: Order Number Prefix
             comment: Shared by every site.
             tab: General
             span: right
+            attributes:
+                maxlength: 8
         low_stock_threshold:
             label: Low Stock Threshold
             comment: Products with less stock than this are shown as low stock.
             type: number
+            min: 1
+            max: 1000
+            step: 1
             tab: General
             span: left
         service_tax_rate:
             label: VAT Rate of Shipping and Payment Fees (%)
             type: number
+            min: 0
+            max: 100
+            step: 0.01
             tab: General
             span: right
         cart_ttl_days:
             label: Cart Lifetime (days)
             type: number
+            min: 1
+            max: 365
+            step: 1
             tab: General
             span: left
 
         out_of_stock_limit_customer:
             label: Out of Stock Attempts per Customer or Cart
             type: number
+            min: 1
+            max: 1000
+            step: 1
             tab: Limits
             span: left
         out_of_stock_limit_ip:
             label: Out of Stock Attempts per IP Address
             comment: Keep this higher than the customer limit, since many people can share an IP address.
             type: number
+            min: 1
+            max: 10000
+            step: 1
             tab: Limits
             span: right
         out_of_stock_decay_minutes:
             label: Attempt Window (minutes)
             type: number
+            min: 1
+            max: 1440
+            step: 1
             tab: Limits
             span: left

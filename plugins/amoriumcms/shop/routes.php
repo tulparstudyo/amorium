@@ -9,6 +9,7 @@ use AmoriumCms\Shop\Classes\Middleware\CustomerAuth;
 use AmoriumCms\Shop\Classes\Middleware\AdminAuth;
 use AmoriumCms\Shop\Classes\Middleware\PublicCache;
 use AmoriumCms\Shop\Classes\Middleware\PrivateResponse;
+use AmoriumCms\Shop\Classes\Middleware\KeepBrowserSession;
 use AmoriumCms\Shop\Classes\Middleware\NoStoreResponse;
 use AmoriumCms\Shop\Controllers\Api;
 use AmoriumCms\Shop\Controllers\Api\Admin;
@@ -88,7 +89,9 @@ Route::prefix('api/v1/{site}')
         });
 
         Route::middleware(NoStoreResponse::class)->group(function () {
-            Route::get('payments/{code}/return', [Api\GatewayController::class, 'returned'])->where('code', '[a-z0-9_]+');
+            Route::match(['get', 'post'], 'payments/{code}/return', [Api\GatewayController::class, 'returned'])
+                ->middleware(KeepBrowserSession::class)
+                ->where('code', '[a-z0-9_]+');
             Route::post('payments/{code}/webhook', [Api\GatewayController::class, 'webhook'])->where('code', '[a-z0-9_]+');
         });
 

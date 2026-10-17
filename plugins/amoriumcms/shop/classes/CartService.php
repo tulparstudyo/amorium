@@ -7,6 +7,7 @@ use Request;
 use AmoriumCms\Shop\Classes\Api\ApiCode;
 use AmoriumCms\Shop\Classes\Api\ApiException;
 use AmoriumCms\Shop\Classes\Payments\PaymentMethods;
+use AmoriumCms\Shop\Classes\Payments\StartsPayment;
 use AmoriumCms\Shop\Models\Cart;
 use AmoriumCms\Shop\Models\Order;
 use AmoriumCms\Shop\Models\Product;
@@ -51,6 +52,10 @@ class CartService
             }
 
             if (!$cart) {
+                $cart = static::reopenUnpaid($user->id, $siteId);
+            }
+
+            if (!$cart) {
                 $cart = static::create();
             }
         }
@@ -70,6 +75,30 @@ class CartService
             $cart->expires_at = static::expiry();
             $cart->save();
         }
+
+        return $cart;
+    }
+
+    /**
+     * reopenUnpaid gives back the cart of a card payment the customer left unfinished.
+     * The cart stays closed only after the payment is confirmed.
+     */
+    protected static function reopenUnpaid(int $userId, int $siteId): ?Cart
+    {
+        $cart = Cart::where('user_id', $userId)->where('site_id', $siteId)->whereNotNull('order_id')->orderBy('id', 'desc')->first();
+        if (!$cart) {
+            return null;
+        }
+
+        $order = Order::where('id', $cart->order_id)->where('payment_status', Order::PAYMENT_PENDING)->where('status', Order::STATUS_PENDING_PAYMENT)->first();
+        $method = $order ? PaymentMethods::find($order->payment_method) : null;
+
+        if (!$order || !$method instanceof StartsPayment) {
+            return null;
+        }
+
+        $cart->order_id = null;
+        $cart->save();
 
         return $cart;
     }

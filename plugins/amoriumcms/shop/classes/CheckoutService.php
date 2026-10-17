@@ -213,6 +213,8 @@ class CheckoutService
                     throw ApiException::make(ApiCode::CART_NOT_FOUND);
                 }
 
+                static::replaceUnpaidAttempt($cart);
+
                 $order = Order::where('cart_id', $cart->id)->where('status', Order::STATUS_PAYMENT_NOT_MADE)->first() ?: new Order;
                 $wasDraft = $order->exists;
 
@@ -263,8 +265,10 @@ class CheckoutService
 
                 OrderService::record($order, $wasDraft ? Order::STATUS_PAYMENT_NOT_MADE : null, $order->status);
 
-                $cart->order_id = $order->id;
-                $cart->save();
+                if (!$paymentMethod instanceof StartsPayment) {
+                    $cart->order_id = $order->id;
+                    $cart->save();
+                }
 
                 return $order;
             });
@@ -288,6 +292,10 @@ class CheckoutService
         Db::transaction(function () use ($cart, $user, $email) {
             $cart = Cart::lockForUpdate()->find($cart->id);
             if (!$cart || $cart->order_id) {
+                return;
+            }
+
+            if (Order::where('cart_id', $cart->id)->where('payment_status', Order::PAYMENT_PENDING)->whereNotIn('status', [Order::STATUS_PAYMENT_NOT_MADE, Order::STATUS_CANCELLED, Order::STATUS_REFUNDED])->exists()) {
                 return;
             }
 
@@ -347,6 +355,24 @@ class CheckoutService
                 OrderService::record($order, null, Order::STATUS_PAYMENT_NOT_MADE);
             }
         });
+    }
+
+    /**
+     * replaceUnpaidAttempt cancels a card payment that was left unfinished, so a second
+     * attempt reserves the stock once and the cart stays open until the new payment is confirmed.
+     */
+    protected static function replaceUnpaidAttempt(Cart $cart)
+    {
+        $pending = Order::where('cart_id', $cart->id)
+            ->where('payment_status', Order::PAYMENT_PENDING)
+            ->whereNotIn('status', [Order::STATUS_PAYMENT_NOT_MADE, Order::STATUS_CANCELLED, Order::STATUS_REFUNDED])
+            ->get();
+
+        foreach ($pending as $order) {
+            if ($order->canMoveTo(Order::STATUS_CANCELLED)) {
+                OrderService::changeStatus($order, Order::STATUS_CANCELLED, __('Replaced by a new payment attempt.'));
+            }
+        }
     }
 
     /**

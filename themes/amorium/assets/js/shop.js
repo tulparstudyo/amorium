@@ -948,13 +948,13 @@
                 const result = await api('POST', 'checkout/place', { expected_total: state.cart.totals.grand_total }, { 'Idempotency-Key': idempotencyKey });
                 const order = result.data;
 
-                cartToken.set(null);
-                updateCartCount(0);
-
                 if (order.payment_instructions?.type === 'redirect' && order.payment_instructions.url) {
                     window.location.href = order.payment_instructions.url;
                     return;
                 }
+
+                cartToken.set(null);
+                updateCartCount(0);
 
                 const url = new URL(pageUrl('order', { number: order.number }), window.location.href);
                 url.searchParams.set('placed', '1');
@@ -1015,6 +1015,11 @@
         const number = root.dataset.number;
         const params = new URLSearchParams(window.location.search);
         const guestToken = params.get('token');
+
+        if (params.get('placed') === '1') {
+            cartToken.set(null);
+            updateCartCount(0);
+        }
 
         const render = (order) => {
             const instructions = order.payment_instructions;

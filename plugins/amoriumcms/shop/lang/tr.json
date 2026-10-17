@@ -190,6 +190,7 @@
     "Only select specs can be variant specs.": "Yalnızca seçim tipindeki özellikler varyant olabilir.",
     "Only select specs have options.": "Yalnızca seçim tipindeki özelliklerin seçenekleri olur.",
     "Payment received.": "Ödeme alındı.",
+    "Replaced by a new payment attempt.": "Yeni bir ödeme denemesiyle değiştirildi.",
     "Please choose a billing address.": "Lütfen bir fatura adresi seçin.",
     "Please choose a shipping address.": "Lütfen bir teslimat adresi seçin.",
     "Please enter a billing address.": "Lütfen bir fatura adresi girin.",

@@ -1,6 +1,8 @@
 <?php namespace AmoriumCms\Shop\Controllers\Api;
 
+use Url;
 use Request;
+use Cms\Facades\Cms;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use AmoriumCms\Shop\Classes\Payments\OmnipayMethod;
@@ -14,20 +16,26 @@ use AmoriumCms\Shop\Models\Payment;
 class GatewayController
 {
     /**
-     * returned sends the customer back to the order
+     * returned sends the customer back to the shop. The provider posts or redirects here,
+     * so this action never renders a page that would start a new browser session.
      */
     public function returned(string $code): RedirectResponse
     {
         $method = $this->method($code);
-        $payment = $method ? $this->payment($method, (string) Request::query('token'), (string) Request::query($method->referenceQuery())) : null;
+        $reference = $method ? (string) (Request::query($method->referenceQuery()) ?: Request::post($method->referenceQuery())) : '';
+        $payment = $method ? $this->payment($method, (string) Request::query('token'), $reference) : null;
 
         if (!$method || !$payment) {
-            return redirect(\Url::to('/'));
+            return redirect($this->checkoutUrl());
         }
 
-        $paid = $method->complete($payment, Request::query());
+        $paid = $method->complete($payment, Request::query(), (string) Request::post('token'));
 
-        return redirect($method->orderUrl($payment->order, $paid ? ['placed' => 1] : []));
+        if (!$paid) {
+            return redirect($this->checkoutUrl());
+        }
+
+        return redirect($method->orderUrl($payment->order, ['placed' => 1]));
     }
 
     /**
@@ -80,5 +88,13 @@ class GatewayController
         }
 
         return $payment;
+    }
+
+    /**
+     * checkoutUrl is where an unfinished payment returns the customer, with the cart still open
+     */
+    protected function checkoutUrl(): string
+    {
+        return Url::to(Cms::pageUrl('shop/checkout') ?: '/shop/checkout');
     }
 }
