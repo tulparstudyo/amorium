@@ -71,6 +71,7 @@ return array(
     'Omnipay\\SecurePay\\' => array($vendorDir . '/omnipay/securepay/src'),
     'Omnipay\\SagePay\\' => array($vendorDir . '/omnipay/sagepay/src'),
     'Omnipay\\PaymentExpress\\' => array($vendorDir . '/omnipay/paymentexpress/src'),
+    'Omnipay\\PayTR\\' => array($vendorDir . '/tulparstudyo/omnipay-paytr/src'),
     'Omnipay\\PayPal\\' => array($vendorDir . '/omnipay/paypal/src'),
     'Omnipay\\Mollie\\' => array($vendorDir . '/omnipay/mollie/src'),
     'Omnipay\\Iyzico\\' => array($vendorDir . '/tulparstudyo/omnipay-iyzico/src'),

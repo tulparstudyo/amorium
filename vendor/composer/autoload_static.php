@@ -139,6 +139,7 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
             'Omnipay\\SecurePay\\' => 18,
             'Omnipay\\SagePay\\' => 16,
             'Omnipay\\PaymentExpress\\' => 23,
+            'Omnipay\\PayTR\\' => 14,
             'Omnipay\\PayPal\\' => 15,
             'Omnipay\\Mollie\\' => 15,
             'Omnipay\\Iyzico\\' => 15,
@@ -512,6 +513,10 @@ class ComposerStaticInit6ba1b63904fdfe553eb0e7d2608a06f2
         'Omnipay\\PaymentExpress\\' =>
         array (
             0 => __DIR__ . '/..' . '/omnipay/paymentexpress/src',
+        ),
+        'Omnipay\\PayTR\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/tulparstudyo/omnipay-paytr/src',
         ),
         'Omnipay\\PayPal\\' =>
         array (

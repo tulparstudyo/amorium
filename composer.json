@@ -21,12 +21,17 @@
         "omnipay/paymentexpress": "^3.0",
         "omnipay/securepay": "^3.0",
         "omnipay/dummy": "^3.0",
-        "tulparstudyo/omnipay-iyzico": "^1.0"
+        "tulparstudyo/omnipay-iyzico": "^1.0",
+        "tulparstudyo/omnipay-paytr": "^1.0"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/tulparstudyo/omnipay-iyzico"
+        },
+        {
+            "type": "path",
+            "url": "../tulparstudyo/omnipay-paytr"
         }
     ],
     "require-dev": {

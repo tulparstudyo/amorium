@@ -12599,6 +12599,42 @@
             "install-path": "../tulparstudyo/omnipay-iyzico"
         },
         {
+            "name": "tulparstudyo/omnipay-paytr",
+            "version": "1.0.0",
+            "version_normalized": "1.0.0.0",
+            "dist": {
+                "type": "path",
+                "url": "../tulparstudyo/omnipay-paytr",
+                "reference": "43600b50d5d0d7ebf051ea18906b99b14bd764c4"
+            },
+            "require": {
+                "omnipay/common": "^3.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Omnipay\\PayTR\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "PayTR iFrame gateway for the Omnipay payment processing library",
+            "homepage": "https://github.com/tulparstudyo/omnipay-paytr",
+            "keywords": [
+                "iframe",
+                "omnipay",
+                "payment",
+                "paytr"
+            ],
+            "transport-options": {
+                "relative": true
+            },
+            "install-path": "../tulparstudyo/omnipay-paytr"
+        },
+        {
             "name": "twig/twig",
             "version": "v3.30.0",
             "version_normalized": "3.30.0.0",

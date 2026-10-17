@@ -555,6 +555,57 @@ tabs:
             type: sensitive
             tab: Credit Card
 
+        _paytr_section:
+            label: PayTR
+            type: section
+            cssClass: payment-provider
+            comment: The customer pays on PayTR. Card details stay on PayTR.
+            tab: Credit Card
+        paytr_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: PayTR
+            flow: redirect
+            customer: PayTR
+            credentials:
+                merchantId: merchant_id
+                merchantKey: merchant_key
+                merchantSalt: merchant_salt
+            testMode: sandbox
+        paytr_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        paytr_name:
+            label: Name on this site
+            comment: Leave empty to use PayTR.
+            tab: Credit Card
+            span: left
+        paytr_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        paytr_merchant_id:
+            label: PayTR Merchant ID
+            type: sensitive
+            tab: Credit Card
+        paytr_merchant_key:
+            label: PayTR Merchant Key
+            type: sensitive
+            tab: Credit Card
+        paytr_merchant_salt:
+            label: PayTR Merchant Salt
+            type: sensitive
+            tab: Credit Card
+
         _dummy_section:
             label: Dummy
             type: section

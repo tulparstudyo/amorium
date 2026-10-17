@@ -1,0 +1,17 @@
+{
+    "name": "tulparstudyo/omnipay-paytr",
+    "type": "library",
+    "description": "PayTR iFrame gateway for the Omnipay payment processing library",
+    "keywords": ["omnipay", "paytr", "payment", "iframe"],
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+        "php": "^8.2",
+        "omnipay/common": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\PayTR\\": "src/"
+        }
+    }
+}

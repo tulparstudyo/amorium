@@ -16,6 +16,7 @@
         "omnipay/paymentexpress": "^3.0",
         "omnipay/securepay": "^3.0",
         "omnipay/dummy": "^3.0",
-        "tulparstudyo/omnipay-iyzico": "^1.0"
+        "tulparstudyo/omnipay-iyzico": "^1.0",
+        "tulparstudyo/omnipay-paytr": "^1.0"
     }
 }
