@@ -88,8 +88,8 @@ Route::prefix('api/v1/{site}')
         });
 
         Route::middleware(NoStoreResponse::class)->group(function () {
-            Route::get('payments/stripe/return', [Api\StripeController::class, 'returned']);
-            Route::post('payments/stripe/webhook', [Api\StripeController::class, 'webhook']);
+            Route::get('payments/{code}/return', [Api\GatewayController::class, 'returned'])->where('code', '[a-z0-9_]+');
+            Route::post('payments/{code}/webhook', [Api\GatewayController::class, 'webhook'])->where('code', '[a-z0-9_]+');
         });
 
         Route::any('{any?}', $notFound)->where('any', '.*');

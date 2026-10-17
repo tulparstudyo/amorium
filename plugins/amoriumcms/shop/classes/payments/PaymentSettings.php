@@ -96,8 +96,15 @@ class PaymentSettings
                 }
             }
 
-            if ($code === 'stripe' && $input['enabled'] && trim((string) ($input['fields']['secret_key'] ?? '')) === '') {
-                $errors['Payment.stripe_secret_key'] = [__('The Stripe secret key is required when card payment is enabled.')];
+            $gateway = Gateways::find($code);
+            if ($gateway && $input['enabled']) {
+                foreach ($gateway['credentials'] as $suffix) {
+                    if (trim((string) ($input['fields'][$suffix] ?? '')) === '') {
+                        $errors['Payment.' . static::key($code, $suffix)] = [__('The :name is required when the method is enabled.', [
+                            'name' => $gateway['labels'][$suffix] ?? $suffix,
+                        ])];
+                    }
+                }
             }
         }
 
@@ -136,13 +143,27 @@ class PaymentSettings
             $settings->cod_fee = Money::round($fields['fee'] ?? 0);
         }
 
-        if ($code === 'stripe') {
-            $secret = trim((string) ($fields['secret_key'] ?? ''));
-            $settings->stripe_secret_key = $secret;
-            $settings->stripe_webhook_secret = trim((string) ($fields['webhook_secret'] ?? ''));
+        $gateway = Gateways::find($code);
+        if ($gateway) {
+            foreach (Gateways::suffixes($gateway) as $suffix) {
+                $value = $fields[$suffix] ?? '';
+                $settings->{static::key($code, $suffix)} = $suffix === $gateway['testMode']
+                    ? (bool) $value
+                    : trim((string) $value);
+            }
 
-            if ($settings->stripe_enabled && $secret === '') {
-                throw ApiException::validation(['fields.secret_key' => __('The Stripe secret key is required when card payment is enabled.')]);
+            if ($settings->{static::key($code, 'enabled')}) {
+                $missing = [];
+                foreach ($gateway['credentials'] as $suffix) {
+                    if (trim((string) $settings->{static::key($code, $suffix)}) === '') {
+                        $missing['fields.' . $suffix] = __('The :name is required when the method is enabled.', [
+                            'name' => $gateway['labels'][$suffix] ?? $suffix,
+                        ]);
+                    }
+                }
+                if ($missing) {
+                    throw ApiException::validation($missing);
+                }
             }
         }
 
@@ -176,9 +197,11 @@ class PaymentSettings
             $rules['fields.fee'] = 'nullable|numeric|min:0';
         }
 
-        if ($code === 'stripe') {
-            $rules['fields.secret_key'] = 'nullable|string|max:255';
-            $rules['fields.webhook_secret'] = 'nullable|string|max:255';
+        $gateway = Gateways::find($code);
+        if ($gateway) {
+            foreach (Gateways::suffixes($gateway) as $suffix) {
+                $rules['fields.' . $suffix] = $suffix === $gateway['testMode'] ? 'nullable|boolean' : 'nullable|string|max:255';
+            }
         }
 
         return $rules;
@@ -209,11 +232,14 @@ class PaymentSettings
             ];
         }
 
-        if ($code === 'stripe') {
-            $input['fields'] = [
-                'secret_key' => $flat['stripe_secret_key'] ?? '',
-                'webhook_secret' => $flat['stripe_webhook_secret'] ?? '',
-            ];
+        $gateway = Gateways::find($code);
+        if ($gateway) {
+            foreach (Gateways::suffixes($gateway) as $suffix) {
+                $value = $flat[static::key($code, $suffix)] ?? '';
+                $input['fields'][$suffix] = $suffix === $gateway['testMode']
+                    ? !in_array($value, [null, false, 0, '0', '', 'false'], true)
+                    : $value;
+            }
         }
 
         return $input;
@@ -236,12 +262,8 @@ class PaymentSettings
             return 'cod_fee';
         }
 
-        if ($field === 'fields.secret_key') {
-            return 'stripe_secret_key';
-        }
-
-        if ($field === 'fields.webhook_secret') {
-            return 'stripe_webhook_secret';
+        if (str_starts_with($field, 'fields.') && Gateways::find($code)) {
+            return static::key($code, substr($field, strlen('fields.')));
         }
 
         if (str_starts_with($field, 'fields.accounts')) {
@@ -295,24 +317,33 @@ class PaymentSettings
             ]];
         }
 
-        $site = Site::getActiveSite();
+        $gateway = Gateways::find($code);
+        if (!$gateway) {
+            return [];
+        }
 
-        return [
-            [
-                'key' => 'secret_key',
-                'type' => 'password',
-                'label' => 'Stripe Secret Key',
-                'comment' => 'Starts with sk_. The key stays on the server.',
-                'value' => (string) ShopSetting::value('stripe_secret_key'),
-            ],
-            [
-                'key' => 'webhook_secret',
-                'type' => 'password',
-                'label' => 'Stripe Webhook Secret',
-                'comment' => 'Stripe notifies this address: :url',
-                'comment_url' => '/api/v1/' . ($site?->code ?: '{site}') . '/payments/stripe/webhook',
-                'value' => (string) ShopSetting::value('stripe_webhook_secret'),
-            ],
-        ];
+        $site = Site::getActiveSite()?->code ?: '{site}';
+        $rows = [];
+
+        foreach (Gateways::suffixes($gateway) as $suffix) {
+            $boolean = $suffix === $gateway['testMode'];
+            $row = [
+                'key' => $suffix,
+                'type' => $boolean ? 'boolean' : 'password',
+                'label' => $gateway['labels'][$suffix] ?? $suffix,
+                'value' => $boolean
+                    ? static::enabled(static::key($code, $suffix))
+                    : (string) ShopSetting::value(static::key($code, $suffix)),
+            ];
+
+            if ($suffix === $gateway['webhook']) {
+                $row['comment'] = 'The gateway notifies this address: :url';
+                $row['comment_url'] = '/api/v1/' . $site . '/payments/' . $code . '/webhook';
+            }
+
+            $rows[] = $row;
+        }
+
+        return $rows;
     }
 }

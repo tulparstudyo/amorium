@@ -1,3 +1,7 @@
+<link href="<?= Url::asset('plugins/amoriumcms/shop/assets/css/payments.css') ?>?v=<?= filemtime(plugins_path('amoriumcms/shop/assets/css/payments.css')) ?>" rel="stylesheet">
+
+<div id="payment-accordion" hidden data-offered="<?= e(__('Offered')) ?>" data-hidden="<?= e(__('Not offered')) ?>"></div>
+
 <?= Form::open(['class' => 'layout']) ?>
 
     <div class="layout-row">
@@ -18,3 +22,5 @@
     </div>
 
 <?= Form::close() ?>
+
+<script src="<?= Url::asset('plugins/amoriumcms/shop/assets/js/payments.js') ?>?v=<?= filemtime(plugins_path('amoriumcms/shop/assets/js/payments.js')) ?>"></script>

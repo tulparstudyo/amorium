@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Less' => array($vendorDir . '/wikimedia/less.php/lib'),
+    'Braintree' => array($vendorDir . '/braintree/braintree_php/lib'),
 );

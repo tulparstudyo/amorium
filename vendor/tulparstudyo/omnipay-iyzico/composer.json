@@ -1,0 +1,24 @@
+{
+    "name": "tulparstudyo/omnipay-iyzico",
+    "type": "library",
+    "description": "iyzico Checkout Form gateway for the Omnipay payment processing library",
+    "keywords": ["omnipay", "iyzico", "iyzipay", "payment", "checkout"],
+    "homepage": "https://github.com/tulparstudyo/omnipay-iyzico",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+        "php": "^8.2",
+        "omnipay/common": "^3.0",
+        "iyzico/iyzipay-php": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\Iyzico\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

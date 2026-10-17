@@ -5,6 +5,17 @@
     "require": {
         "composer/installers": "~1.0",
         "league/omnipay": "^3.2",
-        "omnipay/stripe": "^3.2"
+        "omnipay/stripe": "^3.2",
+        "omnipay/paypal": "^3.0",
+        "omnipay/mollie": "^5.0",
+        "omnipay/braintree": "^2.0@beta",
+        "omnipay/authorizenet": "^3.0",
+        "omnipay/worldpay": "^3.0",
+        "omnipay/sagepay": "^4.0",
+        "omnipay/eway": "^3.0",
+        "omnipay/paymentexpress": "^3.0",
+        "omnipay/securepay": "^3.0",
+        "omnipay/dummy": "^3.0",
+        "tulparstudyo/omnipay-iyzico": "^1.0"
     }
 }

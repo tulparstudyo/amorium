@@ -60,11 +60,15 @@ class ShopSetting extends SettingModel
         $this->cod_name = '';
         $this->cod_order_status = 'processing';
         $this->cod_fee = 0;
-        $this->stripe_enabled = false;
-        $this->stripe_name = '';
-        $this->stripe_order_status = 'pending_payment';
-        $this->stripe_secret_key = '';
-        $this->stripe_webhook_secret = '';
+        foreach (\AmoriumCms\Shop\Classes\Payments\Gateways::definitions() as $code => $gateway) {
+            $this->{$code . '_enabled'} = false;
+            $this->{$code . '_name'} = '';
+            $this->{$code . '_order_status'} = 'pending_payment';
+
+            foreach (\AmoriumCms\Shop\Classes\Payments\Gateways::suffixes($gateway) as $suffix) {
+                $this->{$code . '_' . $suffix} = $suffix === $gateway['testMode'] ? false : '';
+            }
+        }
         $this->cart_ttl_days = 30;
         $this->order_number_prefix = 'AM';
         $this->out_of_stock_limit_customer = 10;
@@ -77,14 +81,20 @@ class ShopSetting extends SettingModel
      */
     public function filterFields($fields, $context = null)
     {
-        if (!isset($fields->stripe_webhook_secret)) {
-            return;
-        }
+        $site = Site::getSiteFromContext()?->code ?: 'site';
 
-        $code = Site::getSiteFromContext()?->code ?: 'site';
-        $fields->stripe_webhook_secret->comment = __('Stripe notifies this address: :url', [
-            'url' => Url::to('api/v1/' . $code . '/payments/stripe/webhook'),
-        ]);
+        foreach (\AmoriumCms\Shop\Classes\Payments\Gateways::definitions() as $code => $gateway) {
+            if (!$gateway['webhook']) {
+                continue;
+            }
+
+            $name = $code . '_' . $gateway['webhook'];
+            if (isset($fields->{$name})) {
+                $fields->{$name}->comment = __('The gateway notifies this address: :url', [
+                    'url' => Url::to('api/v1/' . $site . '/payments/' . $code . '/webhook'),
+                ]);
+            }
+        }
     }
 
     /**

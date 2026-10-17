@@ -71,13 +71,23 @@ tabs:
         _stripe_section:
             label: Stripe
             type: section
+            cssClass: payment-provider
             comment: Card payments open on Stripe. Add another provider as a new section in this tab.
             tab: Credit Card
+        # An Omnipay provider is the enabled field plus composer. gateway is the
+        # Omnipay name, flow is checkout or redirect, credentials map setters to
+        # the field suffix, testMode and webhook name optional suffixes.
         stripe_enabled:
             label: Enabled
             comment: Customers of this site can choose the method only while it is enabled.
             type: switch
             tab: Credit Card
+            gateway: Stripe\Checkout
+            flow: checkout
+            customer: Card
+            credentials:
+                apiKey: secret_key
+            webhook: webhook_secret
         stripe_name:
             label: Name on this site
             comment: Leave empty to use Card.
@@ -101,3 +111,475 @@ tabs:
             label: Stripe Webhook Secret
             type: sensitive
             tab: Credit Card
+
+        _paypal_section:
+            label: PayPal
+            type: section
+            cssClass: payment-provider
+            comment: The customer pays with a PayPal account. Card details stay on PayPal.
+            tab: Credit Card
+        paypal_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: PayPal_Rest
+            flow: redirect
+            customer: PayPal
+            credentials:
+                clientId: client_id
+                secret: secret
+            testMode: sandbox
+        paypal_sandbox:
+            label: Sandbox
+            comment: Use PayPal sandbox credentials.
+            type: switch
+            tab: Credit Card
+        paypal_name:
+            label: Name on this site
+            comment: Leave empty to use PayPal.
+            tab: Credit Card
+            span: left
+        paypal_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        paypal_client_id:
+            label: PayPal Client ID
+            type: sensitive
+            tab: Credit Card
+        paypal_secret:
+            label: PayPal Secret
+            type: sensitive
+            tab: Credit Card
+
+        _mollie_section:
+            label: Mollie
+            type: section
+            cssClass: payment-provider
+            comment: The customer pays on Mollie. Card details stay on Mollie.
+            tab: Credit Card
+        mollie_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: Mollie
+            flow: redirect
+            customer: Mollie
+            credentials:
+                apiKey: api_key
+        mollie_name:
+            label: Name on this site
+            comment: Leave empty to use Mollie.
+            tab: Credit Card
+            span: left
+        mollie_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        mollie_api_key:
+            label: Mollie API Key
+            type: sensitive
+            tab: Credit Card
+
+        _braintree_section:
+            label: Braintree
+            type: section
+            cssClass: payment-provider
+            comment: Braintree merchant account. The shop starts a Braintree payment with these keys.
+            tab: Credit Card
+        braintree_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: Braintree
+            flow: redirect
+            customer: Braintree
+            credentials:
+                merchantId: merchant_id
+                publicKey: public_key
+                privateKey: private_key
+            testMode: sandbox
+        braintree_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        braintree_name:
+            label: Name on this site
+            comment: Leave empty to use Braintree.
+            tab: Credit Card
+            span: left
+        braintree_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        braintree_merchant_id:
+            label: Braintree Merchant ID
+            type: sensitive
+            tab: Credit Card
+        braintree_public_key:
+            label: Braintree Public Key
+            type: sensitive
+            tab: Credit Card
+        braintree_private_key:
+            label: Braintree Private Key
+            type: sensitive
+            tab: Credit Card
+
+        _authorizenet_section:
+            label: Authorize.Net
+            type: section
+            cssClass: payment-provider
+            comment: Authorize.Net hosted payment. The customer pays on Authorize.Net.
+            tab: Credit Card
+        authorizenet_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: AuthorizeNet_SIM
+            flow: redirect
+            customer: Authorize.Net
+            credentials:
+                apiLoginId: api_login_id
+                signatureKey: signature_key
+            testMode: sandbox
+        authorizenet_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        authorizenet_name:
+            label: Name on this site
+            comment: Leave empty to use Authorize.Net.
+            tab: Credit Card
+            span: left
+        authorizenet_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        authorizenet_api_login_id:
+            label: Authorize.Net API Login ID
+            type: sensitive
+            tab: Credit Card
+        authorizenet_signature_key:
+            label: Authorize.Net Signature Key
+            type: sensitive
+            tab: Credit Card
+
+        _worldpay_section:
+            label: Worldpay
+            type: section
+            cssClass: payment-provider
+            comment: Worldpay hosted payment. The customer pays on Worldpay.
+            tab: Credit Card
+        worldpay_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: WorldPay
+            flow: redirect
+            customer: Worldpay
+            credentials:
+                installationId: installation_id
+                secretWord: secret_word
+        worldpay_name:
+            label: Name on this site
+            comment: Leave empty to use Worldpay.
+            tab: Credit Card
+            span: left
+        worldpay_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        worldpay_installation_id:
+            label: Worldpay Installation ID
+            type: sensitive
+            tab: Credit Card
+        worldpay_secret_word:
+            label: Worldpay Secret Word
+            type: sensitive
+            tab: Credit Card
+
+        _sagepay_section:
+            label: Sage Pay (Opayo)
+            type: section
+            cssClass: payment-provider
+            comment: Opayo Server. The customer pays on Opayo.
+            tab: Credit Card
+        sagepay_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: SagePay_Server
+            flow: redirect
+            customer: Sage Pay
+            credentials:
+                vendor: vendor
+            testMode: sandbox
+        sagepay_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        sagepay_name:
+            label: Name on this site
+            comment: Leave empty to use Sage Pay.
+            tab: Credit Card
+            span: left
+        sagepay_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        sagepay_vendor:
+            label: Sage Pay Vendor
+            type: sensitive
+            tab: Credit Card
+
+        _eway_section:
+            label: eWAY
+            type: section
+            cssClass: payment-provider
+            comment: eWAY Rapid Shared Page. The customer pays on eWAY.
+            tab: Credit Card
+        eway_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: Eway_RapidShared
+            flow: redirect
+            customer: eWAY
+            credentials:
+                apiKey: api_key
+                password: password
+            testMode: sandbox
+        eway_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        eway_name:
+            label: Name on this site
+            comment: Leave empty to use eWAY.
+            tab: Credit Card
+            span: left
+        eway_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        eway_api_key:
+            label: eWAY API Key
+            type: sensitive
+            tab: Credit Card
+        eway_password:
+            label: eWAY Password
+            type: sensitive
+            tab: Credit Card
+
+        _paymentexpress_section:
+            label: PaymentExpress
+            type: section
+            cssClass: payment-provider
+            comment: Windcave PxPay. The customer pays on Payment Express.
+            tab: Credit Card
+        paymentexpress_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: PaymentExpress_PxPay
+            flow: redirect
+            customer: Payment Express
+            credentials:
+                username: username
+                password: password
+            testMode: sandbox
+        paymentexpress_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        paymentexpress_name:
+            label: Name on this site
+            comment: Leave empty to use Payment Express.
+            tab: Credit Card
+            span: left
+        paymentexpress_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        paymentexpress_username:
+            label: Payment Express Username
+            type: sensitive
+            tab: Credit Card
+        paymentexpress_password:
+            label: Payment Express Password
+            type: sensitive
+            tab: Credit Card
+
+        _securepay_section:
+            label: SecurePay
+            type: section
+            cssClass: payment-provider
+            comment: SecurePay Direct Post. The customer pays on SecurePay.
+            tab: Credit Card
+        securepay_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: SecurePay_DirectPost
+            flow: redirect
+            customer: SecurePay
+            credentials:
+                merchantId: merchant_id
+                transactionPassword: transaction_password
+            testMode: sandbox
+        securepay_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        securepay_name:
+            label: Name on this site
+            comment: Leave empty to use SecurePay.
+            tab: Credit Card
+            span: left
+        securepay_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        securepay_merchant_id:
+            label: SecurePay Merchant ID
+            type: sensitive
+            tab: Credit Card
+        securepay_transaction_password:
+            label: SecurePay Transaction Password
+            type: sensitive
+            tab: Credit Card
+
+        _iyzico_section:
+            label: iyzico
+            type: section
+            cssClass: payment-provider
+            comment: The customer pays on iyzico. Card details stay on iyzico.
+            tab: Credit Card
+        iyzico_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: Iyzico
+            flow: redirect
+            customer: iyzico
+            credentials:
+                apiKey: api_key
+                secretKey: secret_key
+            testMode: sandbox
+        iyzico_sandbox:
+            label: Sandbox
+            comment: Use the provider test environment.
+            type: switch
+            tab: Credit Card
+        iyzico_name:
+            label: Name on this site
+            comment: Leave empty to use iyzico.
+            tab: Credit Card
+            span: left
+        iyzico_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right
+        iyzico_api_key:
+            label: iyzico API Key
+            type: sensitive
+            tab: Credit Card
+        iyzico_secret_key:
+            label: iyzico Secret Key
+            type: sensitive
+            tab: Credit Card
+
+        _dummy_section:
+            label: Dummy
+            type: section
+            cssClass: payment-provider
+            comment: Local test payment. No card and no provider account. The order is confirmed when the customer returns.
+            tab: Credit Card
+        dummy_enabled:
+            label: Enabled
+            comment: Customers of this site can choose the method only while it is enabled.
+            type: switch
+            tab: Credit Card
+            gateway: Dummy
+            flow: direct
+            customer: Dummy
+        dummy_name:
+            label: Name on this site
+            comment: Leave empty to use Dummy.
+            tab: Credit Card
+            span: left
+        dummy_order_status:
+            label: Initial Order Status
+            comment: The status a new order receives when the customer pays with this method.
+            type: dropdown
+            options:
+                pending_payment: Pending payment
+                processing: Processing
+            tab: Credit Card
+            span: right

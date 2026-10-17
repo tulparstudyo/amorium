@@ -15,7 +15,11 @@ class PaymentMethods
      */
     public static function all(): array
     {
-        $methods = [new BankTransfer, new CashOnDelivery, new Stripe];
+        $methods = [new BankTransfer, new CashOnDelivery];
+
+        foreach (Gateways::definitions() as $definition) {
+            $methods[] = new OmnipayMethod($definition);
+        }
 
         $result = [];
         foreach ($methods as $method) {

@@ -11,7 +11,7 @@ Feature | What it does
 Catalog | Products, variants, categories, brands, specs and reviews
 Customers | Accounts, addresses and favorites on RainLab.User
 Orders | Cart, checkout, stock movements and order status history
-Payments | Bank transfer, cash on delivery and Stripe Checkout
+Payments | Bank transfer, cash on delivery, Stripe Checkout and PayPal
 Shipping | Shipping methods with a free-shipping threshold
 Multisite | Prices, names and payment settings for each site
 
@@ -22,7 +22,7 @@ php artisan plugin:install AmoriumCms.Shop --from=https://github.com/AmoriumCms/
 php artisan october:migrate
 ```
 
-The theme pages that call the shop live in the [theme repository](https://github.com/AmoriumCms/theme). Card payments need the Stripe secret key under **Shop > Payment Methods**.
+The theme pages that call the shop live in the [theme repository](https://github.com/AmoriumCms/theme). Card providers are configured under **Shop > Payment Methods**. A new Omnipay provider is its Composer package plus a section in the payment form.
 
 ## Updating
 
