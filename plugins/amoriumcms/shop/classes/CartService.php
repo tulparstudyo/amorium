@@ -98,7 +98,7 @@ class CartService
                 $target->save();
             }
 
-            Order::where('cart_id', $from->id)->where('status', Order::STATUS_INCOMPLETE)->get()->each->delete();
+            Order::where('cart_id', $from->id)->where('status', Order::STATUS_PAYMENT_NOT_MADE)->get()->each->delete();
             $from->delete();
         });
 

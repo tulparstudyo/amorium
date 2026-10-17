@@ -363,7 +363,7 @@
     "Rating": "Puan",
     "Review": "Yorum",
     "Language": "Dil",
-    "Incomplete": "Tamamlanmadı",
+    "Payment not made": "Ödeme Yapılmadı",
     "Mark this order as refunded? The received payments will be marked as refunded and the stock will not be returned.": "Sipariş iade edildi olarak işaretlensin mi? Alınan ödemeler iade edildi olarak işaretlenecek, stok geri eklenmeyecek.",
     "Shop Config": "Mağaza Ayarları",
     "Gives the storefront scripts the API address, the sign in token and the currency.": "Mağaza betiklerine API adresini, oturum anahtarını ve para birimini verir.",

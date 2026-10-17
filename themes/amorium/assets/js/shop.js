@@ -46,6 +46,7 @@
         in_stock: 'bg-green-100 text-green-800',
         low_stock: 'bg-amber-100 text-amber-800',
         refunded: 'bg-orange-100 text-orange-800',
+        payment_not_made: 'bg-gray-100 text-gray-700',
         cancelled: 'bg-red-100 text-red-800',
         rejected: 'bg-red-100 text-red-800',
         failed: 'bg-red-100 text-red-800',

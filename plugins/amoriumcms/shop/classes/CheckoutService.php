@@ -213,8 +213,8 @@ class CheckoutService
                     throw ApiException::make(ApiCode::CART_NOT_FOUND);
                 }
 
-                $order = Order::where('cart_id', $cart->id)->where('status', Order::STATUS_INCOMPLETE)->first() ?: new Order;
-                $wasIncomplete = $order->exists;
+                $order = Order::where('cart_id', $cart->id)->where('status', Order::STATUS_PAYMENT_NOT_MADE)->first() ?: new Order;
+                $wasDraft = $order->exists;
 
                 $order->fill([
                     'user_id' => $user?->id,
@@ -261,7 +261,7 @@ class CheckoutService
                     $paymentMethod->start($order, $payment);
                 }
 
-                OrderService::record($order, $wasIncomplete ? Order::STATUS_INCOMPLETE : null, $order->status);
+                OrderService::record($order, $wasDraft ? Order::STATUS_PAYMENT_NOT_MADE : null, $order->status);
 
                 $cart->order_id = $order->id;
                 $cart->save();
@@ -276,11 +276,11 @@ class CheckoutService
     }
 
     /**
-     * trackIncomplete keeps an incomplete order for a customer who reached the checkout
+     * trackPaymentNotMade keeps a draft order for a customer who reached the checkout
      * with an e-mail address, so the admins see the checkouts that were left unfinished.
      * The order takes no stock and no number; placing the cart completes the same order.
      */
-    public static function trackIncomplete(Cart $cart)
+    public static function trackPaymentNotMade(Cart $cart)
     {
         $user = Auth::user();
         $email = $user ? $user->email : $cart->email;
@@ -291,7 +291,7 @@ class CheckoutService
                 return;
             }
 
-            $order = Order::where('cart_id', $cart->id)->where('status', Order::STATUS_INCOMPLETE)->first();
+            $order = Order::where('cart_id', $cart->id)->where('status', Order::STATUS_PAYMENT_NOT_MADE)->first();
 
             if (!$cart->items()->exists()) {
                 $order?->delete();
@@ -315,7 +315,7 @@ class CheckoutService
             $shippingMethod = $totals['shipping_method'];
 
             $isNew = !$order;
-            $order = $order ?: new Order(['cart_id' => $cart->id, 'status' => Order::STATUS_INCOMPLETE, 'payment_status' => Order::PAYMENT_PENDING]);
+            $order = $order ?: new Order(['cart_id' => $cart->id, 'status' => Order::STATUS_PAYMENT_NOT_MADE, 'payment_status' => Order::PAYMENT_PENDING]);
 
             $order->fill([
                 'user_id' => $user?->id,
@@ -344,7 +344,7 @@ class CheckoutService
             static::writeItems($order, $totals['lines']);
 
             if ($isNew) {
-                OrderService::record($order, null, Order::STATUS_INCOMPLETE);
+                OrderService::record($order, null, Order::STATUS_PAYMENT_NOT_MADE);
             }
         });
     }

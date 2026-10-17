@@ -101,7 +101,7 @@ export default ({ api, meta, fail, notify, hash, showList }) => ({
                     <a href="#/" class="btn btn-sm btn-default">&larr; {{ t('Orders') }}</a>
                     <h3 class="m-0">{{ order.number || '#' + order.id }}</h3>
                     <status-badge :value="order.status"></status-badge>
-                    <status-badge v-if="order.status !== 'incomplete'" :value="order.payment_status"></status-badge>
+                    <status-badge v-if="order.status !== 'payment_not_made'" :value="order.payment_status"></status-badge>
                     <div class="shop-spacer"></div>
                     <span class="shop-muted">{{ siteName(order.site_id) }} · {{ date(order.placed_at) }}</span>
                 </div>

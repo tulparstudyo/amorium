@@ -12,3 +12,6 @@ v1.0.2:
 v1.0.3:
     - Color is a product property and the common code can be shared
     - add_product_colors.php
+v1.0.4:
+    - Rename the incomplete order status to payment_not_made
+    - rename_incomplete_status.php

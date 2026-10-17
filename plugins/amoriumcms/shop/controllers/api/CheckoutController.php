@@ -18,7 +18,7 @@ class CheckoutController
     public function show()
     {
         $cart = CartService::resolve();
-        CheckoutService::trackIncomplete($cart);
+        CheckoutService::trackPaymentNotMade($cart);
 
         return ApiResponse::ok(CheckoutService::show($cart));
     }
@@ -29,7 +29,7 @@ class CheckoutController
     public function update()
     {
         $cart = CheckoutService::update(CartService::resolve(), Request::all());
-        CheckoutService::trackIncomplete($cart);
+        CheckoutService::trackPaymentNotMade($cart);
 
         return ApiResponse::ok(CheckoutService::show($cart));
     }

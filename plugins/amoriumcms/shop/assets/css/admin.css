@@ -31,7 +31,7 @@
 :is(.shop-admin, .shop-list) .shop-badge-cancelled, :is(.shop-admin, .shop-list) .shop-badge-rejected, :is(.shop-admin, .shop-list) .shop-badge-out_of_stock,
 :is(.shop-admin, .shop-list) .shop-badge-failed { background: #f8d7da; color: #842029; }
 :is(.shop-admin, .shop-list) .shop-badge-low_stock, :is(.shop-admin, .shop-list) .shop-badge-refunded { background: #ffe5d0; color: #8a3a00; }
-:is(.shop-admin, .shop-list) .shop-badge-incomplete { background: #f1f3f5; color: #6c757d; border: 1px dashed #adb5bd; }
+:is(.shop-admin, .shop-list) .shop-badge-payment_not_made { background: #f1f3f5; color: #6c757d; border: 1px dashed #adb5bd; }
 .shop-admin .shop-bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
 .shop-admin .shop-bars div { flex: 1; background: var(--bs-primary, #3498db); min-height: 2px; border-radius: 2px 2px 0 0; opacity: .8; }
 .shop-admin .shop-tree-indent { display: inline-block; width: 20px; }

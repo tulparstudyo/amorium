@@ -1,8 +1,8 @@
 # Builds the installation package of the Amorium theme and the AmoriumCms.Amorium plugin.
 # Every run raises the patch version of the theme (1.6.0 -> 1.6.1); with -Minor the minor version is raised
 # instead (1.6.1 -> 1.7.0).
-# The marketplace repositories in the amoriumcms folder next to public_html are updated, committed and tagged;
-# pushing is left to the developer.
+# The marketplace repositories in the amoriumcms folder next to public_html (theme, plugin, shop)
+# are updated, committed and tagged; pushing is left to the developer.
 # The marketplace reads composer.json from the repository root, so the theme and the plugin have their own
 # repositories named theme and plugin.
 param(
@@ -17,6 +17,7 @@ $rootPath = Split-Path $publicPath -Parent
 $outputPath = Join-Path $rootPath 'setup'
 $reposPath = Join-Path $rootPath 'amoriumcms'
 $pluginPath = Join-Path $publicPath 'plugins\amoriumcms\amorium'
+$shopPath = Join-Path $publicPath 'plugins\amoriumcms\shop'
 $setupPath = Join-Path $PSScriptRoot 'setup'
 $repoOwner = 'AmoriumCms'
 $versionFile = Join-Path $themePath 'version.yaml'
@@ -126,6 +127,12 @@ try {
         throw "No version found for the plugin in $pluginPath"
     }
     $repositories += Update-Repository 'plugin' $pluginPath "v$pluginVersion" "AmoriumCms.Amorium $pluginVersion" @((Join-Path $setupPath 'plugin\README.md'), (Join-Path $setupPath '.gitattributes'))
+
+    $shopVersion = Get-LatestVersion (Join-Path $shopPath 'updates\version.yaml')
+    if (-not $shopVersion) {
+        throw "No version found for the shop plugin in $shopPath"
+    }
+    $repositories += Update-Repository 'shop' $shopPath "v$shopVersion" "AmoriumCms.Shop $shopVersion" @((Join-Path $setupPath 'shop\README.md'), (Join-Path $setupPath '.gitattributes'))
 }
 catch {
     [IO.File]::WriteAllText($versionFile, "$content`n")

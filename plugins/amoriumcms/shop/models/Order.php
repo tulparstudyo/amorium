@@ -15,10 +15,10 @@ class Order extends Model
     const STATUS_DELIVERED = 'delivered';
     const STATUS_CANCELLED = 'cancelled';
     const STATUS_REFUNDED = 'refunded';
-    const STATUS_INCOMPLETE = 'incomplete';
+    const STATUS_PAYMENT_NOT_MADE = 'payment_not_made';
 
     const STATUSES = [
-        self::STATUS_INCOMPLETE,
+        self::STATUS_PAYMENT_NOT_MADE,
         self::STATUS_PENDING_PAYMENT,
         self::STATUS_PROCESSING,
         self::STATUS_SHIPPED,
@@ -28,11 +28,11 @@ class Order extends Model
     ];
 
     /**
-     * @var array TRANSITIONS lists the allowed next statuses. An incomplete order is
+     * @var array TRANSITIONS lists the allowed next statuses. A payment_not_made order is
      * completed only by the customer placing it.
      */
     const TRANSITIONS = [
-        self::STATUS_INCOMPLETE => [],
+        self::STATUS_PAYMENT_NOT_MADE => [],
         self::STATUS_PENDING_PAYMENT => [self::STATUS_PROCESSING, self::STATUS_CANCELLED],
         self::STATUS_PROCESSING => [self::STATUS_SHIPPED, self::STATUS_CANCELLED],
         self::STATUS_SHIPPED => [self::STATUS_DELIVERED, self::STATUS_CANCELLED],
@@ -44,7 +44,7 @@ class Order extends Model
     /**
      * @var array NOT_COUNTED statuses are left out of the sales totals
      */
-    const NOT_COUNTED = [self::STATUS_INCOMPLETE, self::STATUS_CANCELLED, self::STATUS_REFUNDED];
+    const NOT_COUNTED = [self::STATUS_PAYMENT_NOT_MADE, self::STATUS_CANCELLED, self::STATUS_REFUNDED];
 
     const PAYMENT_PENDING = 'pending';
     const PAYMENT_PAID = 'paid';
@@ -79,11 +79,11 @@ class Order extends Model
     }
 
     /**
-     * scopeIsPlaced leaves out the incomplete orders
+     * scopeIsPlaced leaves out the drafts where payment was not made
      */
     public function scopeIsPlaced($query)
     {
-        return $query->where('status', '<>', static::STATUS_INCOMPLETE);
+        return $query->where('status', '<>', static::STATUS_PAYMENT_NOT_MADE);
     }
 
     /**
